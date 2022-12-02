@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "~antd/dist/antd.css";
+.no-ant-item-margin .ant-form-item {
+    margin: 0;
+}
+
+.ant-btn-primary {
+    background-color: #358eed;
+}

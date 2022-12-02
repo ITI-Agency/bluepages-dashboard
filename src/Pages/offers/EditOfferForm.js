@@ -1,0 +1,480 @@
+import { Input, Skeleton, Space, Switch, Tabs, Upload } from 'antd';
+import React, { createRef, useEffect, useState } from 'react';
+import { BsBackspaceFill } from 'react-icons/bs';
+import { Button, Form, Select } from 'antd';
+import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from "react-toastify";
+
+
+import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import ImgCrop from 'antd-img-crop';
+import { UploadOutlined } from '@ant-design/icons';
+import TextArea from 'antd/lib/input/TextArea';
+import TabPane from 'antd/lib/tabs/TabPane';
+import { Content } from 'antd/lib/layout/layout';
+import OffersServices from 'Services/OffersServices';
+import CountriesServices from "../../Services/CountriesServices";
+import UserServices from "../../Services/UserServices";
+import CategoriesServices from "../../Services/CategoriesServices";
+import CitiesServices from 'Services/CitiesServices';
+import { useNavigate } from 'react-router-dom';
+import CompaniesServices from 'Services/CompaniesServices';
+const { Option } = Select;
+
+const layout = {
+	labelCol: { span: 2 },
+	wrapperCol: { span: 20 },
+};
+const formImagesLayout = {
+	labelCol: { span: 4 },
+	wrapperCol: { span: 16 },
+};
+const tailLayout = {
+	wrapperCol: { offset: 8, span: 16 },
+};
+const formItemLayout = {
+	labelCol: {
+		xs: { span: 24 },
+		sm: { span: 0 },
+	},
+	wrapperCol: {
+		xs: { span: 24 },
+		sm: { span: 24 },
+	},
+};
+const formItemLayoutWithOutLabel = {
+	wrapperCol: {
+		xs: { span: 24, offset: 0 },
+		sm: { span: 24 },
+	},
+};
+const EditOfferForm = ({ offer, id, }) => {
+	const queryClient = useQueryClient();
+	const [dataLoaded, setDataLoaded] = useState(false);
+	const [countries, setCountries] = useState([]);
+	const [cities, setCities] = useState([]);
+	const [categories, setCategories] = useState([]);
+	const [users, setUsers] = useState(null);
+	const [companies, setCompanies] = useState([]);
+	const [logoFile, setLogoFile] = useState([]);
+
+	const navigate = useNavigate();
+	const discount = {
+		percentage: "نسبه %",
+		amount: "كميه ثابته"
+	};
+
+	const [images, setImages] = useState([]);
+	const handleGoBack = () => {
+		setCreate(false);
+		setEdit(false);
+	};
+
+	useEffect(() => {
+		getFieldsData();
+	}, []);
+
+	const getFieldsData = async () => {
+		const { status: countriesStatus, data: countriesData } =
+			await CountriesServices.getAllCountries([{ city: true }]);
+		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(offer.countryId);
+		const { status: usersStatus, data: usersData } = await UserServices.getAllUsers();
+		const { status: categoriesStatus, data: categoriesData } =
+			await CategoriesServices.getAllCategories();
+		const { status: companiesStatus, data: companiesData } =
+			await CompaniesServices.getAllCompanies();
+
+		if (
+			countriesStatus == 200 &&
+			citiesStatus == 200 &&
+			usersStatus == 200 &&
+			categoriesStatus == 200 &&
+			companiesStatus == 200
+		) {
+			setCountries(countriesData);
+			setCities(citiesData);
+			setUsers(usersData);
+			setCategories(categoriesData);
+			setCompanies(companiesData);
+			setDataLoaded(true);
+			return;
+		}
+	};
+
+	const mutation = useMutation(data => {
+		console.log({ data });
+		data.on_sale = data.on_sale ? "true" : "false";
+		console.log('countryCity:', countries.find(co => co.id == data.countryId));
+		if (!countries.find(co => co.id == data.countryId)?.cities?.map(c => c.id)?.includes(data.cityId)) {
+			toast.error('الرجاء إختيار مدينه تابعه للدوله');
+			return;
+		}
+		data.categories = [data.categories];
+		let formData = new FormData();
+		// upload categories
+		data.categories.forEach(cat => {
+			formData.append("categories[]", cat);
+		});
+		if (logoFile?.length) {
+			formData.append("logoFile", logoFile[0].originFileObj);
+		}
+		delete data.categories;
+		for (const [key, value] of Object.entries(data)) {
+			formData.append(key, value);
+		}
+		// setLoading(true);
+
+		return OffersServices.updateOffer(formData, offer.id);
+	}, {
+		onError: (error) => {
+			console.log({ error });
+			toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+			// setLoading(false);
+
+		},
+		onSuccess: (res) => {
+			// Boom baby!
+			if (res) {
+				toast.success('لقد تم تعديل العرض بنجاح');
+				navigate(`/offers`);
+			}
+			// setLoading(false);
+
+			// Router.push('/login')
+		},
+	});
+	const addImages = useMutation(() => {
+		// data.categories = [data.categories]
+		let formData = new FormData();
+		// upload images
+		if (images?.fileList && images?.fileList?.length) {
+			images.fileList.forEach(el => {
+				formData.append("images[]", el.originFileObj
+				);
+			});
+		} else {
+			toast.error("برجاء إضافه صور أولا");
+		}
+		return OffersServices.addOfferImage(offer.id, formData);
+	}, {
+		onError: (error) => {
+			console.log({ error });
+			toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+		},
+		onSuccess: () => {
+			// Boom baby!
+			toast.success('لقد تم إضافه الصور بنجاح  ');
+
+			window.location.reload(false);
+			// Router.push('/login')
+		},
+	});
+	const removeImages = useMutation((imageId) => {
+		// data.categories = [data.categories]
+		const payload = [imageId];
+		const data = {
+			data: {
+				imageIds: payload
+			}
+		};
+		return OffersServices.removeOfferImage(offer.id, data);
+
+	}, {
+		onError: (error) => {
+			toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+		},
+		onSuccess: () => {
+			// Boom baby!
+			toast.success('لقد تم إضافه الصور بنجاح  ');
+			window.location.reload(false);
+			// handleGoBack();
+			// Router.push('/login')
+		},
+	});
+
+	const [form] = Form.useForm();
+	const [imagesForm] = Form.useForm();
+
+	const onReset = () => {
+		form.resetFields();
+	};
+	const onChangeMainPagePaid = () => {
+		setMainPagePaid(!mainPagePaid);
+	};
+	const onChangePaid = () => {
+		setPaid(!paid);
+	};
+	const getUserCompanies = async (id) => {
+		const { status: companiesStatus, data: companiesData } =
+			await CompaniesServices.getAllCompanies([{ userId: id }]);
+		if (companiesStatus == 200) {
+			setCompanies(companiesData);
+		}
+	};
+	const getCountryCities = async (id) => {
+		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(id);
+		if (citiesStatus == 200) {
+			setCities(citiesData);
+		}
+	};
+	/* eslint-disable no-template-curly-in-string */
+	const validateMessages = {
+		required: '${label} مطلوب!',
+		types: {
+			email: '${label} يجب أن يكون صالحا!',
+		},
+		// number: {
+		//   range: '${label} must be between ${min} and ${max}',
+		// },
+	};
+
+	const [saleChecked, setSaleChecked] = useState(offer?.on_sale);
+	const [mainPagePaid, setMainPagePaid] = useState(offer?.main_page_paid);
+	const [paid, setPaid] = useState(offer?.paid);
+
+	const onChangeSale = (checked) => {
+		setSaleChecked(checked);
+		console.log(`switch sale to ${checked}`);
+	};
+
+	if (!dataLoaded || !countries || !categories || !users || !cities || !companies) {
+		return (
+			<div className="p-8 m-40 mx-auto mt-8 bg-white rounded-md shadow-md md:w-9/12">
+				<Skeleton active />
+			</div>
+
+		);
+	}
+	const initialValues = {
+		name_ar: offer.name_ar || "",
+		name_en: offer.name_en || "",
+		description_ar: offer.description_ar || "",
+		description_en: offer.description_en || "",
+		address_ar: offer.address_ar || "",
+		address_en: offer.address_en || "",
+		companyId: offer?.companyId || null,
+		countryId: offer?.countryId || null,
+		cityId: offer?.cityId || null,
+		userId: offer?.userId,
+		categories: offer?.categories?.map(it => it.id) || [],
+		on_sale: offer?.on_sale,
+		sale_type: offer?.sale_type,
+		sale_amount: offer?.sale_amount,
+		location_link: offer?.location_link || "",
+	};
+	return (
+		<div className='mx-4'>
+			<div className="my-4 divider ">
+				<h1 className="text-2xl font-bold text-center text-blueLight">
+					Edit Offer
+				</h1>
+				<div className="w-full h-[1px] bg-gray-400"></div>
+			</div>
+			<div>
+				<Form layout="vertical" {...layout} form={form} initialValues={initialValues} name="control-hooks" onFinish={mutation.mutate} validateMessages={validateMessages}>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item label="الإسم بالعربيه" name="name_ar" rules={[{ required: true, message: 'الإسم باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<Input placeholder='الإسم باللغه العربيه' />
+						</Form.Item>
+						<Form.Item label="الإسم بالإنجليزيه" className="" name="name_en" rules={[{ required: true, message: 'الإسم باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<Input placeholder='الإسم باللغه الإنجليزيه' />
+						</Form.Item>
+					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item label='إسم المستخدم' name="userId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار إسم المستخدم' }]}>
+							<Select
+								showSearch
+								optionFilterProp="children"
+								filterOption={(input, option) =>
+									(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+								}
+								options={users?.map((co) => ({ label: co.name, value: co.id }))}
+								placeholder='برجاء إختيار إسم المستخدم'
+								allowClear
+								onChange={getUserCompanies}
+							/>
+						</Form.Item>
+						<Form.Item label="الشركه" name="companyId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار شركه' }]}>
+							<Select
+								showSearch
+								optionFilterProp="children"
+								filterOption={(input, option) =>
+									(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+								}
+								options={companies?.map((co) => ({ label: co.name_ar, value: co.id }))}
+								placeholder='برجاء إختيار شركه'
+								allowClear
+							/>
+						</Form.Item>
+						<Form.Item label="الدوله" name="countryId" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار دوله' }]}>
+							<Select
+								showSearch
+								optionFilterProp="children"
+								filterOption={(input, option) =>
+									(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+								}
+								options={countries?.map((co) => ({ label: co.name_ar, value: co.id }))}
+								placeholder='برجاء إختيار دوله'
+								allowClear
+								onChange={getCountryCities}
+							/>
+						</Form.Item>
+
+
+					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item label="الغرفه التجاريه" name="cityId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار غرفه تجاريه' }]}>
+							<Select
+								placeholder='برجاء إختيار غرفه تجاريه'
+								allowClear
+							>
+								{cities?.map((ci) => (<Option key={ci.id} value={ci.id}>{ci[`name_ar`]}</Option>))}
+							</Select>
+						</Form.Item>
+						<Form.Item label="الأنشطه" style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
+							<Select
+								mode="multiple"
+								allowClear
+								style={{ width: '100%' }}
+								placeholder="برجاء إختيار الأنشطه"
+								// defaultValue={['a10', 'c12']}
+								// onChange={handleChange}
+								options={categories.map((cat) => ({ label: cat[`name_ar`], value: cat.id }))}
+							/>
+						</Form.Item>
+					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item label="العنوان بالعربيه" name="address_ar" rules={[{ required: true, message: 'العنوان باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<Input placeholder='العنوان باللغه العربيه' />
+						</Form.Item>
+						<Form.Item label="العنوان بالإنجليزيه" className="" name="address_en" rules={[{ required: true, message: 'العنوان باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<Input placeholder='العنوان باللغه الإنجليزيه' />
+						</Form.Item>
+					</Form.Item>
+					<div className="divider">
+						<h1 className="mb-1 text-lg font-bold text-center text-[#0f6fbd]">
+							Images
+						</h1>
+						<div className="w-full h-[1px] bg-gray-500"></div>
+					</div>
+					<Form.Item className='mt-4 mb-0' >
+						<Form.Item label="صوره الغلاف " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
+							{/* <ImgCrop rotate> */}
+							<Upload onChange={({ fileList }) => { setLogoFile(fileList); }}
+								beforeUpload={() => false}>
+								<Button icon={<UploadOutlined />}>إضغط لإضافه لوجو</Button>
+							</Upload>
+							{/* </ImgCrop> */}
+
+							{
+								offer?.logo &&
+								// <Image
+								// 	width={100}
+								// 	src={company?.logo}
+								// />
+								<img src={offer?.logo} alt="" width="100px" />
+							}
+						</Form.Item>
+
+					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item label="الوصف بالعربيه" name="description_ar" rules={[{ required: true, message: 'الوصف باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<TextArea placeholder='الوصف باللغه العربيه' rows={4} />
+						</Form.Item>
+						<Form.Item label="الوصف بالإنجليزيه" className="" name="description_en" rules={[{ required: true, message: 'الوصف باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} />
+						</Form.Item>
+					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item label="إظهار في الصفحه الرئيسيه" name="main_page_paid" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="checked">
+							<Switch defaultChecked={mainPagePaid} className={`${mainPagePaid ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={onChangeMainPagePaid} />
+						</Form.Item>
+						<Form.Item label="مدفوع" name="paid" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="checked">
+							<Switch defaultChecked={paid} className={`${paid ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={onChangePaid} />
+						</Form.Item>
+						<Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Input placeholder="رابط الخريطه" />
+						</Form.Item>
+					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item label="إستعمال خصم" name="on_sale" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(30% - 8px)' }}>
+							<Switch defaultChecked={saleChecked} className={`${saleChecked ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={onChangeSale} />
+						</Form.Item>
+						<Form.Item
+							noStyle
+							shouldUpdate={(prevValues, currentValues) => prevValues.on_sale !== currentValues.on_sale}
+						>
+							{({ getFieldValue }) =>
+								getFieldValue('on_sale') === true ? (
+									<>
+										<Form.Item label="نوع الخصم" name="sale_type" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار نوع الخصم' }]}>
+											<Select
+												placeholder='برجاء إختيار نوع الخصم'
+												allowClear
+											>
+												<Option value='PERCENTAGE'>{discount.percentage}</Option>
+												<Option value='AMOUNT'>{discount.amount}</Option>
+											</Select>
+										</Form.Item>
+										<Form.Item label="كميه الخصم (نسبه/كميه)" className="" name="sale_amount" rules={[{ required: true, message: "برجاء إدخال كميه الخصم (نسبه/كميه)" }]} style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+											<Input type='number' placeholder="كميه الخصم (نسبه/كميه)" />
+										</Form.Item>
+									</>
+								) : null
+							}
+						</Form.Item>
+
+					</Form.Item>
+					<Form.Item {...tailLayout}>
+						<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
+							submit
+						</Button>
+						<Button htmlType="button" onClick={onReset} className='mx-2 rtl:pt-2 '>
+							reset
+						</Button>
+
+					</Form.Item>
+				</Form>
+			</div>
+			<div className="my-8 divider ">
+				<h1 className="text-2xl font-bold text-center text-blueLight">
+					Edit Offer Images
+				</h1>
+				<div className="w-full h-[1px] bg-gray-400"></div>
+			</div>
+			<Form {...formImagesLayout} form={imagesForm} name="form-images" onFinish={addImages.mutate} >
+				<Form.Item label="إضافه صور العرض" valuePropName="images" style={{ distplay: "inline-block", marginBottom: 0 }}>
+					<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
+						beforeUpload={() => false} action="/upload.do" listType="picture-card">
+						<div className='block' >
+							<PlusOutlined />
+							<div style={{ marginTop: 8 }}>Upload</div>
+						</div>
+					</Upload>
+				</Form.Item>
+				<Form.Item style={{ distplay: "inline-block", marginBottom: 0 }}>
+					<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
+						Upload New Images
+					</Button>
+				</Form.Item>
+			</Form>
+			<section className="overflow-hidden text-gray-700 ">
+				<div className="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
+					<div className="flex flex-wrap -m-1 md:-m-2">
+						{offer.images.map((img, i) => (
+							<div key={i} className="flex flex-wrap w-1/3">
+								<div className="flex flex-col w-full p-1 mx-4 md:p-2">
+									<img width={150} height={150} alt="gallery" className="block object-cover object-center w-full h-full rounded-lg "
+										src={img.image}></img>
+									<div onClick={() => removeImages.mutate(img.id)} className="mt-2 text-center text-white bg-red-500 cursor-pointer hover:bg-red-400 btn"> <p className="text-center">حذف</p></div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+		</div>
+	);
+};
+
+export default EditOfferForm;

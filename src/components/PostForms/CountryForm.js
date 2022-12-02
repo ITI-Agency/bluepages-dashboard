@@ -1,0 +1,113 @@
+import React, { useEffect, useState } from "react";
+import { PlusOutlined } from "@ant-design/icons";
+import { Form, Input, Button, Rate, Upload } from "antd";
+const { TextArea } = Input;
+
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+
+function CountryForm({ onSubmit, countryDetails }) {
+  const { useForm, Item } = Form;
+  const [form] = useForm();
+  useEffect(() => {
+    if (countryDetails) {
+      form.setFieldsValue({
+        name_ar: countryDetails.name_ar,
+        name_en: countryDetails.name_en,
+        code: countryDetails.code,
+        title_ar: countryDetails.title_ar,
+        title_en: countryDetails.title_en,
+        subtitle_ar: countryDetails.subtitle_ar,
+        subtitle_en: countryDetails.subtitle_en,
+      });
+    }
+  }, [countryDetails]);
+
+  const getFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+  return (
+    <Container sx={{ mb: 4 }}>
+      <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
+        <Form
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 14,
+          }}
+          onFinish={onSubmit}
+          initialValues={{}}
+          form={form}
+        >
+          <Item label="Flag" name="file" getValueFromEvent={getFile} valuePropName="fileList">
+            <Upload beforeUpload={() => false} listType="picture-card">
+              <div>
+                <PlusOutlined />
+                <div
+                  style={{
+                    marginTop: 8,
+                  }}
+                >
+                  Upload
+                </div>
+              </div>
+            </Upload>
+          </Item>
+
+          <Item label="Images" name="images" getValueFromEvent={getFile} valuePropName="fileList">
+            <Upload beforeUpload={() => false} listType="picture-card">
+              <div>
+                <PlusOutlined />
+                <div
+                  style={{
+                    marginTop: 8,
+                  }}
+                >
+                  Upload
+                </div>
+              </div>
+            </Upload>
+          </Item>
+          <Item label="Name ar" name="name_ar" rules={[{ required: true, message: 'برجاء إختيار المستخدم' }]}>
+            <Input />
+          </Item>
+          <Item label="Name en" name="name_en" rules={[{ required: true, message: 'برجاء إختيار المستخدم' }]}>
+            <Input />
+          </Item>
+          <Item label="Code" name="code" rules={[{ required: true, message: 'برجاء إختيار الكود' }]}>
+            <Input />
+          </Item>
+          <Item label="Title ar" name="title_ar" rules={[{ required: true, message: 'برجاء إختيار العنوان' }]}>
+            <Input />
+          </Item>
+          <Item label="Title en" name="title_en" rules={[{ required: true, message: 'برجاء إختيار العنوان' }]}>
+            <Input />
+          </Item>
+          <Item label="Subtitle ar" name="subtitle_ar" rules={[{ required: true, message: 'برجاء إختيار العنوان الفرعي' }]}>
+            <Input />
+          </Item>
+          <Item label="Subtitle en" name="subtitle_en" rules={[{ required: true, message: 'برجاء إختيار العنوان الفرعي' }]}>
+            <Input />
+          </Item>
+
+          <Item
+            wrapperCol={{
+              span: 12,
+              offset: 4,
+            }}
+          >
+            <Button type="primary" htmlType="submit">
+              {countryDetails ? "Update" : "Submit"}
+            </Button>
+          </Item>
+        </Form>
+      </Paper>
+    </Container>
+  );
+}
+
+export default CountryForm;
