@@ -85,7 +85,7 @@ function Settings() {
 	});
 
 
-	if (loading || Object.keys(settings).length === 0) return <LoadingDataLoader />;
+	if (loading || !settings) return <LoadingDataLoader />;
 	console.log("settings", settings);
 	const initialValues = {
 		title_ar: settings.title_ar || "",
@@ -109,7 +109,7 @@ function Settings() {
 		// latitude: settings.latitude || "",
 		// longitude: settings.longitude || "",
 		location_link: settings.location_link || "",
-		price_for_main_page_offers: settings.price_for_main_page_offers || "",
+		price_for_main_page_offers: Number(settings.price_for_main_page_offers) || 0,
 		// views: settings.views || "",
 	};
 
