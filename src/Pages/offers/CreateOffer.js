@@ -61,6 +61,7 @@ function CreateOffer() {
 		}
 	};
 	const mutation = useMutation(data => {
+		if (!data.companyId) delete data.companyId
 		console.log({ OfferData: data });
 		// data.categories = [data.categories]
 		let formData = new FormData();
@@ -203,7 +204,7 @@ function CreateOffer() {
 										onChange={getUserCompanies}
 									/>
 								</Form.Item>
-								<Form.Item label="الشركه" name="companyId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار شركه' }]}>
+								<Form.Item label="الشركه" name="companyId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
 									<Select
 										showSearch
 										optionFilterProp="children"

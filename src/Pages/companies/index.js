@@ -447,21 +447,21 @@ function Companies() {
 			key: 'id',
 			render: (text, record) => <p className='text-sm font-medium text-gray-900 '>{record.id}</p>,
 		},
-		{
-			title: "logo",
-			key: 'id',
-			render: (text, record) => record.logo ? (
-				<MDAvatar src={record.logo} alt={record.name_ar} shadow="sm" />
-			) : (
-				<MDAvatar src={LogoPlaceholder} alt={record.name_ar} shadow="sm" />
-				// <img
-				//   src="assets/images/logo-placeholder.png"
-				//   alt={item.name_en}
-				//   width="2rem"
-				//   height="2rem"
-				// />
-			),
-		},
+		// {
+		// 	title: "logo",
+		// 	key: 'id',
+		// 	render: (text, record) => record.logo ? (
+		// 		<MDAvatar src={record.logo} alt={record.name_ar} shadow="sm" />
+		// 	) : (
+		// 		<MDAvatar src={LogoPlaceholder} alt={record.name_ar} shadow="sm" />
+		// 		// <img
+		// 		//   src="assets/images/logo-placeholder.png"
+		// 		//   alt={item.name_en}
+		// 		//   width="2rem"
+		// 		//   height="2rem"
+		// 		// />
+		// 	),
+		// },
 		{
 			title: "name",
 			dataIndex: `name_ar`,

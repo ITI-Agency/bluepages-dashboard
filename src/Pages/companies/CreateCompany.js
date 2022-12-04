@@ -182,7 +182,8 @@ function CreateCompany() {
 			if (key === 'verified') {
 				formData.append(key, value ? "true" : "false");
 			} else {
-				formData.append(key, value);
+				formData.append(key, value && value !=
+					"undefined" ? value: "");
 			}
 		}
 
