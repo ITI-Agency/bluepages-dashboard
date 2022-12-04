@@ -66,7 +66,7 @@ function CreateCompany() {
 	const [categories, setCategories] = useState([]);
 	const [users, setUsers] = useState([]);
 	const [subscriptionPlanPackages, setSubscriptionPlanPackages] = useState([]);
-	const [verified, setVerified] = useState(false);
+	// const [verified, setVerified] = useState(false);
 	const [stay, setStay] = useState(false);
 	const postCompany = async (companyData) => {
 		setLoading(true);
@@ -217,12 +217,14 @@ function CreateCompany() {
 		},
 		onSuccess: (res) => {
 			console.log("success response", res);
-			toast.success('لقد تم إضافه الصفحه بنجاح');
+			if (res) {
+				toast.success('لقد تم إضافه الصفحه بنجاح');
+			}
+			setLoading(false);
+			setStay(false);
 			if (!stay) {
-				setLoading(false);
 				navigate(`/companies`);
 			}
-			setStay(false);
 			// Boom baby!
 			// if (!res) return;
 			// notify('لقد تم إنشاء الصفحه بنجاح', 'success');
@@ -494,9 +496,9 @@ function CreateCompany() {
 						</div>
 
 						<Form.Item style={{ width: "100%", marginBottom: "20px" }} >
-							<Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							{/* <Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Switch className={`${verified ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={() => setVerified(!verified)} />
-							</Form.Item>
+							</Form.Item> */}
 							<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Input placeholder="رابط الخريطه" />
 							</Form.Item>
@@ -714,7 +716,7 @@ function CreateCompany() {
 							<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
 								submit
 							</Button>
-							<Button type="success" onClick={submitAndStay} className='mx-2 text-white bg-green-500 rtl:pt-2'>
+							<Button type="success" onClick={submitAndStay} className='mx-2 text-white bg-green-500 rtl:pt-2' loading={stay}>
 								submit and stay
 							</Button>
 							<Button htmlType="button" onClick={onReset} className='mx-2 rtl:pt-2 '>

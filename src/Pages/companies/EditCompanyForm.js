@@ -63,7 +63,7 @@ const EditCompanyForm = ({ company, id }) => {
 	const [categories, setCategories] = useState([]);
 	const [users, setUsers] = useState(null);
 	const [subscriptionPlanPackages, setSubscriptionPlanPackages] = useState(null);
-	const [verified, setVerified] = useState(company?.verified);
+	// const [verified, setVerified] = useState(company?.verified);
 	const [form] = Form.useForm();
 	const [imagesForm] = Form.useForm();
 
@@ -121,6 +121,8 @@ const EditCompanyForm = ({ company, id }) => {
 		}
 	};
 	const mutation = useMutation(data => {
+		console.log({ data });
+
 		console.log({ countrySelected: countries.find(co => co.id == data.countryId)?.cities?.map(c => c.id) });
 		if (!countries.find(co => co.id == data.countryId)?.cities?.map(c => c.id)?.includes(data.cityId)) {
 			toast.error('الرجاء إختيار مدينه تابعه للدوله');
@@ -132,8 +134,6 @@ const EditCompanyForm = ({ company, id }) => {
 				return;
 			}
 		}
-		console.log({ data });
-
 		// data.categories = [data.categories]
 		let formData = new FormData();
 		// upload categories
@@ -155,7 +155,6 @@ const EditCompanyForm = ({ company, id }) => {
 			formData.append("bannerFile", bannerFile.fileList[0].originFileObj);
 		}
 		setLoading(true);
-
 		return CompaniesServices.updateCompany(formData, company.id);
 	}, {
 		onError: (error) => {
@@ -368,12 +367,12 @@ const EditCompanyForm = ({ company, id }) => {
 					</Form.Item>
 				</Form.Item>
 				<Form.Item style={{ marginBottom: 0 }} >
-					<Form.Item label='الوصف باللغه العربيه' name="description_ar" rules={[{ required: true, message: 'الوصف باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+					<Form.Item label='الوصف باللغه العربيه' name="description_ar"  className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
 							<TextArea defaultValue={company?.description_ar} placeholder='الوصف باللغه العربيه' rows={4} />
 						</Form.Item>
 					</Form.Item>
-					<Form.Item label='الوصف باللغه الإنجليزيه' className="" name="description_en" rules={[{ required: true, message: 'الوصف باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+					<Form.Item label='الوصف باللغه الإنجليزيه' className="" name="description_en" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
 							<TextArea defaultValue={company?.description_en} placeholder='الوصف باللغه الإنجليزيه' rows={4} />
 						</Form.Item>
@@ -439,19 +438,19 @@ const EditCompanyForm = ({ company, id }) => {
 					<div className="w-full h-[1px] bg-gray-500"></div>
 				</div>
 				<Form.Item className='mt-4 mb-0'  >
-					<Form.Item label='المنطقه باللغه العربيه' name="district_ar" rules={[{ required: true, message: 'المنطقه باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label='المنطقه باللغه العربيه' name="district_ar"  className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='المنطقه باللغه العربيه' />
 					</Form.Item>
-					<Form.Item label='المنطقه باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="district_en" rules={[{ required: true, message: 'المنطقه باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label='المنطقه باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="district_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='المنطقه باللغه الإنجليزيه' />
 					</Form.Item>
-					<Form.Item label='الحي باللغه العربيه' name="street_ar" rules={[{ required: true, message: 'الحي باللغه العربيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label='الحي باللغه العربيه' name="street_ar"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='الحي باللغه العربيه' />
 					</Form.Item>
 
 				</Form.Item>
 				<Form.Item className='mb-0'  >
-					<Form.Item label='الحي باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="street_en" rules={[{ required: true, message: 'الحي باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label='الحي باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="street_en"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='الحي باللغه الإنجليزيه' />
 					</Form.Item>
 					<Form.Item label="رقم المبني" name="building_no" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
@@ -511,9 +510,9 @@ const EditCompanyForm = ({ company, id }) => {
 					<div className="w-full h-[1px] bg-gray-500"></div>
 				</div>
 				<Form.Item style={{ width: "100%", marginBottom: "20px" }} >
-					<Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					{/* <Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Switch defaultChecked={verified} className={`${verified ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={() => setVerified(!verified)} />
-					</Form.Item>
+					</Form.Item> */}
 					<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="رابط الخريطه" />
 					</Form.Item>

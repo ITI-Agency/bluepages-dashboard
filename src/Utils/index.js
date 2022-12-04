@@ -9,12 +9,12 @@ const plans = [
 	{
 		package_id: 1,
 		name_en: 'FREE',
-		name_ar: 'مجاني وموثق',
+		name_ar: 'مجاني',
 	},
 	{
 		package_id: 2,
 		name_en: 'BASIC',
-		name_ar: 'مدفوع اساسي',
+		name_ar: 'موثق مدفوع أساسي',
 	},
 	{
 		package_id: 3,
