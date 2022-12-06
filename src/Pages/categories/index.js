@@ -323,6 +323,7 @@ function Categories() {
 			dataIndex: `id`,
 			key: 'id',
 			render: (text, record) => <p className='text-sm font-medium text-gray-900 '>{record.id}</p>,
+
 		},
 		{
 			title: "Name Ar",
@@ -336,6 +337,7 @@ function Categories() {
 				</MDBox>
 			),
 			...getColumnSearchProps('name_ar'),
+			width: '25%',
 		},
 		{
 			title: "Name En",

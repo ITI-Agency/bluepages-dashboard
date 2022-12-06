@@ -30,6 +30,8 @@ import ImgCrop from "antd-img-crop";
 import SubscriptionPlanPackagesServices from "Services/SubscriptionPlanPackagesServices";
 import { toast } from "react-toastify";
 import Util from "../../Utils";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 const plans = Util.plans;
 const layout = {
 	labelCol: { span: 2 },
@@ -55,6 +57,7 @@ const formItemLayoutWithOutLabel = {
 	},
 };
 function CreateCompany() {
+
 	const { setLoading } = useLoading();
 	const navigate = useNavigate();
 	const [dataLoaded, setDataLoaded] = useState(false);
@@ -66,6 +69,9 @@ function CreateCompany() {
 	const [categories, setCategories] = useState([]);
 	const [users, setUsers] = useState([]);
 	const [subscriptionPlanPackages, setSubscriptionPlanPackages] = useState([]);
+	const [descriptionar, setDescriptionar] = useState("");
+	const [descriptionen, setDescriptionen] = useState("");
+
 	// const [verified, setVerified] = useState(false);
 	const [stay, setStay] = useState(false);
 	const postCompany = async (companyData) => {
@@ -137,6 +143,7 @@ function CreateCompany() {
 	// const { data: countries = [], isLoading: isLoadingCountries } = useQuery(['countries'], CountriesServices.getAllCountries);
 	// const { data: categoriesList = [], isLoading: isLoadingCategories } = useQuery(['categories'], CategoriesServices.getAllCategories);
 	const mutation = useMutation(data => {
+		console.log({ data });
 		if (!countries.find(co => co.id == data.countryId)?.cities?.map(c => c.id)?.includes(data.cityId)) {
 			toast.error('الرجاء إختيار مدينه تابعه للدوله');
 			return;
@@ -183,9 +190,11 @@ function CreateCompany() {
 				formData.append(key, value ? "true" : "false");
 			} else {
 				formData.append(key, value && value !=
-					"undefined" ? value: "");
+					"undefined" ? value : "");
 			}
 		}
+		formData.append("description_en", descriptionen);
+		formData.append("description_ar", descriptionar);
 
 
 		if (logoFile?.length) {
@@ -349,6 +358,11 @@ function CreateCompany() {
 
 							<Form.Item label='الأنشطه' style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
 								<Select
+									showSearch
+									optionFilterProp="children"
+									filterOption={(input, option) =>
+										(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+									}
 									mode="multiple"
 									allowClear
 									style={{ width: '100%' }}
@@ -358,14 +372,17 @@ function CreateCompany() {
 							</Form.Item>
 						</Form.Item>
 						<Form.Item style={{ marginBottom: 0 }} >
-							<Form.Item label='الوصف باللغه العربيه' name="description_ar" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<Form.Item label='الوصف باللغه العربيه' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 								<Form.Item >
-									<TextArea placeholder='الوصف باللغه العربيه' rows={4} />
+									<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
+
+									{/* <TextArea placeholder='الوصف باللغه العربيه' rows={4} /> */}
 								</Form.Item>
 							</Form.Item>
-							<Form.Item label='الوصف باللغه الإنجليزيه' className="" name="description_en" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<Form.Item label='الوصف باللغه الإنجليزيه' className="" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 								<Form.Item >
-									<TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} />
+									{/* <TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
+									<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
 								</Form.Item>
 							</Form.Item>
 

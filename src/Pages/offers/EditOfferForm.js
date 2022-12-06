@@ -333,6 +333,11 @@ const EditOfferForm = ({ offer, id, }) => {
 						</Form.Item>
 						<Form.Item label="الأنشطه" style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
 							<Select
+								showSearch
+								optionFilterProp="children"
+								filterOption={(input, option) =>
+									(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+								}
 								mode="multiple"
 								allowClear
 								style={{ width: '100%' }}

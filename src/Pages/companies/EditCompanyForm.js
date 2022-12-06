@@ -21,7 +21,8 @@ const plans = Util.plans;
 const { Option } = Select;
 import useLoading from "Hooks/useLoading";
 import { UploadOutlined } from '@ant-design/icons';
-
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const layout = {
 	labelCol: { span: 2 },
@@ -64,6 +65,8 @@ const EditCompanyForm = ({ company, id }) => {
 	const [users, setUsers] = useState(null);
 	const [subscriptionPlanPackages, setSubscriptionPlanPackages] = useState(null);
 	// const [verified, setVerified] = useState(company?.verified);
+	const [descriptionar, setDescriptionar] = useState(company?.description_ar);
+	const [descriptionen, setDescriptionen] = useState(company?.description_en);
 	const [form] = Form.useForm();
 	const [imagesForm] = Form.useForm();
 
@@ -146,6 +149,8 @@ const EditCompanyForm = ({ company, id }) => {
 			formData.append(key, value);
 		}
 		// upload images
+		formData.append("description_en", descriptionen);
+		formData.append("description_ar", descriptionar);
 
 
 		if (logoFile?.fileList?.length) {
@@ -238,8 +243,8 @@ const EditCompanyForm = ({ company, id }) => {
 		cityId: company?.cityId || null,
 		standard_phone: company.standard_phone || "",
 		categories: company?.categories?.map(it => it.id) || [],
-		description_ar: company.description_ar || "",
-		description_en: company.description_en || "",
+		// description_ar: company.description_ar || "",
+		// description_en: company.description_en || "",
 		district_ar: company.district_ar || "",
 		district_en: company.district_en || "",
 		street_ar: company.street_ar || "",
@@ -356,6 +361,11 @@ const EditCompanyForm = ({ company, id }) => {
 
 					<Form.Item label='الأنشطه' style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
 						<Select
+							showSearch
+							optionFilterProp="children"
+							filterOption={(input, option) =>
+								(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+							}
 							mode="multiple"
 							allowClear
 							style={{ width: '100%' }}
@@ -367,14 +377,18 @@ const EditCompanyForm = ({ company, id }) => {
 					</Form.Item>
 				</Form.Item>
 				<Form.Item style={{ marginBottom: 0 }} >
-					<Form.Item label='الوصف باللغه العربيه' name="description_ar"  className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+					<Form.Item label='الوصف باللغه العربيه' name="description_ar" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
-							<TextArea defaultValue={company?.description_ar} placeholder='الوصف باللغه العربيه' rows={4} />
+							{/* <TextArea defaultValue={company?.description_ar} placeholder='الوصف باللغه العربيه' rows={4} /> */}
+							<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
+
 						</Form.Item>
 					</Form.Item>
 					<Form.Item label='الوصف باللغه الإنجليزيه' className="" name="description_en" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
-							<TextArea defaultValue={company?.description_en} placeholder='الوصف باللغه الإنجليزيه' rows={4} />
+							{/* <TextArea defaultValue={company?.description_en} placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
+							<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
+
 						</Form.Item>
 					</Form.Item>
 
@@ -438,19 +452,19 @@ const EditCompanyForm = ({ company, id }) => {
 					<div className="w-full h-[1px] bg-gray-500"></div>
 				</div>
 				<Form.Item className='mt-4 mb-0'  >
-					<Form.Item label='المنطقه باللغه العربيه' name="district_ar"  className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label='المنطقه باللغه العربيه' name="district_ar" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='المنطقه باللغه العربيه' />
 					</Form.Item>
 					<Form.Item label='المنطقه باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="district_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='المنطقه باللغه الإنجليزيه' />
 					</Form.Item>
-					<Form.Item label='الحي باللغه العربيه' name="street_ar"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label='الحي باللغه العربيه' name="street_ar" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='الحي باللغه العربيه' />
 					</Form.Item>
 
 				</Form.Item>
 				<Form.Item className='mb-0'  >
-					<Form.Item label='الحي باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="street_en"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label='الحي باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="street_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='الحي باللغه الإنجليزيه' />
 					</Form.Item>
 					<Form.Item label="رقم المبني" name="building_no" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
