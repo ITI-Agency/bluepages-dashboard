@@ -38,7 +38,7 @@ function CreateOffer() {
 
 	const navigate = useNavigate();
 	const [dataLoaded, setDataLoaded] = useState(false);
-	const [companies, setCompanies] = useState([]);
+	// const [companies, setCompanies] = useState([]);
 	const [countries, setCountries] = useState([]);
 	const [cities, setCities] = useState([]);
 	const [users, setUsers] = useState([]);
@@ -157,19 +157,19 @@ function CreateOffer() {
 		const { status: usersStatus, data: usersData } = await UserServices.getAllUsers();
 		const { status: categoriesStatus, data: categoriesData } =
 			await CategoriesServices.getAllCategories();
-		const { status: companiesStatus, data: companiesData } =
-			await CompaniesServices.getAllCompanies();
+		// const { status: companiesStatus, data: companiesData } =
+		// await CompaniesServices.getAllCompanies();
 
 		if (
 			countriesStatus == 200 &&
 			usersStatus == 200 &&
-			categoriesStatus == 200 &&
-			companiesStatus == 200
+			categoriesStatus == 200
+			// companiesStatus == 200
 		) {
 			setCountries(countriesData);
 			setUsers(usersData);
 			setCategories(categoriesData);
-			setCompanies(companiesData);
+			// setCompanies(companiesData);
 			setDataLoaded(true);
 			return;
 		}
@@ -204,19 +204,8 @@ function CreateOffer() {
 										onChange={getUserCompanies}
 									/>
 								</Form.Item>
-								<Form.Item label="الشركه" name="companyId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
-									<Select
-										showSearch
-										optionFilterProp="children"
-										filterOption={(input, option) =>
-											(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-										}
-										options={companies?.map((co) => ({ label: co.name_ar, value: co.id }))}
-										placeholder='برجاء إختيار شركه'
-										allowClear
-									/>
-								</Form.Item>
-								<Form.Item label="الدوله" name="countryId" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار دوله' }]}>
+
+								<Form.Item label="الدوله" name="countryId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار دوله' }]}>
 									<Select
 										showSearch
 										optionFilterProp="children"
@@ -229,11 +218,7 @@ function CreateOffer() {
 										onChange={getCountryCities}
 									/>
 								</Form.Item>
-
-
-							</Form.Item>
-							<Form.Item style={{ marginBottom: 0 }} >
-								<Form.Item label="الغرفه التجاريه" name="cityId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار غرفه تجاريه' }]}>
+								<Form.Item label="الغرفه التجاريه" name="cityId" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار غرفه تجاريه' }]}>
 									<Select
 										placeholder='برجاء إختيار غرفه تجاريه'
 										allowClear
@@ -241,6 +226,21 @@ function CreateOffer() {
 										{cities?.map((ci) => (<Option key={ci.id} value={ci.id}>{ci[`name_ar`]}</Option>))}
 									</Select>
 								</Form.Item>
+
+							</Form.Item>
+							<Form.Item style={{ marginBottom: 0 }} >
+								{/* <Form.Item label="الشركه" name="companyId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
+									<Select
+										showSearch
+										optionFilterProp="children"
+										filterOption={(input, option) =>
+											(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+										}
+										options={companies?.map((co) => ({ label: co.name_ar, value: co.id }))}
+										placeholder='برجاء إختيار شركه'
+										allowClear
+									/>
+								</Form.Item> */}
 								<Form.Item label="الأنشطه" style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
 									<Select
 										showSearch

@@ -166,7 +166,7 @@ function Companies() {
 	const getAllCompanies = async () => {
 		setLoading(true);
 		try {
-			const response = await CompaniesServices.getAllCompanies([{ country: "true" }, { city: "true" }]);
+			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 }]);
 			const { status: countriesStatus, data: countriesData } = await CountriesServices.getAllCountries();
 			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
 			if (response && response.status == 200 && countriesStatus == 200 && citiesStatus == 200) {
@@ -630,6 +630,30 @@ function Companies() {
 			),
 		},
 	];
+	const handleChange = async (pagination, filters, sorter) => {
+		try {
+			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }]);
+			if (response && response.status == 200) {
+				setCompanies(response.data);
+			} else {
+				toast.error("sorry something went wrong while getting companies!");
+				setLoading(false);
+			}
+		} catch (error) {
+			toast.error("sorry something went wrong while getting companies!");
+			setLoading(false);
+		}
+
+		// const offset = pagination.current * pagination.pageSize - pagination.pageSize;
+		// const limit = pagination.pageSize;
+		// const params = {};
+
+		// if (sorter.hasOwnProperty("column")) {
+		// 	params.order = { field: sorter.field, dir: sorter.order };
+		// }
+
+		// getData(offset, limit, params);
+	};
 	return (
 		<DashboardLayout>
 			<MDBox marginBottom={2} display="flex">
@@ -651,7 +675,7 @@ function Companies() {
 					</MDButton>
 				</MDBox>
 			</MDBox>
-			<Table columns={columns} dataSource={companies} />
+			<Table onChange={handleChange} columns={columns} dataSource={companies.items} pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50'], total: companies?.meta?.totalItems }} />
 			{/* <DataTable
         table={{
           columns: [
