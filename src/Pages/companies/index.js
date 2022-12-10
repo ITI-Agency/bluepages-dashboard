@@ -64,8 +64,11 @@ function Companies() {
 	const [cities, setCities] = useState([]);
 	const [countries, setCountries] = useState([]);
 	const [openSelectModal, setOpenSelectModal] = useState(false);
+	const [openDeleteModal, setOpenDeleteModal] = useState(false);
 	const [searchText, setSearchText] = useState('');
 	const [searchedColumn, setSearchedColumn] = useState('');
+	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
 	const searchInput = useRef(null);
 	const handleSearch = (
 		selectedKeys,
@@ -136,11 +139,11 @@ function Companies() {
 		filterIcon: (filtered) => (
 			<SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
 		),
-		onFilter: (value, record) =>
-			record[dataIndex]
-				.toString()
-				.toLowerCase()
-				.includes((value).toLowerCase()),
+		// onFilter: (value, record) =>
+		// 	record[dataIndex]
+		// 		.toString()
+		// 		.toLowerCase()
+		// 		.includes((value).toLowerCase()),
 		onFilterDropdownOpenChange: visible => {
 			if (visible) {
 				setTimeout(() => searchInput.current?.select(), 100);
@@ -380,6 +383,47 @@ function Companies() {
 			getAllCompanies();
 		}
 	};
+	const handleDeleteData = async (value) => {
+		console.log(value.planId )
+		setLoading(true);
+		try {
+			const response = await CompaniesServices.deleteByPlan(value.planId);
+			if (response && response.status == 200) {
+				toast.success("success to delete data");
+				setOpenDeleteModal(false);
+				getAllCompanies();
+			} else {
+				toast.error("something went wrong!");
+				setOpenDeleteModal(false);
+				getAllCompanies();
+			}
+		} catch (error) {
+			toast.error("something went wrong!");
+			setOpenDeleteModal(false);
+			getAllCompanies();
+		}
+	};
+	const handleDeleteSelected = async () => {
+		setLoading(true);
+		try {
+			const response = await CompaniesServices.deleteMultipleCompany({
+				data: { ids: selectedRowKeys }
+			});
+			if (response && response.status == 200) {
+				toast.success("success to delete data");
+		setLoading(false);
+				getAllCompanies();
+			} else {
+				toast.error("something went wrong!");
+		setLoading(false);
+				getAllCompanies();
+			}
+		} catch (error) {
+			toast.error("something went wrong!");
+		setLoading(false);
+			getAllCompanies();
+		}
+	};
 
 	if (loading) return <LoadingDataLoader />;
 	if (openSelectModal)
@@ -440,6 +484,49 @@ function Companies() {
 				</Paper>
 			</DashboardLayout>
 		);
+	if (openDeleteModal)
+		return (
+			<DashboardLayout>
+				<Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
+					<Form {...layout} name="control-hooks" onFinish={handleDeleteData}>
+						{/* <MDBox sx={style}> */}
+						<Grid container spacing={5}>
+							<Grid item xs={12} sm={6}>
+								<Form.Item label='الخطه  ' name="planId" style={{ display: 'inline-block', width: 'calc(100% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار الخطه ' }]}>
+									<Select
+										placeholder='برجاء إختيار الخطه '
+										allowClear
+									>
+										{plans?.map((p) => (<Option key={p.package_id} value={p.package_id}>{p[`name_ar`]}</Option>))}
+									</Select>
+								</Form.Item>
+							</Grid>
+						
+							<Grid item xs={12} sm={6}>
+								<MDBox
+									display="flex"
+									alignItems="center"
+									mt={{ xs: 2, sm: 0 }}
+									ml={{ xs: -1.5, sm: 0 }}
+								>
+									<MDBox mr={1} className="no-ant-item-margin">
+										<Form.Item>
+											<Button type="primary" htmlType="submit">
+												Confirm
+											</Button>
+										</Form.Item>
+									</MDBox>
+									<MDButton onClick={() => setOpenDeleteModal(false)} variant="text" color="dark">
+										cancel
+									</MDButton>
+								</MDBox>
+							</Grid>
+						</Grid>
+						{/* </MDBox> */}
+					</Form>
+				</Paper>
+			</DashboardLayout>
+		);
 	const columns = [
 		{
 			title: "#",
@@ -465,7 +552,7 @@ function Companies() {
 		{
 			title: "name",
 			dataIndex: `name_ar`,
-			key: 'name',
+			key: 'search',
 			render: (text, record) => (
 				<Link to={`/companies/${record.id}`}>
 					<MDBox lineHeight={1}>
@@ -476,11 +563,12 @@ function Companies() {
 					</MDBox>
 				</Link>
 			),
+			width: '20%',
 			...getColumnSearchProps('name_ar'),
 		},
 		{
 			title: "Country",
-			key: 'country',
+			key: 'countryId',
 			render: (text, record) => (
 				<>
 					<MDBox lineHeight={1}>
@@ -491,11 +579,11 @@ function Companies() {
 				</>
 			),
 			filters: countries?.map(c => ({ text: c.name_ar, value: c.id })),
-			onFilter: (value, record) => record?.countryId == value,
+			// onFilter: (value, record) => record?.countryId == value,
 		},
 		{
 			title: "City",
-			key: 'city',
+			key: 'cityId',
 			render: (text, record) => (
 				<>
 					<MDBox lineHeight={1}>
@@ -506,11 +594,12 @@ function Companies() {
 				</>
 			),
 			filters: cities?.map(c => ({ text: c.name_ar, value: c.id })),
-			onFilter: (value, record) => record.cityId == value,
+			// onFilter: (value, record) => record.cityId == value,
 		},
 		{
 			title: "plan",
-			key: 'plan',
+			key: 'packageId',
+			
 			render: (_, record) => (
 				<MDBox lineHeight={1}>
 					<MDTypography display="block" variant="button" fontWeight="medium">
@@ -518,8 +607,8 @@ function Companies() {
 					</MDTypography>
 				</MDBox>
 			),
-			filters: plans.map((p) => ({ text: p.name_ar, value: p.name_ar })),
-			onFilter: (value, record) => record.plan.name_ar.indexOf(value) === 0,
+			filters: plans.map((p) => ({ text: p.name_ar, value: p.package_id })),
+			// onFilter: (value, record) => record.plan.name_ar.indexOf(value) === 0,
 		},
 		{
 			title: "views",
@@ -527,42 +616,42 @@ function Companies() {
 			render: (_, record) => <p className='text-sm font-medium text-gray-900 '>{record.views}</p>,
 			sorter: (a, b) => a.views - b.views,
 		},
-		{
-			title: "verified",
-			key: 'verified',
-			render: (_, record) => record.verified ? (
-				<MDBox
-					display="flex"
-					justifyContent="center"
-					alignItems="center"
-					width="2rem"
-					height="2rem"
-					bgColor="success"
-					shadow="sm"
-					borderRadius="50%"
-					color="white"
-				>
-					<Icon fontSize="medium" color="inherit">
-						checkcircleicon
-					</Icon>
-				</MDBox>
-			) : (
-				<Icon fontSize="medium" color="dark">
-					infoicon
-				</Icon>
-			),
-			filters: [
-				{
-					text: 'verified',
-					value: true
-				},
-				{
-					text: 'not verified',
-					value: false
-				},
-			],
-			onFilter: (value, record) => record.verified === value,
-		},
+		// {
+		// 	title: "verified",
+		// 	key: 'verified',
+		// 	render: (_, record) => record.verified ? (
+		// 		<MDBox
+		// 			display="flex"
+		// 			justifyContent="center"
+		// 			alignItems="center"
+		// 			width="2rem"
+		// 			height="2rem"
+		// 			bgColor="success"
+		// 			shadow="sm"
+		// 			borderRadius="50%"
+		// 			color="white"
+		// 		>
+		// 			<Icon fontSize="medium" color="inherit">
+		// 				checkcircleicon
+		// 			</Icon>
+		// 		</MDBox>
+		// 	) : (
+		// 		<Icon fontSize="medium" color="dark">
+		// 			infoicon
+		// 		</Icon>
+		// 	),
+		// 	filters: [
+		// 		{
+		// 			text: 'verified',
+		// 			value: true
+		// 		},
+		// 		{
+		// 			text: 'not verified',
+		// 			value: false
+		// 		},
+		// 	],
+		// 	onFilter: (value, record) => record.verified === value,
+		// },
 		{
 			title: "Active",
 			key: 'status',
@@ -587,7 +676,7 @@ function Companies() {
 					value: false
 				},
 			],
-			onFilter: (value, record) => record.status === value,
+			// onFilter: (value, record) => record.status === value,
 		},
 		{
 			title: "created_at",
@@ -609,30 +698,34 @@ function Companies() {
 						ml={{ xs: -1.5, sm: 0 }}
 					>
 						<Link to={`/companies/${record.id}`}>
-							<MDButton variant="text" color="info">
+							<MDButton  style={{padding:0}} className="px-0" variant="text" color="info">
 								<Icon>preview</Icon>&nbsp;show
 							</MDButton>
 						</Link>
 						<Link to={`/companies/${record.id}/edit-info`}>
-							<MDButton variant="text" color="dark">
+							<MDButton style={{padding:0}} className="px-0" variant="text" color="dark">
 								<Icon>edit</Icon>&nbsp;edit
 							</MDButton>
 						</Link>
 						<MDBox mr={1}>
-							<MDButton onClick={() => handleOpen(record)} variant="text" color="error">
+							<MDButton  style={{padding:0}} className="px-0" onClick={() => handleOpen(record)} variant="text" color="error">
 								<Icon>delete</Icon>&nbsp;delete
 							</MDButton>
 						</MDBox>
-
-
 					</MDBox>
 				</>
 			),
 		},
 	];
 	const handleChange = async (pagination, filters, sorter) => {
+		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }];
+		Object.entries(filters).forEach(f => {
+			if (f[1] && f[1].length) {
+				filtersArray.push({[f[0]]:f[1][0]})
+			}
+		})
 		try {
-			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }]);
+			const response = await CompaniesServices.getAllCompaniesPaginate(filtersArray);
 			if (response && response.status == 200) {
 				setCompanies(response.data);
 			} else {
@@ -654,140 +747,80 @@ function Companies() {
 
 		// getData(offset, limit, params);
 	};
+	const rowSelection = {
+		onChange: (selectedRowKeys, selectedRows) => {
+			console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+		},
+		getCheckboxProps: (record) => ({
+			disabled: record.name === 'Disabled User',
+			// Column configuration not to be checked
+			name: record.name,
+		}),
+	};
 	return (
 		<DashboardLayout>
-			<MDBox marginBottom={2} display="flex">
-				<MDBox>
-					<MDButton variant="gradient" color="info" onClick={handleExport}>
-						<Icon>edit</Icon>Export Excel
-					</MDButton>
+			<MDBox marginBottom={2} className="flex justify-between">
+				<MDBox className="flex">
+					<MDBox>
+						<MDButton variant="gradient" color="info" onClick={handleExport}>
+							<Icon>edit</Icon>Export Excel
+						</MDButton>
+					</MDBox>
+					<MDBox ml={2}>
+						<MDButton variant="gradient" component="label" color="success">
+							<Icon>edit</Icon>Import Excel
+							<input
+								hidden
+								accept=".xlsx, .xls, .csv"
+								name="excelFile"
+								type="file"
+								onChange={handleImportFile}
+							/>
+						</MDButton>
+					</MDBox>
+
+					<MDBox ml={2}>
+						<MDButton onClick={handleDeleteSelected}   variant="gradient" component="label" color="warning">
+							<Icon>delete</Icon>Delete Selected
+							{/* <input
+								hidden
+								accept=".xlsx, .xls, .csv"
+								name="excelFile"
+								type="file"
+								onChange={handleImportFile}
+							/> */}
+						</MDButton>
+					</MDBox>
 				</MDBox>
+
 				<MDBox ml={2}>
-					<MDButton variant="gradient" component="label" color="success">
-						<Icon>edit</Icon>Import Excel
-						<input
+					<MDButton onClick={() => setOpenDeleteModal(true)} variant="gradient" component="label" color="error">
+						<Icon>delete</Icon>Delete By Plan
+						{/* <input
 							hidden
 							accept=".xlsx, .xls, .csv"
 							name="excelFile"
 							type="file"
 							onChange={handleImportFile}
-						/>
+						/> */}
 					</MDButton>
 				</MDBox>
 			</MDBox>
-			<Table onChange={handleChange} columns={columns} dataSource={companies.items} pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50'], total: companies?.meta?.totalItems }} />
-			{/* <DataTable
-        table={{
-          columns: [
-            { Header: "logo", accessor: "logo", width: "7%" },
-            { Header: "name & email", accessor: "name" },
-            { Header: "Phone & website", accessor: "standard_phone" },
-            { Header: "Plan", accessor: "plan" },
-            { Header: "views", accessor: "views" },
-            { Header: "verified", accessor: "verified" },
-            { Header: "Active", accessor: "status" },
-            { Header: "actions", accessor: "actions" },
-          ],
-          rows: companies.map((item) => {
-            return {
-              ...item,
-              logo: item.logo ? (
-                <MDAvatar src={item.logo} alt={item.name_en} shadow="sm" />
-              ) : (
-                <MDAvatar src={LogoPlaceholder} alt={item.name_en} shadow="sm" />
-                // <img
-                //   src="assets/images/logo-placeholder.png"
-                //   alt={item.name_en}
-                //   width="2rem"
-                //   height="2rem"
-                // />
-              ),
-              name: (
-                <>
-                  <Link to={`/companies/${item.id}`}>
-                    <MDBox lineHeight={1}>
-                      <MDTypography display="block" variant="button" fontWeight="medium">
-                        {item.name_en}
-                      </MDTypography>
-                      <MDTypography variant="caption">{item.email}</MDTypography>
-                    </MDBox>
-                  </Link>
-                </>
-              ),
-              standard_phone: (
-                <MDBox lineHeight={1}>
-                  <MDTypography display="block" fontSize="medium">
-                    {item.website}
-                  </MDTypography>
-                  <MDTypography variant="caption">{item.standard_phone}</MDTypography>
-                </MDBox>
-              ),
-              plan: (
-                <MDBox lineHeight={1}>
-                  <MDTypography display="block" variant="button" fontWeight="medium">
-                    {item.plan.name_en}
-                  </MDTypography>
-                </MDBox>
-              ),moment
-              verified: item.verified ? (
-                <MDBox
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  width="2rem"
-                  height="2rem"
-                  bgColor="success"
-                  shadow="sm"
-                  borderRadius="50%"
-                  color="white"
-                >
-                  <Icon fontSize="medium" color="inherit">
-                    checkcircleicon
-                  </Icon>
-                </MDBox>
-              ) : (
-                <Icon fontSize="medium" color="dark">
-                  infoicon
-                </Icon>
-              ),
-              status: (
-                <>
-                  <Switch
-                    checked={item.status}
-                    onChange={(e) => {
-                      item.status = !item.status;
-                      handleStatusChange(e, item);
-                    }}
-                  />
-                </>
-              ),
-              actions: (
-                <>
-                  <MDBox
-                    display="flex"
-                    alignItems="center"
-                    mt={{ xs: 2, sm: 0 }}
-                    ml={{ xs: -1.5, sm: 0 }}
-                  >
-                    <MDBox mr={1}>
-                      <MDButton onClick={() => handleOpen(item)} variant="text" color="error">
-                        <Icon>delete</Icon>&nbsp;delete
-                      </MDButton>
-                    </MDBox>
-                    <Link to={`/companies/edit/${item.id}`}>
-                      <MDButton variant="text" color="dark">
-                        <Icon>edit</Icon>&nbsp;edit
-                      </MDButton>
-                    </Link>
-                  </MDBox>
-                </>
-              ),
-            };
-          }),
-        }}
-        canSearch
-        onSearch={handleSearch}
-      /> */}
+			<Table
+				onChange={handleChange}
+				columns={columns}
+				dataSource={companies.items}
+				pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50'], total: companies?.meta?.totalItems }}
+				rowKey={(record) => record.id}
+				rowSelection={{
+					selectedRowKeys,
+					onChange: (selectedRowKeys, selectedRows) => {
+						setSelectedRowKeys(selectedRowKeys);
+					}
+				}}
+
+			/>
+		
 			<MDBox
 				display="flex"
 				justifyContent="center"

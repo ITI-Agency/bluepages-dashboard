@@ -23,6 +23,7 @@ const getAllCompanies = async (filters = []) => {
   return response;
 };
 const getAllCompaniesPaginate = async (filters = []) => {
+	console.log({ filters })
   // [
   //   { userId: 1 },
   //   { cityId: 1 },
@@ -50,6 +51,18 @@ const createMultipleCompany = async (companies) => {
     //here you can add category id and/or country & city id
   };
   const response = await http.post(`/companies/multiple`, companies);
+  return response;
+};
+const deleteMultipleCompany = async (ids) => {
+  // const dataArr = {
+  //   data: companies, // as array
+  //   //here you can add category id and/or country & city id
+  // };
+	const response = await http.delete(`/companies/delete/multiple`, ids);
+  return response;
+};
+const deleteByPlan = async (planId) => {
+	const response = await http.delete(`/companies/${planId}/delete-by-plan`);
   return response;
 };
 
@@ -172,5 +185,7 @@ export default {
   getCompanyCategoryDetails,
   createCompanyCategory,
   updateCompanyCategory,
-  removeCompanyCategory,
+	removeCompanyCategory,
+	deleteMultipleCompany,
+	deleteByPlan
 };
