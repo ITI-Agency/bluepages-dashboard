@@ -176,11 +176,11 @@ const EditCompanyForm = ({ company, id }) => {
 		formData.append("description_ar", descriptionar);
 
 		console.log('logo',logoFile)
-		console.log(bannerFile)
-		if (logoFile?.length) {
+		console.log('logo', bannerFile)
+		if (logoFile?.length && !logoFile[0]?.url) {
 			formData.append("logoFile", logoFile[0].originFileObj);
 		}
-		if (bannerFile?.length) {
+		if (bannerFile?.length && !bannerFile[0]?.url) {
 			formData.append("bannerFile", bannerFile[0].originFileObj);
 		}
 		setLoading(true);
