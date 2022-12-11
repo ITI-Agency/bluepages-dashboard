@@ -535,8 +535,8 @@ const EditCompanyForm = ({ company, id }) => {
 					<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
 						<Input placeholder='رقم الهاتف الرئيسي' />
 					</Form.Item>
-					<Form.Item label="الخط الساخن" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="الخط الساخن" />
+					<Form.Item label="الرقم الموحد" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						<Input placeholder="الرقم الموحد" />
 					</Form.Item>
 					<Form.Item label="رقم السجل" name="commercial_reg" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="رقم السجل" />
