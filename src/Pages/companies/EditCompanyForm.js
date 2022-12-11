@@ -355,13 +355,13 @@ const EditCompanyForm = ({ company, id }) => {
 					<Form.Item label='الإسم باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4" name="name_en" rules={[{ required: true, message: 'الإسم باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='الإسم باللغه الإنجليزيه' />
 					</Form.Item>
-					<Form.Item label='البريد الإلكتروني' name="email" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ type: 'email', required: true, message: 'برجاء إدخال بريد إلكتروني صالح' }]}>
+					<Form.Item label='البريد الإلكتروني' name="email" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
 						<Input placeholder='البريد الإلكتروني' />
 					</Form.Item>
 				</Form.Item>
 				<Form.Item style={{ marginBottom: 0 }} >
-					<Form.Item label='الرابط' name="website" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'الرابط مطلوب' }]}>
-						<Input placeholder='الرابط' />
+					<Form.Item label='الموقع الإلكتروني' name="website" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
+						<Input placeholder='الموقع الإلكتروني' />
 					</Form.Item>
 					<Form.Item label='الدوله' name="countryId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار دوله' }]}>
 						<Select
@@ -390,9 +390,7 @@ const EditCompanyForm = ({ company, id }) => {
 					</Form.Item>
 				</Form.Item>
 				<Form.Item style={{ marginBottom: 0 }} >
-					<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone" rules={[{ required: true, message: 'رقم الهاتف مطلوب' }]}>
-						<Input placeholder='رقم الهاتف الرئيسي' />
-					</Form.Item>
+
 
 					<Form.Item label='الأنشطه' style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
 						<Select
@@ -534,6 +532,9 @@ const EditCompanyForm = ({ company, id }) => {
 
 				</Form.Item>
 				<Form.Item   >
+					<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+						<Input placeholder='رقم الهاتف الرئيسي' />
+					</Form.Item>
 					<Form.Item label="الخط الساخن" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="الخط الساخن" />
 					</Form.Item>

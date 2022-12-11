@@ -340,13 +340,13 @@ function CreateCompany() {
 							<Form.Item label='الإسم باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4" name="name_en" rules={[{ required: true, message: 'الإسم باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Input placeholder='الإسم باللغه الإنجليزيه' />
 							</Form.Item>
-							<Form.Item label='البريد الإلكتروني' name="email" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ type: 'email', required: true, message: 'برجاء إدخال بريد إلكتروني صالح' }]}>
+							<Form.Item label='البريد الإلكتروني' name="email" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
 								<Input placeholder='البريد الإلكتروني' />
 							</Form.Item>
 						</Form.Item>
 						<Form.Item style={{ marginBottom: 0 }} >
-							<Form.Item label='الرابط' name="website" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'الرابط مطلوب' }]}>
-								<Input placeholder='الرابط' />
+							<Form.Item label='الموقع الإلكتروني' name="website" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
+								<Input placeholder='الموقع الإلكتروني' />
 							</Form.Item>
 							<Form.Item label='الدوله' name="countryId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار دوله' }]}>
 								<Select
@@ -421,7 +421,7 @@ function CreateCompany() {
 											<div style={{ marginTop: 8 }}>Upload</div>
 										</div>
 									}
-									
+
 								</Upload>
 								{/* </ImgCrop> */}
 							</Form.Item>
@@ -430,24 +430,24 @@ function CreateCompany() {
 							</Form.Item>
 						</Form.Item>
 						<Form.Item className='mt-4 mb-0' >
-							<Form.Item  label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
+							<Form.Item label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
 								<ImgCrop grid aspect={4.47} rotate>
-								<Upload
-									// beforeUpload={() => false}
+									<Upload
+										// beforeUpload={() => false}
 										action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-									onChange={({ fileList }) => {
-										setBannerFile(fileList);
-									}}
-									fileList={bannerFile}
-									listType="picture-card"
+										onChange={({ fileList }) => {
+											setBannerFile(fileList);
+										}}
+										fileList={bannerFile}
+										listType="picture-card"
 										onPreview={onPreview}
 
 									>
-										{bannerFile.length < 1 && 
+										{bannerFile.length < 1 &&
 											<div className='block' >
 												<PlusOutlined />
 												<div style={{ marginTop: 8 }}>Upload</div>
-											</div>	
+											</div>
 										}
 									</Upload>
 								</ImgCrop>
@@ -496,14 +496,14 @@ function CreateCompany() {
 
 						</Form.Item>
 						<Form.Item   >
-							<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone" rules={[{ required: true, message: 'رقم الهاتف مطلوب' }]}>
+							<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
 								<Input placeholder='رقم الهاتف الرئيسي' />
 							</Form.Item>
 
 							<Form.Item label="الخط الساخن" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Input placeholder="الخط الساخن" />
 							</Form.Item>
-							<Form.Item className="mt-8"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Form.Item className="mt-8" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Form.List
 									name="phones"
 									style={{ width: '100%' }}
