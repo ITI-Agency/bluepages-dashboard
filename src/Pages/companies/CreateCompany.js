@@ -56,6 +56,13 @@ const formItemLayoutWithOutLabel = {
 		sm: { span: 24 },
 	},
 };
+const getSrcFromFile = (file) => {
+	return new Promise((resolve) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file.originFileObj);
+		reader.onload = () => resolve(reader.result);
+	});
+};
 function CreateCompany() {
 
 	const { setLoading } = useLoading();
@@ -137,6 +144,18 @@ function CreateCompany() {
 	const [form] = Form.useForm();
 	const onReset = () => {
 		form.resetFields();
+	};
+	const onPreview = async (file) => {
+		const src = file.url || (await getSrcFromFile(file));
+		const imgWindow = window.open(src);
+
+		if (imgWindow) {
+			const image = new Image();
+			image.src = src;
+			imgWindow.document.write(image.outerHTML);
+		} else {
+			window.location.href = src;
+		}
 	};
 	// const [cities, setCities] = useState([]);
 
@@ -352,9 +371,6 @@ function CreateCompany() {
 							</Form.Item>
 						</Form.Item>
 						<Form.Item style={{ marginBottom: 0 }} >
-							<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone" rules={[{ required: true, message: 'رقم الهاتف مطلوب' }]}>
-								<Input placeholder='رقم الهاتف الرئيسي' />
-							</Form.Item>
 
 							<Form.Item label='الأنشطه' style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
 								<Select
@@ -398,10 +414,14 @@ function CreateCompany() {
 								{/* <ImgCrop rotate> */}
 								<Upload onChange={({ fileList: newFileList }) => { setLogoFile(newFileList); }}
 									beforeUpload={() => false} listType="picture-card">
-									<div className='block' >
-										<PlusOutlined />
-										<div style={{ marginTop: 8 }}>Upload</div>
-									</div>
+									{logoFile.length < 1 &&
+										<div className='block' >
+
+											<PlusOutlined />
+											<div style={{ marginTop: 8 }}>Upload</div>
+										</div>
+									}
+									
 								</Upload>
 								{/* </ImgCrop> */}
 							</Form.Item>
@@ -410,21 +430,31 @@ function CreateCompany() {
 							</Form.Item>
 						</Form.Item>
 						<Form.Item className='mt-4 mb-0' >
-							<Form.Item label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
-								{/* <ImgCrop aspect={4.47} rotate> */}
+							<Form.Item  label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
+								<ImgCrop grid aspect={4.47} rotate>
 								<Upload
-									beforeUpload={() => false}
+									// beforeUpload={() => false}
+										action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
 									onChange={({ fileList }) => {
 										setBannerFile(fileList);
 									}}
+									fileList={bannerFile}
 									listType="picture-card"
-								>
-									<div className='block' >
-										<PlusOutlined />
-										<div style={{ marginTop: 8 }}>Upload</div>
-									</div>								</Upload>
-								{/* </ImgCrop> */}
+										onPreview={onPreview}
+
+									>
+										{bannerFile.length < 1 && 
+											<div className='block' >
+												<PlusOutlined />
+												<div style={{ marginTop: 8 }}>Upload</div>
+											</div>	
+										}
+									</Upload>
+								</ImgCrop>
 							</Form.Item>
+							{/* <Form.Item label="عرض بانر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} >
+								{bannerFile?.length ? <img alt="" src={bannerFile[0]?.thumbUrl} className="rounded-full aspect-square object-contain	p-2 w-[7.5rem] h-[7.5rem] inline-block" /> : ""}
+							</Form.Item> */}
 						</Form.Item>
 						<Form.Item label="صور الشركه" valuePropName="images" style={{ marginBottom: 0 }}>
 							<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
@@ -466,67 +496,14 @@ function CreateCompany() {
 
 						</Form.Item>
 						<Form.Item   >
+							<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone" rules={[{ required: true, message: 'رقم الهاتف مطلوب' }]}>
+								<Input placeholder='رقم الهاتف الرئيسي' />
+							</Form.Item>
+
 							<Form.Item label="الخط الساخن" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Input placeholder="الخط الساخن" />
 							</Form.Item>
-							<Form.Item label="رقم السجل" name="commercial_reg" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="رقم السجل" />
-							</Form.Item>
-
-							{/* <Form.Item name="post_code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-							<Input placeholder="الرمز البريدي" />
-						</Form.Item> */}
-						</Form.Item>
-						<div className="divider">
-							<h1 className="mb-1 text-lg font-bold text-center text-[#0f6fbd]">
-								social_media
-							</h1>
-							<div className="w-full h-[1px] bg-gray-500"></div>
-						</div>
-						<Form.Item className='mt-4 mb-0'  >
-							<Form.Item label="الدرجه" name="degree" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="الدرجه" />
-							</Form.Item>
-							<Form.Item label="فيسبوك" className="ltr:mr-4 rtl:ml-4 " name="facebook" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="فيسبوك" />
-							</Form.Item>
-							<Form.Item label="تويتر" name="twitter" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="تويتر" />
-							</Form.Item>
-						</Form.Item>
-						<Form.Item className='mt-4 mb-0'  >
-							<Form.Item label="واتساب" name="whatsapp" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="واتساب" />
-							</Form.Item>
-							<Form.Item label="سناب شات" className="ltr:mr-4 rtl:ml-4 " name="snapchat" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="سناب شات" />
-							</Form.Item>
-							<Form.Item label="انستجرام" name="instagram" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="انستجرام" />
-							</Form.Item>
-						</Form.Item>
-
-						<div className="my-4 divider">
-							<h1 className="mb-4 text-lg font-bold text-center text-[#0f6fbd] ">
-								extra
-							</h1>
-							<div className="w-full h-[1px] bg-gray-500"></div>
-						</div>
-
-						<Form.Item style={{ width: "100%", marginBottom: "20px" }} >
-							{/* <Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Switch className={`${verified ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={() => setVerified(!verified)} />
-							</Form.Item> */}
-							<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="رابط الخريطه" />
-							</Form.Item>
-							{/* <Form.Item label="خط الطول Longitude" name="longitude" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="خط الطول Longitude" />
-							</Form.Item> */}
-
-						</Form.Item>
-						<Form.Item style={{ width: "100%" }} >
-							<Form.Item className='ltr:mr-4 rtl:ml-4' style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							<Form.Item className="mt-8"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Form.List
 									name="phones"
 									style={{ width: '100%' }}
@@ -598,7 +575,62 @@ function CreateCompany() {
 								</Form.List>
 
 							</Form.Item>
-							<Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+
+							{/* <Form.Item name="post_code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Input placeholder="الرمز البريدي" />
+						</Form.Item> */}
+						</Form.Item>
+						<Form.Item   >
+							<Form.Item label="رقم السجل" name="commercial_reg" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="رقم السجل" />
+							</Form.Item>
+
+							{/* <Form.Item name="post_code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Input placeholder="الرمز البريدي" />
+						</Form.Item> */}
+						</Form.Item>
+						<div className="divider">
+							<h1 className="mb-1 text-lg font-bold text-center text-[#0f6fbd]">
+								social_media
+							</h1>
+							<div className="w-full h-[1px] bg-gray-500"></div>
+						</div>
+						<Form.Item className='mt-4 mb-0'  >
+							<Form.Item label="الدرجه" name="degree" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="الدرجه" />
+							</Form.Item>
+							<Form.Item label="فيسبوك" className="ltr:mr-4 rtl:ml-4 " name="facebook" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="فيسبوك" />
+							</Form.Item>
+							<Form.Item label="تويتر" name="twitter" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="تويتر" />
+							</Form.Item>
+						</Form.Item>
+						<Form.Item className='mt-4 mb-0'  >
+							<Form.Item label="واتساب" name="whatsapp" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="واتساب" />
+							</Form.Item>
+							<Form.Item label="سناب شات" className="ltr:mr-4 rtl:ml-4 " name="snapchat" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="سناب شات" />
+							</Form.Item>
+							<Form.Item label="انستجرام" name="instagram" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="انستجرام" />
+							</Form.Item>
+						</Form.Item>
+
+						<div className="my-4 divider">
+							<h1 className="mb-4 text-lg font-bold text-center text-[#0f6fbd] ">
+								extra
+							</h1>
+							<div className="w-full h-[1px] bg-gray-500"></div>
+						</div>
+
+
+						<Form.Item style={{ width: "100%" }} >
+							<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="رابط الخريطه" />
+							</Form.Item>
+							<Form.Item className="mt-8" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 
 								<Form.List
 									name="videos"

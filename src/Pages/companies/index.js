@@ -810,7 +810,7 @@ function Companies() {
 				onChange={handleChange}
 				columns={columns}
 				dataSource={companies.items}
-				pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50'], total: companies?.meta?.totalItems }}
+				pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50','100'], total: companies?.meta?.totalItems }}
 				rowKey={(record) => record.id}
 				rowSelection={{
 					selectedRowKeys,

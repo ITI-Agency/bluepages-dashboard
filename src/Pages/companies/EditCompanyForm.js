@@ -23,6 +23,7 @@ import useLoading from "Hooks/useLoading";
 import { UploadOutlined } from '@ant-design/icons';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import ImgCrop from "antd-img-crop";
 
 const layout = {
 	labelCol: { span: 2 },
@@ -51,6 +52,13 @@ const formItemLayoutWithOutLabel = {
 		sm: { span: 24 },
 	},
 };
+const getSrcFromFile = (file) => {
+	return new Promise((resolve) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file.originFileObj);
+		reader.onload = () => resolve(reader.result);
+	});
+};
 const EditCompanyForm = ({ company, id }) => {
 	console.log({ company });
 	const navigate = useNavigate();
@@ -75,6 +83,20 @@ const EditCompanyForm = ({ company, id }) => {
 	};
 	useEffect(() => {
 		getFieldsData();
+		if (company?.banner) {
+			
+			setBannerFile([{
+				uid: '-1',
+				url: company?.banner,
+			}])
+		}
+		if (company?.logo) {
+			setLogoFile([{
+				uid: '-1',
+				url: company?.logo,
+			}])
+		}
+
 	}, []);
 	const getCountryCities = async (id) => {
 		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(id);
@@ -120,6 +142,7 @@ const EditCompanyForm = ({ company, id }) => {
 			setCategories(categoriesData);
 			setSubscriptionPlanPackages(subscriptionPlanPackagesData);
 			setDataLoaded(true);
+			
 			return;
 		}
 	};
@@ -152,12 +175,13 @@ const EditCompanyForm = ({ company, id }) => {
 		formData.append("description_en", descriptionen);
 		formData.append("description_ar", descriptionar);
 
-
-		if (logoFile?.fileList?.length) {
-			formData.append("logoFile", logoFile.fileList[0].originFileObj);
+		console.log('logo',logoFile)
+		console.log(bannerFile)
+		if (logoFile?.length) {
+			formData.append("logoFile", logoFile[0].originFileObj);
 		}
-		if (bannerFile?.fileList?.length) {
-			formData.append("bannerFile", bannerFile.fileList[0].originFileObj);
+		if (bannerFile?.length) {
+			formData.append("bannerFile", bannerFile[0].originFileObj);
 		}
 		setLoading(true);
 		return CompaniesServices.updateCompany(formData, company.id);
@@ -225,7 +249,18 @@ const EditCompanyForm = ({ company, id }) => {
 		},
 	});
 
+	const onPreview = async (file) => {
+		const src = file.url || (await getSrcFromFile(file));
+		const imgWindow = window.open(src);
 
+		if (imgWindow) {
+			const image = new Image();
+			image.src = src;
+			imgWindow.document.write(image.outerHTML);
+		} else {
+			window.location.href = src;
+		}
+	};
 
 	if (!dataLoaded || !countries || !categories || !users || !cities || !subscriptionPlanPackages) return <div className="p-8 m-40 mx-auto mt-8 bg-white rounded-md shadow-md md:w-9/12">
 		<Skeleton active />
@@ -377,14 +412,14 @@ const EditCompanyForm = ({ company, id }) => {
 					</Form.Item>
 				</Form.Item>
 				<Form.Item style={{ marginBottom: 0 }} >
-					<Form.Item label='الوصف باللغه العربيه' name="description_ar" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+					<Form.Item label='الوصف باللغه العربيه'  className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
 							{/* <TextArea defaultValue={company?.description_ar} placeholder='الوصف باللغه العربيه' rows={4} /> */}
 							<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
 
 						</Form.Item>
 					</Form.Item>
-					<Form.Item label='الوصف باللغه الإنجليزيه' className="" name="description_en" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+					<Form.Item label='الوصف باللغه الإنجليزيه' className=""  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
 							{/* <TextArea defaultValue={company?.description_en} placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
 							<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
@@ -400,32 +435,54 @@ const EditCompanyForm = ({ company, id }) => {
 					<div className="w-full h-[1px] bg-gray-500"></div>
 				</div>
 				<Form.Item className='mt-4 mb-0' >
-					<Form.Item label="اللوجو " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
-						{/* <ImgCrop rotate> */}
+					{/* <Form.Item label="اللوجو " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
 						<Upload onChange={({ fileList }) => { setLogoFile({ fileList }); }}
 							beforeUpload={() => false}>
 							<Button icon={<UploadOutlined />}>إضغط لإضافه لوجو</Button>
 						</Upload>
-						{/* </ImgCrop> */}
 
-						{
-							company?.logo &&
-							// <Image
-							// 	width={100}
-							// 	src={company?.logo}
-							// />
-							<img src={company?.logo} alt="" width="100px" height="100px" />
-						}
-					</Form.Item>
-					<Form.Item label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
-						{/* <ImgCrop aspect={4.47} rotate> */}
-						<Upload
+					
+					</Form.Item> */}
+					<Form.Item label="اللوجو " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
+						{/* <ImgCrop rotate> */}
+						<Upload onChange={({ fileList: newFileList }) => { setLogoFile(newFileList); }}
 							beforeUpload={() => false}
-							onChange={({ fileList }) => { setBannerFile({ fileList }); }}>
-							<Button icon={<UploadOutlined />}>إضغط لإضافه بنر</Button>
+							fileList={logoFile}
+							listType="picture-card">
+							{logoFile.length < 1 &&
+								<div className='block' >
+
+									<PlusOutlined />
+									<div style={{ marginTop: 8 }}>Upload</div>
+								</div>
+							}
+
 						</Upload>
 						{/* </ImgCrop> */}
-						{
+					</Form.Item>
+					<Form.Item label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
+						<ImgCrop grid aspect={4.47} rotate>
+						<Upload
+										// beforeUpload={() => false}
+										onChange={({ fileList }) => {
+											setBannerFile(fileList);
+										}}
+										fileList={bannerFile}
+										listType="picture-card"
+										onPreview={onPreview}
+
+									>
+										{bannerFile.length < 1 &&
+											<div className='block' >
+												<PlusOutlined />
+												<div style={{ marginTop: 8 }}>Upload</div>
+											</div>
+										}
+									</Upload>
+								</ImgCrop>
+						{/* </ImgCrop> */}
+						{/* {bannerFile?.length ? <img alt="" src={bannerFile[0]?.thumbUrl} className="rounded-full aspect-square object-contain	p-2 w-[7.5rem] h-[7.5rem] inline-block" /> : ""} */}
+						{/* {
 							company?.banner &&
 							<img
 								width={200}
@@ -433,7 +490,7 @@ const EditCompanyForm = ({ company, id }) => {
 								src={company?.banner}
 								alt=""
 							/>
-						}
+						} */}
 					</Form.Item>
 				</Form.Item>
 				{/* <Form.Item label="صور الشركه" valuePropName="images" style={{ marginBottom: 0 }}>
