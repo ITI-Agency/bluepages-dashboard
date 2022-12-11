@@ -719,9 +719,17 @@ function Companies() {
 	];
 	const handleChange = async (pagination, filters, sorter) => {
 		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }];
+		console.log({ filters })
 		Object.entries(filters).forEach(f => {
 			if (f[1] && f[1].length) {
-				filtersArray.push({[f[0]]:f[1][0]})
+				if (f[0] === 'packageId') {
+					console.log('packages arrray', f[1])
+					f[1].forEach(it => {
+						filtersArray.push({ 'packages[]': it })
+					})
+				} else {
+					filtersArray.push({[f[0]]:f[1][0]})
+				}
 			}
 		})
 		try {
