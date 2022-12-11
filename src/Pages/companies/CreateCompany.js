@@ -239,6 +239,8 @@ function CreateCompany() {
 		onError: (error) => {
 			console.log({ error });
 			setLoading(false);
+			toast.error("لقد حدث خطأ ما");
+
 			console.log("there is an error:>", error);
 			setStay(false);
 
@@ -496,7 +498,7 @@ function CreateCompany() {
 
 						</Form.Item>
 						<Form.Item   >
-							<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+							<Form.Item rules={[{ required: true, message: 'برجاء إضافه رقم هاتف رئيسي' }]} label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
 								<Input placeholder='رقم الهاتف الرئيسي' />
 							</Form.Item>
 
