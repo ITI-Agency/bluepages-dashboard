@@ -465,7 +465,7 @@ const EditCompanyForm = ({ company, id }) => {
 					
 					</Form.Item> */}
 					<Form.Item label="اللوجو" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
-						<ImgCrop grid aspect={1.2} rotate>
+						<ImgCrop grid aspect={1} rotate>
 						<Upload onChange={({ fileList: newFileList }) => { setLogoFile(newFileList); }}
 							// beforeUpload={() => false}
 							fileList={logoFile}
