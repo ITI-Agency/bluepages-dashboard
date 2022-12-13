@@ -36,8 +36,8 @@ const EditOffer = ({ setCreate, setEdit }) => {
 	}
 	return (
 		<DashboardLayout>
-			<h1>Update Offer</h1>
-			<Container sx={{ mb: 4 }}>
+			{/* <h1>Update Offer</h1> */}
+			<Container >
 				<Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
 					<div className="mx-8">
 

@@ -12,6 +12,12 @@ const getAllCategories = async (filters = []) => {
 	const response = await http.get(`/categories${queries}`);
 	return response;
 };
+const getAllCategoriesMapped = async (filters = []) => {
+	//prepare filters to be queries
+	const queries = Utils.prepareQueryFilters(filters);
+	const response = await http.get(`/categories/getAll/mapped${queries}`);
+	return response;
+};
 
 const createCategory = async (category) => {
 	const response = await http.post(`/categories`, category);
@@ -42,5 +48,6 @@ export default {
 	createCategory,
 	updateCategory,
 	deleteCategory,
-	createMultipleCategory
+	createMultipleCategory,
+	getAllCategoriesMapped
 };

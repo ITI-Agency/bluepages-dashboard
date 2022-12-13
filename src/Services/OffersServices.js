@@ -1,10 +1,27 @@
 import http from "./httpService";
+import Utils from "../Utils";
 
 const getAllOffers = async () => {
 	const response = await http.get("/offers");
 	return response;
 };
-
+const getAllOffersPaginate = async (filters = []) => {
+	console.log({ filters });
+	// [
+	//   { userId: 1 },
+	//   { cityId: 1 },
+	//   { countryId: 1 },
+	//   { categories[]: 1 },
+	//   {branches: true},
+	//   {user: true},
+	//   {city: true},
+	//   {country: true}
+	// ];
+	//prepare filters to be queries
+	const queries = Utils.prepareQueryFilters(filters);
+	const response = await http.get(`/offers/getAll/paginate${queries}`);
+	return response;
+};
 const getOfferDetails = async (offerId) => {
 	const AUTH_JWT = sessionStorage.getItem("AUTH_JWT");
 	const data = await fetch(`${process.env.REACT_APP_API_BASE_URL}offers/${offerId}`, {
@@ -60,7 +77,14 @@ const removeOfferImage = async (offerId, payload) => {
 	const response = await http.delete(`/offers/${offerId}/remove-images`, payload);
 	return response;
 };
-
+const deleteMultipleOffer = async (ids) => {
+	// const dataArr = {
+	//   data: companies, // as array
+	//   //here you can add category id and/or country & city id
+	// };
+	const response = await http.delete(`/offers/delete/multiple`, ids);
+	return response;
+};
 //offer videos
 const getAllOfferVideos = async (companyId) => {
 	return await http.get(`/video?companyId=${companyId}`);
@@ -97,4 +121,6 @@ export default {
 	addOfferImage,
 	removeOfferImage,
 	removeOffer,
+	getAllOffersPaginate,
+	deleteMultipleOffer
 };

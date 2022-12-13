@@ -74,7 +74,7 @@ function EditCompany() {
   if (loading || !companyDetails) return <LoadingDataLoader />;
   return (
     <DashboardLayout>
-      <h1>Update Company</h1>
+      {/* <h1>Update Company</h1> */}
       <Container sx={{ mb: 4 }}>
         <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
 				<Tabs>

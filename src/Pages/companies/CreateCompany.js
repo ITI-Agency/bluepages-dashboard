@@ -157,6 +157,18 @@ function CreateCompany() {
 			window.location.href = src;
 		}
 	};
+	const onPreviewLogo = async (file) => {
+		const src = file.url || (await getSrcFromFile(file));
+		const imgWindow = window.open(src);
+
+		if (imgWindow) {
+			const image = new Image();
+			image.src = src;
+			imgWindow.document.write(image.outerHTML);
+		} else {
+			window.location.href = src;
+		}
+	};
 	// const [cities, setCities] = useState([]);
 
 	// const { data: countries = [], isLoading: isLoadingCountries } = useQuery(['countries'], CountriesServices.getAllCountries);
@@ -413,9 +425,14 @@ function CreateCompany() {
 						</div>
 						<Form.Item className='mt-4 mb-0' >
 							<Form.Item label="اللوجو " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
-								{/* <ImgCrop rotate> */}
+								<ImgCrop grid aspect={1.2} rotate>
 								<Upload onChange={({ fileList: newFileList }) => { setLogoFile(newFileList); }}
-									beforeUpload={() => false} listType="picture-card">
+										// beforeUpload={() => false}
+										listType="picture-card"
+										fileList={logoFile}
+										onPreview={onPreviewLogo}
+
+									>
 									{logoFile.length < 1 &&
 										<div className='block' >
 
@@ -425,25 +442,24 @@ function CreateCompany() {
 									}
 
 								</Upload>
-								{/* </ImgCrop> */}
+								</ImgCrop>
 							</Form.Item>
-							<Form.Item label="عرض لوجو الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} >
+							{/* <Form.Item label="عرض لوجو الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} >
 								{logoFile?.length ? <img alt="" src={logoFile[0]?.thumbUrl} className="rounded-full aspect-square object-contain	p-2 w-[7.5rem] h-[7.5rem] inline-block" /> : ""}
-							</Form.Item>
+							</Form.Item> */}
 						</Form.Item>
 						<Form.Item className='mt-4 mb-0' >
 							<Form.Item label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
 								<ImgCrop grid aspect={4.47} rotate>
 									<Upload
 										// beforeUpload={() => false}
-										action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+										// action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
 										onChange={({ fileList }) => {
 											setBannerFile(fileList);
 										}}
 										fileList={bannerFile}
 										listType="picture-card"
 										onPreview={onPreview}
-
 									>
 										{bannerFile.length < 1 &&
 											<div className='block' >
@@ -498,10 +514,9 @@ function CreateCompany() {
 
 						</Form.Item>
 						<Form.Item   >
-							<Form.Item rules={[{ required: true, message: 'برجاء إضافه رقم هاتف رئيسي' }]} label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+							<Form.Item  label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
 								<Input placeholder='رقم الهاتف الرئيسي' />
 							</Form.Item>
-
 							<Form.Item label="الرقم الموحد" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Input placeholder="الرقم الموحد" />
 							</Form.Item>
@@ -792,63 +807,3 @@ function CreateCompany() {
 }
 
 export default CreateCompany;
-
-
-  // const { setLoading } = useLoading();
-  // const { navigate } = useNavigate();
-  // const [dataLoaded, setDataLoaded] = useState(false);
-  // const [countries, setCountries] = useState([]);
-  // const [cities, setCities] = useState([]);
-  // const [users, setUsers] = useState([]);
-  // const [categories, setCategories] = useState([]);
-  // const postCompany = async (companyData) => {
-  //   setLoading(true);
-  //   const res = await CompaniesServices.createCompany(companyData);
-  //   console.log("thsi is the response of posting company:>", res);
-  //   if (res.status == 201) {
-  //     setLoading(false);
-  //     navigate(`/companies/${res.data?.id ? res.data.id : ""}`);
-  //   } else {
-  //     setLoading(false);
-  //     console.log("there is an error:>", res);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getFieldsData();
-  // }, []);
-  // const getCountryCities = async (id) => {
-  //   const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(id);
-  //   if (citiesStatus == 200) {
-  //     setCities(citiesData);
-  //   }
-  // };
-  // const getFieldsData = async () => {
-  //   const { status: countriesStatus, data: countriesData } =
-  //     await CountriesServices.getAllCountries();
-  //   // const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(1);
-  //   const { status: usersStatus, data: usersData } = await UserServices.getAllUsers();
-  //   const { status: categoriesStatus, data: categoriesData } =
-  //     await CategoriesServices.getAllCategories();
-
-  //   console.log("this is data:>", {
-  //     countriesData,
-  //     // citiesData,
-  //     usersData,
-  //     categoriesData,
-  //   });
-  //   if (
-  //     countriesStatus == 200 &&
-  //     // citiesStatus == 200 &&
-  //     usersStatus == 200 &&
-  //     categoriesStatus == 200
-  //   ) {
-  //     setCountries(countriesData);
-  //     // setCities(citiesData);
-  //     setUsers(usersData);
-  //     setCategories(categoriesData);
-  //     setDataLoaded(true);
-  //     return;
-  //   }
-  // };
-  // if (!dataLoaded) return <LoadingDataLoader />;

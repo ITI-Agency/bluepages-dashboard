@@ -5,6 +5,7 @@ import { Button, Form, Select } from 'antd';
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from "react-toastify";
 
+import useLoading from "Hooks/useLoading";
 
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import ImgCrop from 'antd-img-crop';
@@ -20,7 +21,8 @@ import CitiesServices from 'Services/CitiesServices';
 import { useNavigate } from 'react-router-dom';
 import CompaniesServices from 'Services/CompaniesServices';
 const { Option } = Select;
-
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 const layout = {
 	labelCol: { span: 2 },
 	wrapperCol: { span: 20 },
@@ -48,12 +50,22 @@ const formItemLayoutWithOutLabel = {
 		sm: { span: 24 },
 	},
 };
+const getSrcFromFile = (file) => {
+	return new Promise((resolve) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file.originFileObj);
+		reader.onload = () => resolve(reader.result);
+	});
+};
 const EditOfferForm = ({ offer, id, }) => {
 	const queryClient = useQueryClient();
 	const [dataLoaded, setDataLoaded] = useState(false);
 	const [countries, setCountries] = useState([]);
 	const [cities, setCities] = useState([]);
 	const [categories, setCategories] = useState([]);
+	const { setLoading } = useLoading();
+	const [descriptionar, setDescriptionar] = useState(offer?.description_ar);
+	const [descriptionen, setDescriptionen] = useState(offer?.description_en);
 	const [users, setUsers] = useState(null);
 	// const [companies, setCompanies] = useState([]);
 	const [logoFile, setLogoFile] = useState([]);
@@ -72,6 +84,12 @@ const EditOfferForm = ({ offer, id, }) => {
 
 	useEffect(() => {
 		getFieldsData();
+		if (offer?.logo) {
+			setLogoFile([{
+				uid: '-1',
+				url: offer?.logo,
+			}]);
+		}
 	}, []);
 
 	const getFieldsData = async () => {
@@ -109,27 +127,40 @@ const EditOfferForm = ({ offer, id, }) => {
 			toast.error('الرجاء إختيار مدينه تابعه للدوله');
 			return;
 		}
-		data.categories = [data.categories];
+		// data.categories = [data.categories];
 		let formData = new FormData();
 		// upload categories
 		data.categories.forEach(cat => {
 			formData.append("categories[]", cat);
 		});
-		if (logoFile?.length) {
+		if (logoFile?.length && !logoFile[0]?.url) {
 			formData.append("logoFile", logoFile[0].originFileObj);
 		}
 		delete data.categories;
 		for (const [key, value] of Object.entries(data)) {
 			formData.append(key, value);
 		}
-		// setLoading(true);
+		// upload images
+		formData.append("description_en", descriptionen);
+		formData.append("description_ar", descriptionar);
+		// upload images
+		setLoading(true);
 
+		console.log("images", images?.fileList);
+		if (images?.fileList?.length) {
+			let formDataImages = new FormData();
+			images?.fileList?.forEach(el => {
+				formDataImages.append("images[]", el.originFileObj
+				);
+			});
+			return OffersServices.addOfferImage(offer.id, formDataImages);
+		} 
 		return OffersServices.updateOffer(formData, offer.id);
 	}, {
 		onError: (error) => {
 			console.log({ error });
 			toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
-			// setLoading(false);
+			setLoading(false);
 
 		},
 		onSuccess: (res) => {
@@ -138,7 +169,7 @@ const EditOfferForm = ({ offer, id, }) => {
 				toast.success('لقد تم تعديل العرض بنجاح');
 				navigate(`/offers`);
 			}
-			// setLoading(false);
+			setLoading(false);
 
 			// Router.push('/login')
 		},
@@ -245,11 +276,23 @@ const EditOfferForm = ({ offer, id, }) => {
 
 		);
 	}
+	const onPreviewLogo = async (file) => {
+		const src = file.url || (await getSrcFromFile(file));
+		const imgWindow = window.open(src);
+
+		if (imgWindow) {
+			const image = new Image();
+			image.src = src;
+			imgWindow.document.write(image.outerHTML);
+		} else {
+			window.location.href = src;
+		}
+	};
 	const initialValues = {
 		name_ar: offer.name_ar || "",
 		name_en: offer.name_en || "",
-		description_ar: offer.description_ar || "",
-		description_en: offer.description_en || "",
+		// description_ar: offer.description_ar || "",
+		// description_en: offer.description_en || "",
 		address_ar: offer.address_ar || "",
 		address_en: offer.address_en || "",
 		companyId: offer?.companyId || null,
@@ -264,12 +307,12 @@ const EditOfferForm = ({ offer, id, }) => {
 	};
 	return (
 		<div className='mx-4'>
-			<div className="my-4 divider ">
+			{/* <div className="my-4 divider ">
 				<h1 className="text-2xl font-bold text-center text-blueLight">
 					Edit Offer
 				</h1>
 				<div className="w-full h-[1px] bg-gray-400"></div>
-			</div>
+			</div> */}
 			<div>
 				<Form layout="vertical" {...layout} form={form} initialValues={initialValues} name="control-hooks" onFinish={mutation.mutate} validateMessages={validateMessages}>
 					<Form.Item style={{ marginBottom: 0 }} >
@@ -367,28 +410,47 @@ const EditOfferForm = ({ offer, id, }) => {
 						<Form.Item label="صوره الغلاف " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
 							{/* <ImgCrop rotate> */}
 							<Upload onChange={({ fileList }) => { setLogoFile(fileList); }}
-								beforeUpload={() => false}>
-								<Button icon={<UploadOutlined />}>إضغط لإضافه لوجو</Button>
+								listType="picture-card"
+								// beforeUpload={() => false}
+								onPreview={onPreviewLogo}
+								fileList={logoFile}
+
+							>
+								{logoFile.length < 1 &&
+									<div className='block' >
+
+										<PlusOutlined />
+										<div style={{ marginTop: 8 }}>Upload</div>
+									</div>
+								}
 							</Upload>
 							{/* </ImgCrop> */}
 
-							{
-								offer?.logo &&
-								// <Image
-								// 	width={100}
-								// 	src={company?.logo}
-								// />
-								<img src={offer?.logo} alt="" width="100px" />
-							}
+
 						</Form.Item>
 
 					</Form.Item>
-					<Form.Item style={{ marginBottom: 0 }} >
-						<Form.Item label="الوصف بالعربيه" name="description_ar" rules={[{ required: true, message: 'الوصف باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
-							<TextArea placeholder='الوصف باللغه العربيه' rows={4} />
+					<Form.Item className='mt-4 mb-4' >
+						<Form.Item label="إضافه صور جديده" valuePropName="images" style={{ distplay: "inline-block", marginBottom: 0 }}>
+							<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
+								beforeUpload={() => false} action="/upload.do" listType="picture-card">
+								<div className='block' >
+									<PlusOutlined />
+									<div style={{ marginTop: 8 }}>Upload</div>
+								</div>
+							</Upload>
 						</Form.Item>
-						<Form.Item label="الوصف بالإنجليزيه" className="" name="description_en" rules={[{ required: true, message: 'الوصف باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
-							<TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} />
+					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item label="الوصف بالعربيه"  className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							{/* <TextArea placeholder='الوصف باللغه العربيه' rows={4} /> */}
+							<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
+
+						</Form.Item>
+						<Form.Item label="الوصف بالإنجليزيه" className=""  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+							{/* <TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
+							<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
+
 						</Form.Item>
 					</Form.Item>
 					<Form.Item style={{ marginBottom: 0 }} >
@@ -448,7 +510,7 @@ const EditOfferForm = ({ offer, id, }) => {
 				</h1>
 				<div className="w-full h-[1px] bg-gray-400"></div>
 			</div>
-			<Form {...formImagesLayout} form={imagesForm} name="form-images" onFinish={addImages.mutate} >
+			{/* <Form {...formImagesLayout} form={imagesForm} name="form-images" onFinish={addImages.mutate} >
 				<Form.Item label="إضافه صور العرض" valuePropName="images" style={{ distplay: "inline-block", marginBottom: 0 }}>
 					<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
 						beforeUpload={() => false} action="/upload.do" listType="picture-card">
@@ -463,7 +525,7 @@ const EditOfferForm = ({ offer, id, }) => {
 						Upload New Images
 					</Button>
 				</Form.Item>
-			</Form>
+			</Form> */}
 			<section className="overflow-hidden text-gray-700 ">
 				<div className="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
 					<div className="flex flex-wrap -m-1 md:-m-2">

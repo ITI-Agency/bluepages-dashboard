@@ -19,7 +19,7 @@ import Paper from "@mui/material/Paper";
 import CountriesServices from "Services/CountriesServices";
 import CitiesServices from "Services/CitiesServices";
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Form, Select, Table, Input, Space } from "antd";
+import { Button, Form, Select, Table, Input, Space, Tag } from "antd";
 
 const { Option } = Select;
 
@@ -35,6 +35,7 @@ import Moment from "react-moment";
 import Utils from "../../Utils";
 import moment from "moment";
 import Highlighter from "react-highlight-words";
+import CategoriesServices from "Services/CategoriesServices";
 const plans = Utils.plans;
 const style = {
 	position: "absolute",
@@ -62,6 +63,7 @@ function Companies() {
 	const [loading, setLoading] = useState(false);
 	const [importedData, setImportedData] = useState([]);
 	const [cities, setCities] = useState([]);
+	const [categories, setCategories] = useState([]);
 	const [countries, setCountries] = useState([]);
 	const [openSelectModal, setOpenSelectModal] = useState(false);
 	const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -171,13 +173,15 @@ function Companies() {
 		try {
 			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 }]);
 			const { status: countriesStatus, data: countriesData } = await CountriesServices.getAllCountries();
+			const { status: categoriesStatus, data: categoriesData } = await CategoriesServices.getAllCategoriesMapped();
 			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
-			if (response && response.status == 200 && countriesStatus == 200 && citiesStatus == 200) {
+			if (response && response.status == 200 && countriesStatus == 200 && citiesStatus == 200  && categoriesStatus == 200  ) {
 				setLoading(false);
 				setData(response.data);
 				setCompanies(response.data);
 				setCountries(countriesData);
 				setCities(citiesData);
+				setCategories(categoriesData);
 			} else {
 				toast.error("sorry something went wrong while getting companies!");
 				setLoading(false);
@@ -214,12 +218,14 @@ function Companies() {
 		}
 	};
 	const handleStatusChange = async (e, item) => {
+		console.log({ item })
 		const { id, status } = item;
-		const dd = companies.map((i) => {
+		console.log({companies})
+		const dd = companies?.items?.map((i) => {
 			if (i.id == item.id) i.status = status;
 			return i;
 		});
-		setCompanies(dd);
+		setCompanies({ items: dd ,meta:companies.meta});
 		try {
 			let formData = new FormData();
 			formData.append('status', `status`);
@@ -289,7 +295,7 @@ function Companies() {
 	};
 
 	const handleExport = () => {
-		const comp = companies.map((c) => {
+		const comp = companies?.items?.map((c) => {
 			c.categories.length ? (c.categories = c.categories?.map((cat) => cat.id).join(",")) : "";
 			return c;
 		});
@@ -310,10 +316,10 @@ function Companies() {
 			},
 			{ label: "standard_phone", value: "standard_phone" },
 			{ label: "website", value: "website" },
-			{ label: "categories", value: "categories" },
+			{ label: "categoryIds", value: "categories" },
 		];
 		const settings = {
-			fileName: "Directory Companies",
+			fileName: "bluePages Companies",
 		};
 		const data = [
 			{
@@ -534,21 +540,21 @@ function Companies() {
 			key: 'id',
 			render: (text, record) => <p className='text-sm font-medium text-gray-900 '>{record.id}</p>,
 		},
-		// {
-		// 	title: "logo",
-		// 	key: 'id',
-		// 	render: (text, record) => record.logo ? (
-		// 		<MDAvatar src={record.logo} alt={record.name_ar} shadow="sm" />
-		// 	) : (
-		// 		<MDAvatar src={LogoPlaceholder} alt={record.name_ar} shadow="sm" />
-		// 		// <img
-		// 		//   src="assets/images/logo-placeholder.png"
-		// 		//   alt={item.name_en}
-		// 		//   width="2rem"
-		// 		//   height="2rem"
-		// 		// />
-		// 	),
-		// },
+		{
+			title: "logo",
+			key: 'id',
+			render: (text, record) => record.logo ? (
+				<MDAvatar src={record.logo} alt={record.name_ar} shadow="sm" />
+			) : (
+				<MDAvatar src={LogoPlaceholder} alt={record.name_ar} shadow="sm" />
+				// <img
+				//   src="assets/images/logo-placeholder.png"
+				//   alt={item.name_en}
+				//   width="2rem"
+				//   height="2rem"
+				// />
+			),
+		},
 		{
 			title: "name",
 			dataIndex: `name_ar`,
@@ -563,24 +569,24 @@ function Companies() {
 					</MDBox>
 				</Link>
 			),
-			width: '20%',
+			// width: '20%',
 			...getColumnSearchProps('name_ar'),
 		},
-		{
-			title: "Country",
-			key: 'countryId',
-			render: (text, record) => (
-				<>
-					<MDBox lineHeight={1}>
-						<MDTypography display="block" variant="button" fontWeight="medium">
-							{record?.country?.name_ar}
-						</MDTypography>
-					</MDBox>
-				</>
-			),
-			filters: countries?.map(c => ({ text: c.name_ar, value: c.id })),
-			// onFilter: (value, record) => record?.countryId == value,
-		},
+		// {
+		// 	title: "Country",
+		// 	key: 'countryId',
+		// 	render: (text, record) => (
+		// 		<>
+		// 			<MDBox lineHeight={1}>
+		// 				<MDTypography display="block" variant="button" fontWeight="medium">
+		// 					{record?.country?.name_ar}
+		// 				</MDTypography>
+		// 			</MDBox>
+		// 		</>
+		// 	),
+		// 	filters: countries?.map(c => ({ text: c.name_ar, value: c.id })),
+		// 	// onFilter: (value, record) => record?.countryId == value,
+		// },
 		{
 			title: "City",
 			key: 'cityId',
@@ -596,6 +602,7 @@ function Companies() {
 			filters: cities?.map(c => ({ text: c.name_ar, value: c.id })),
 			// onFilter: (value, record) => record.cityId == value,
 		},
+		
 		{
 			title: "plan",
 			key: 'packageId',
@@ -611,11 +618,28 @@ function Companies() {
 			// onFilter: (value, record) => record.plan.name_ar.indexOf(value) === 0,
 		},
 		{
-			title: "views",
-			key: 'plan',
-			render: (_, record) => <p className='text-sm font-medium text-gray-900 '>{record.views}</p>,
-			sorter: (a, b) => a.views - b.views,
+			title: "Categories",
+			key: 'categories',
+			render: (text, record) => (
+				<>
+					{record?.categories?.map((cat) => {
+						return (
+							<Tag className="mt-1" color={'geekblue'} key={cat}>
+								{cat?.name_ar?.toUpperCase()}
+							</Tag>
+						);
+					})}
+				</>
+			),
+			filters: categories?.map(c => ({ text: c.name_ar, value: c.id })),
+			// onFilter: (value, record) => record.cityId == value,
 		},
+		// {
+		// 	title: "views",
+		// 	key: 'plan',
+		// 	render: (_, record) => <p className='text-sm font-medium text-gray-900 '>{record.views}</p>,
+		// 	sorter: (a, b) => a.views - b.views,
+		// },
 		// {
 		// 	title: "verified",
 		// 	key: 'verified',
@@ -689,6 +713,7 @@ function Companies() {
 		{
 			title: "control",
 			key: 'action',
+			width:"20%",
 			render: (_, record) => (
 				<>
 					<MDBox
@@ -719,14 +744,16 @@ function Companies() {
 	];
 	const handleChange = async (pagination, filters, sorter) => {
 		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }];
-		console.log({ filters })
 		Object.entries(filters).forEach(f => {
 			if (f[1] && f[1].length) {
 				if (f[0] === 'packageId') {
-					console.log('packages arrray', f[1])
 					f[1].forEach(it => {
 						filtersArray.push({ 'packages[]': it })
 					})
+				} else if (f[0] === 'categories') {
+					f[1].forEach(it => {
+						filtersArray.push({ 'categories[]': it });
+					});
 				} else {
 					filtersArray.push({[f[0]]:f[1][0]})
 				}

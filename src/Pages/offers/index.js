@@ -17,11 +17,13 @@ import Highlighter from "react-highlight-words";
 
 import OffersServices from "Services/OffersServices";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Form, Select, Table, Input, Space } from "antd";
+import { Button, Form, Select, Table, Input, Space, Tag } from "antd";
 
 import { toast } from "react-toastify";
 
 import LogoPlaceholder from "assets/images/logo-placeholder.png";
+import CitiesServices from "Services/CitiesServices";
+import CategoriesServices from "Services/CategoriesServices";
 
 const style = {
 	position: "absolute",
@@ -40,25 +42,46 @@ function Offers() {
 	const [data, setData] = useState([]);
 	const [offers, setOffers] = useState([]);
 	const [open, setOpen] = useState({ state: false });
+	const [cities, setCities] = useState([]);
+	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+	const [categories, setCategories] = useState([]);
 
 	useEffect(() => {
 		getAllOffers();
+		getCategories();
 	}, []);
 	const getAllOffers = async () => {
 		setLoading(true);
 		try {
-			const response = await OffersServices.getAllOffers();
-			if (response && response.status == 200) {
+			const response = await OffersServices.getAllOffersPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 }]);
+			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
+
+			if (response && response.status == 200 && citiesStatus == 200) {
 				setLoading(false);
 				setData(response.data);
 				setOffers(response.data);
+				setCities(citiesData);
 			} else {
 				toast.error("sorry something went wrong while getting offers!");
 				setLoading(false);
 			}
 		} catch (error) {
+			console.log(error)
+
 			toast.error("sorry something went wrong while getting offers!");
 			setLoading(false);
+		}
+	};
+	const getCategories = async () => {
+		try {
+			const { status: categoriesStatus, data: categoriesData } = await CategoriesServices.getAllCategoriesMapped();
+			if (categoriesStatus == 200 ) {
+				setCategories(categoriesData);
+			} else {
+				toast.error("sorry something went wrong while getting offers!");
+			}
+		} catch (error) {
+			toast.error("sorry something went wrong while getting offers!");
 		}
 	};
 
@@ -91,11 +114,11 @@ function Offers() {
 	};
 	const handleStatusChange = async (e, item) => {
 		const { id, status } = item;
-		const dd = offers.map((i) => {
+		const dd = offers?.items?.map((i) => {
 			if (i.id == item.id) i.status = status;
 			return i;
 		});
-		setOffers(dd);
+		setOffers({items:dd,meta:offers.meta});
 		try {
 			const res = await OffersServices.updateOffer({ status }, id);
 			if (res.status == 200) {
@@ -115,7 +138,27 @@ function Offers() {
 	const [searchText, setSearchText] = useState('');
 	const [searchedColumn, setSearchedColumn] = useState('');
 	const searchInput = useRef(null);
-
+	const handleDeleteSelected = async () => {
+		setLoading(true);
+		try {
+			const response = await OffersServices.deleteMultipleOffer({
+				data: { ids: selectedRowKeys }
+			});
+			if (response && response.status == 200) {
+				toast.success("تم الحذف بنجاح");
+				setLoading(false);
+				getAllOffers();
+			} else {
+				toast.error("حدث خطأ ما أثناء الحذف");
+				setLoading(false);
+				getAllOffers();
+			}
+		} catch (error) {
+			toast.error("حدث خطأ ما أثناء الحذف");
+			setLoading(false);
+			getAllOffers();
+		}
+	};
 	const handleSearch = (
 		selectedKeys,
 		confirm,
@@ -179,11 +222,11 @@ function Offers() {
 		filterIcon: (filtered) => (
 			<SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
 		),
-		onFilter: (value, record) =>
-			record[dataIndex]
-				.toString()
-				.toLowerCase()
-				.includes((value).toLowerCase()),
+		// onFilter: (value, record) =>
+		// 	record[dataIndex]
+		// 		.toString()
+		// 		.toLowerCase()
+		// 		.includes((value).toLowerCase()),
 		onFilterDropdownOpenChange: visible => {
 			if (visible) {
 				setTimeout(() => searchInput.current?.select(), 100);
@@ -201,7 +244,43 @@ function Offers() {
 				text
 			),
 	});
-	if (loading) return <LoadingDataLoader />;
+	const handleChange = async (pagination, filters, sorter) => {
+		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }];
+		Object.entries(filters).forEach(f => {
+			if (f[1] && f[1].length) {
+				if (f[0] === 'categories') {
+					f[1].forEach(it => {
+						filtersArray.push({ 'categories[]': it });
+					});
+				} else {
+					filtersArray.push({ [f[0]]: f[1][0] });
+				}
+			}
+		});
+		try {
+			const response = await OffersServices.getAllOffersPaginate(filtersArray);
+			if (response && response.status == 200) {
+				setOffers(response.data);
+			} else {
+				toast.error("sorry something went wrong while getting companies!");
+				setLoading(false);
+			}
+		} catch (error) {
+			toast.error("sorry something went wrong while getting companies!");
+			setLoading(false);
+		}
+
+		// const offset = pagination.current * pagination.pageSize - pagination.pageSize;
+		// const limit = pagination.pageSize;
+		// const params = {};
+
+		// if (sorter.hasOwnProperty("column")) {
+		// 	params.order = { field: sorter.field, dir: sorter.order };
+		// }
+
+		// getData(offset, limit, params);
+	};
+	if (loading || !categories) return <LoadingDataLoader />;
 	const columns = [
 		{
 			title: "#",
@@ -276,14 +355,44 @@ function Offers() {
 		// 	filters:cities?.map(c=>({text:c.name_ar,value:c.id})),
 		// 	onFilter: (value, record) => record.cityId == value,
 		// },
-
 		{
-			title: "views",
-			key: 'plan',
-			render: (_, record) => <p className='text-sm font-medium text-gray-900 '>{record.views}</p>,
-			sorter: (a, b) => a.views - b.views,
+			title: "City",
+			key: 'cityId',
+			render: (text, record) => (
+				<>
+					<MDBox lineHeight={1}>
+						<MDTypography display="block" variant="button" fontWeight="medium">
+							{record?.city?.name_ar}
+						</MDTypography>
+					</MDBox>
+				</>
+			),
+			filters: cities?.map(c => ({ text: c.name_ar, value: c.id })),
+			// onFilter: (value, record) => record.cityId == value,
 		},
-
+		// {
+		// 	title: "views",
+		// 	key: 'plan',
+		// 	render: (_, record) => <p className='text-sm font-medium text-gray-900 '>{record.views}</p>,
+		// 	sorter: (a, b) => a.views - b.views,
+		// },
+		{
+			title: "Categories",
+			key: 'categories',
+			render: (text, record) => (
+				<>
+					{record?.categories?.map((cat) => {
+						return (
+							<Tag className="mt-1" color={'geekblue'} key={cat}>
+								{cat?.name_ar?.toUpperCase()}
+							</Tag>
+						);
+					})}
+				</>
+			),
+			filters: categories?.map(c => ({ text: c.name_ar, value: c.id })),
+			// onFilter: (value, record) => record.cityId == value,
+		},
 		{
 			title: "Active",
 			key: 'status',
@@ -308,7 +417,7 @@ function Offers() {
 					value: false
 				},
 			],
-			onFilter: (value, record) => record.status === value,
+			// onFilter: (value, record) => record.status === value,
 		},
 		{
 			title: "created_at",
@@ -356,100 +465,31 @@ function Offers() {
 	];
 	return (
 		<DashboardLayout>
-			<Table columns={columns} dataSource={offers} />
-			{/* <DataTable
-        table={{
-          columns: [
-            { Header: "name", accessor: "name_en" },
-            { Header: "image", accessor: "images" },
-            { Header: "views", accessor: "views" },
-            { Header: "on sale", accessor: "on_sale" },
-            { Header: "Active", accessor: "status" },
-            { Header: "created", accessor: "createdAt" },
-            { Header: "expire", accessor: "endAt" },
-            { Header: "actions", accessor: "actions" },
-          ],
-          rows: offers.map((item) => {
-            return {
-              ...item,
-              name_en: (
-                <>
-                  <Link to={`/offers/${item.id}`}>
-                    <MDBox lineHeight={1}>
-                      <MDTypography display="block" variant="button" fontWeight="medium">
-                        {item.name_en}
-                      </MDTypography>
-                      <MDTypography variant="caption">{item.description_en}</MDTypography>
-                    </MDBox>
-                  </Link>
-                </>
-              ),
-              images: (
-                <img
-                  src={item.images.length ? item.images[0].image : LogoPlaceholder}
-                  alt={item.name_en}
-                  style={{ width: "2rem", height: "2rem" }}
-                />
-              ),
-              createdAt: <Moment fromNow>{item.createdAt}</Moment>,
-              endAt: <Moment fromNow>{item.endAt}</Moment>,
-              on_sale: item.on_sale ? (
-                <MDBox
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  width="2rem"
-                  height="2rem"
-                  bgColor="success"
-                  shadow="sm"
-                  borderRadius="50%"
-                  color="white"
-                >
-                  <Icon fontSize="medium" color="inherit">
-                    checkcircleicon
-                  </Icon>
-                </MDBox>
-              ) : (
-                <Icon fontSize="medium" color="dark">
-                  infoicon
-                </Icon>
-              ),
-              status: (
-                <>
-                  <Switch
-                    checked={item.status}
-                    onChange={(e) => {
-                      item.status = !item.status;
-                      handleStatusChange(e, item);
-                    }}
-                  />
-                </>
-              ),
-              actions: (
-                <>
-                  <MDBox
-                    display="flex"
-                    alignItems="center"
-                    mt={{ xs: 2, sm: 0 }}
-                    ml={{ xs: -1.5, sm: 0 }}
-                  >
-                    <MDBox mr={1}>
-                      <MDButton onClick={() => handleOpen(item)} variant="text" color="error">
-                        <Icon>delete</Icon>&nbsp;delete
-                      </MDButton>
-                    </MDBox>
-                    <Link to={`/offers/edit/${item.id}`}>
-                      <MDButton variant="text" color="dark">
-                        <Icon>edit</Icon>&nbsp;edit
-                      </MDButton>
-                    </Link>
-                  </MDBox>
-                </>
-              ),
-            };
-          }),
-        }}
-      /> */}
+			<MDBox marginBottom={2} className="flex justify-between">
+				<MDBox className="flex">
+					<MDBox ml={2}>
+						<MDButton onClick={handleDeleteSelected} variant="gradient" component="label" color="warning">
+							<Icon>delete</Icon>Delete Selected
+						
+						</MDButton>
+					</MDBox>
+				</MDBox>
+
+				
+			</MDBox>
+			<Table
+				onChange={handleChange}
+				columns={columns}
+				dataSource={offers?.items}
+				pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50', '100'], total: offers?.meta?.totalItems }}
+				rowKey={(record) => record.id}
+				rowSelection={{
+					selectedRowKeys,
+					onChange: (selectedRowKeys, selectedRows) => {
+						setSelectedRowKeys(selectedRowKeys);
+					}
+				}}
+			/>
 			<MDBox
 				display="flex"
 				justifyContent="center"

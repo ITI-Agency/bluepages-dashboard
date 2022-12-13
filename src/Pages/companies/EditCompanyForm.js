@@ -75,6 +75,7 @@ const EditCompanyForm = ({ company, id }) => {
 	// const [verified, setVerified] = useState(company?.verified);
 	const [descriptionar, setDescriptionar] = useState(company?.description_ar);
 	const [descriptionen, setDescriptionen] = useState(company?.description_en);
+	const [imageDeleted, setImageDeleted] = useState(false);
 	const [form] = Form.useForm();
 	const [imagesForm] = Form.useForm();
 
@@ -146,9 +147,21 @@ const EditCompanyForm = ({ company, id }) => {
 			return;
 		}
 	};
-	const mutation = useMutation(data => {
-		console.log({ data });
+	const onPreviewLogo = async (file) => {
+		const src = file.url || (await getSrcFromFile(file));
+		const imgWindow = window.open(src);
 
+		if (imgWindow) {
+			const image = new Image();
+			image.src = src;
+			imgWindow.document.write(image.outerHTML);
+		} else {
+			window.location.href = src;
+		}
+	};
+	const mutation = useMutation(data => {
+		// company upload
+		console.log({ data });
 		console.log({ countrySelected: countries.find(co => co.id == data.countryId)?.cities?.map(c => c.id) });
 		if (!countries.find(co => co.id == data.countryId)?.cities?.map(c => c.id)?.includes(data.cityId)) {
 			toast.error('الرجاء إختيار مدينه تابعه للدوله');
@@ -183,6 +196,16 @@ const EditCompanyForm = ({ company, id }) => {
 		if (bannerFile?.length && !bannerFile[0]?.url) {
 			formData.append("bannerFile", bannerFile[0].originFileObj);
 		}
+		// company Images upload
+		if (images?.fileList && images?.fileList?.length) {
+			let formDataImages = new FormData();
+			images.fileList.forEach(el => {
+				formDataImages.append("images[]", el.originFileObj
+				);
+			});
+			return CompaniesServices.addCompanyImages(company.id, formDataImages);
+		} 
+
 		setLoading(true);
 		return CompaniesServices.updateCompany(formData, company.id);
 	}, {
@@ -202,7 +225,6 @@ const EditCompanyForm = ({ company, id }) => {
 	const addImages = useMutation(() => {
 		// data.categories = [data.categories]
 		let formData = new FormData();
-		// upload images
 		if (images?.fileList && images?.fileList?.length) {
 			images.fileList.forEach(el => {
 				formData.append("images[]", el.originFileObj
@@ -240,6 +262,7 @@ const EditCompanyForm = ({ company, id }) => {
 		},
 		onSuccess: () => {
 			toast.success('لقد تم الحذف بنجاح');
+			// setImageDeleted(!imageDeleted);
 			window.location.reload(false);
 			// Boom baby!
 			// notify('لقد تم إضافه الصور بنجاح  ', 'success');
@@ -441,12 +464,15 @@ const EditCompanyForm = ({ company, id }) => {
 
 					
 					</Form.Item> */}
-					<Form.Item label="اللوجو " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
-						{/* <ImgCrop rotate> */}
+					<Form.Item label="اللوجو" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
+						<ImgCrop grid aspect={1.2} rotate>
 						<Upload onChange={({ fileList: newFileList }) => { setLogoFile(newFileList); }}
-							beforeUpload={() => false}
+							// beforeUpload={() => false}
 							fileList={logoFile}
-							listType="picture-card">
+								listType="picture-card"
+								onPreview={onPreviewLogo}
+
+							>
 							{logoFile.length < 1 &&
 								<div className='block' >
 
@@ -456,7 +482,7 @@ const EditCompanyForm = ({ company, id }) => {
 							}
 
 						</Upload>
-						{/* </ImgCrop> */}
+						</ImgCrop>
 					</Form.Item>
 					<Form.Item label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
 						<ImgCrop grid aspect={4.47} rotate>
@@ -489,6 +515,17 @@ const EditCompanyForm = ({ company, id }) => {
 								alt=""
 							/>
 						} */}
+					</Form.Item>
+				</Form.Item>
+				<Form.Item className='mt-4 mb-0' >
+					<Form.Item label="إضافه صور جديده" valuePropName="images" style={{ distplay: "inline-block", marginBottom: 0 }}>
+						<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
+							beforeUpload={() => false} action="/upload.do" listType="picture-card">
+							<div className='block' >
+								<PlusOutlined />
+								<div style={{ marginTop: 8 }}>Upload</div>
+							</div>
+						</Upload>
 					</Form.Item>
 				</Form.Item>
 				{/* <Form.Item label="صور الشركه" valuePropName="images" style={{ marginBottom: 0 }}>
@@ -532,7 +569,7 @@ const EditCompanyForm = ({ company, id }) => {
 
 				</Form.Item>
 				<Form.Item   >
-					<Form.Item rules={[{ required: true, message: 'برجاء إضافه رقم هاتف رئيسي' }]} label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+					<Form.Item  label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
 						<Input placeholder='رقم الهاتف الرئيسي' />
 					</Form.Item>
 					<Form.Item label="الرقم الموحد" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
@@ -575,12 +612,12 @@ const EditCompanyForm = ({ company, id }) => {
 						<Input placeholder="انستجرام" />
 					</Form.Item>
 				</Form.Item>
-				<div className="my-4 divider">
+				{/* <div className="my-4 divider">
 					<h1 className="mb-4 text-lg font-bold text-center text-[#0f6fbd] ">
 						extra
 					</h1>
 					<div className="w-full h-[1px] bg-gray-500"></div>
-				</div>
+				</div> */}
 				<Form.Item style={{ width: "100%", marginBottom: "20px" }} >
 					{/* <Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Switch defaultChecked={verified} className={`${verified ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={() => setVerified(!verified)} />
@@ -614,7 +651,7 @@ const EditCompanyForm = ({ company, id }) => {
 				</h1>
 				<div className="w-full h-[1px] bg-gray-400"></div>
 			</div>
-			<Form {...formImagesLayout} form={imagesForm} name="form-images" onFinish={addImages.mutate} >
+			{/* <Form {...formImagesLayout} form={imagesForm} name="form-images" onFinish={addImages.mutate} >
 				<Form.Item label="إضافه صور الشركه" valuePropName="images" style={{ distplay: "inline-block", marginBottom: 0 }}>
 					<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
 						beforeUpload={() => false} action="/upload.do" listType="picture-card">
@@ -629,7 +666,7 @@ const EditCompanyForm = ({ company, id }) => {
 						إضافه صور
 					</Button>
 				</Form.Item>
-			</Form>
+			</Form> */}
 			<section className="overflow-hidden text-gray-700 ">
 				<div className="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
 					<div className="flex flex-wrap -m-1 md:-m-2">

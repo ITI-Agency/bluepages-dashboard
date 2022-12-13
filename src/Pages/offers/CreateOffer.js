@@ -21,6 +21,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Container } from "@mui/system";
 import { Paper } from "@mui/material";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 const discount = {
 	percentage: "نسبه %",
 	amount: "كميه ثابته"
@@ -31,7 +33,13 @@ const layout = {
 	labelCol: { span: 2 },
 	wrapperCol: { span: 22 },
 };
-
+const getSrcFromFile = (file) => {
+	return new Promise((resolve) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file.originFileObj);
+		reader.onload = () => resolve(reader.result);
+	});
+};
 function CreateOffer() {
 	const { setLoading } = useLoading();
 	const [logoFile, setLogoFile] = useState([]);
@@ -47,7 +55,8 @@ function CreateOffer() {
 	const [mainPagePaid, setMainPagePaid] = useState(false);
 	const [paid, setPaid] = useState(false);
 	const [images, setImages] = useState([]);
-
+	const [descriptionar, setDescriptionar] = useState("");
+	const [descriptionen, setDescriptionen] = useState("");
 	const postOffer = async (offerData) => {
 		setLoading(true);
 		const res = await OffersServices.createOffer(offerData);
@@ -73,6 +82,8 @@ function CreateOffer() {
 		data?.videos?.forEach(vid => {
 			formData.append("videos[]", vid);
 		});
+		formData.append("description_en", descriptionen);
+		formData.append("description_ar", descriptionar);
 		delete data.categories;
 		delete data.videos;
 		data.on_sale = saleChecked;
@@ -261,9 +272,11 @@ function CreateOffer() {
 							<Form.Item style={{ marginBottom: 0 }} >
 								<Form.Item label="العنوان بالعربيه" name="address_ar" rules={[{ required: true, message: 'العنوان باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 									<Input placeholder='العنوان باللغه العربيه' />
+
 								</Form.Item>
 								<Form.Item label="العنوان بالإنجليزيه" className="" name="address_en" rules={[{ required: true, message: 'العنوان باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 									<Input placeholder='العنوان باللغه الإنجليزيه' />
+
 								</Form.Item>
 							</Form.Item>
 							<Form.Item className='mt-4 mb-0' >
@@ -294,11 +307,15 @@ function CreateOffer() {
 
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >
-								<Form.Item label="الوصف بالعربيه" name="description_ar" rules={[{ required: true, message: 'الوصف باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
-									<TextArea placeholder='الوصف باللغه العربيه' rows={4} />
+								<Form.Item label="الوصف بالعربيه"  className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+									{/* <TextArea placeholder='الوصف باللغه العربيه' rows={4} /> */}
+									<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
+
 								</Form.Item>
-								<Form.Item label="الوصف بالإنجليزيه" className="" name="description_en" rules={[{ required: true, message: 'الوصف باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
-									<TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} />
+								<Form.Item label="الوصف بالإنجليزيه" className=""  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+									{/* <TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
+									<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
+
 								</Form.Item>
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >
