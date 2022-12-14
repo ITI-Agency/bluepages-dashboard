@@ -1,71 +1,80 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 // import { Container } from "@mui/system";
 // import { Grid } from "@mui/material";
 
-import MDInput from "components/MDInput";
-import SelectField from "components/SelectField";
-import MultiSelectField from "components/MultiSelectField";
-import Button from "@mui/material/Button";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormLabel from "@mui/material/FormLabel";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import TextField from "@mui/material/TextField";
+import MDInput from 'components/MDInput'
+import SelectField from 'components/SelectField'
+import MultiSelectField from 'components/MultiSelectField'
+import Button from '@mui/material/Button'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
+import FormLabel from '@mui/material/FormLabel'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
+import TextField from '@mui/material/TextField'
 
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import Container from '@mui/material/Container'
+import Paper from '@mui/material/Paper'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
 
-function OfferForm({ onSubmit, countries, cities, users, categories, companies }) {
-  const [offer, setOffer] = useState({});
-  const [showSaleFields, setShowSaleFields] = useState(false);
-  const [date, setDate] = useState(null);
+function OfferForm({
+  onSubmit,
+  countries,
+  cities,
+  users,
+  categories,
+  companies,
+}) {
+  const [offer, setOffer] = useState({})
+  const [showSaleFields, setShowSaleFields] = useState(false)
+  const [date, setDate] = useState(null)
   const saleTypes = [
-    { id: "PERCENTAGE", name: "percentage %" },
-    { id: "AMOUNT", name: "Fixed Amount" },
-  ];
-  const formData = new FormData();
+    { id: 'PERCENTAGE', name: 'percentage %' },
+    { id: 'AMOUNT', name: 'Fixed Amount' },
+  ]
+  const formData = new FormData()
   useEffect(() => {
     handleFieldChange({
       target: {
-        name: "endAt",
+        name: 'endAt',
         value: date?._d,
       },
-    });
-  }, [date]);
+    })
+  }, [date])
   const handleFieldChange = (e) => {
-    const value = e.target.value;
-    if (value == "true") {
-      offer[e.target.name] = true;
-    } else if (value == "false") {
-      offer[e.target.name] = false;
+    const value = e.target.value
+    if (value == 'true') {
+      offer[e.target.name] = true
+    } else if (value == 'false') {
+      offer[e.target.name] = false
     } else {
-      offer[e.target.name] = value;
+      offer[e.target.name] = value
     }
-    if (e.target.name == "on_sale") setShowSaleFields(offer[e.target.name]);
+    if (e.target.name == 'on_sale') setShowSaleFields(offer[e.target.name])
     // if (e.target.name == "paid") console.log("this is paid", typeof offer[e.target.name]);
-    setOffer(offer);
-  };
+    setOffer(offer)
+  }
   const handleFormSubmit = (e) => {
     Object.keys(offer).forEach((c) => {
-      if (c == "endAt") offer[c] = offer[c].toISOString();
-      formData.append(c, offer[c]);
-    });
-    console.log("this is form data", formData);
-    onSubmit(formData);
-  };
+      if (c == 'endAt') offer[c] = offer[c].toISOString()
+      formData.append(c, offer[c])
+    })
+    console.log('this is form data', formData)
+    onSubmit(formData)
+  }
   const handleFileFieldChange = (e) => {
-    const files = e.target.files;
-    [...files].forEach((file) => {
-      formData.append("images[]", file);
-    });
-  };
+    const files = e.target.files
+    ;[...files].forEach((file) => {
+      formData.append('images[]', file)
+    })
+  }
 
   return (
     <Container sx={{ mb: 4 }}>
-      <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
+      <Paper
+        variant="outlined"
+        sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
         <form>
           <Grid container spacing={5}>
             <Grid item xs={12}>
@@ -177,10 +186,17 @@ function OfferForm({ onSubmit, countries, cities, users, categories, companies }
                 aria-labelledby="on_sale"
                 defaultValue={false}
                 name="on_sale"
-                onChange={handleFieldChange}
-              >
-                <FormControlLabel value={true} control={<Radio />} label="Yes" />
-                <FormControlLabel value={false} control={<Radio />} label="No" />
+                onChange={handleFieldChange}>
+                <FormControlLabel
+                  value={true}
+                  control={<Radio />}
+                  label="Yes"
+                />
+                <FormControlLabel
+                  value={false}
+                  control={<Radio />}
+                  label="No"
+                />
               </RadioGroup>
             </Grid>
             {showSaleFields && (
@@ -211,10 +227,17 @@ function OfferForm({ onSubmit, countries, cities, users, categories, companies }
                 aria-labelledby="paid"
                 defaultValue={false}
                 name="paid"
-                onChange={handleFieldChange}
-              >
-                <FormControlLabel value={true} control={<Radio />} label="Yes" />
-                <FormControlLabel value={false} control={<Radio />} label="No" />
+                onChange={handleFieldChange}>
+                <FormControlLabel
+                  value={true}
+                  control={<Radio />}
+                  label="Yes"
+                />
+                <FormControlLabel
+                  value={false}
+                  control={<Radio />}
+                  label="No"
+                />
               </RadioGroup>
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -227,7 +250,10 @@ function OfferForm({ onSubmit, countries, cities, users, categories, companies }
               />
             </Grid>
             <Grid item xs={12} sm={4}>
-              <Button variant="contained" component="label" style={{ color: "#fff" }}>
+              <Button
+                variant="contained"
+                component="label"
+                style={{ color: '#fff' }}>
                 Upload offer images
                 <input
                   hidden
@@ -241,14 +267,17 @@ function OfferForm({ onSubmit, countries, cities, users, categories, companies }
             </Grid>
           </Grid>
           <Grid item xs={12} sm={6} mt={4}>
-            <Button variant="contained" style={{ color: "#fff" }} onClick={handleFormSubmit}>
+            <Button
+              variant="contained"
+              style={{ color: '#fff' }}
+              onClick={handleFormSubmit}>
               Submit
             </Button>
           </Grid>
         </form>
       </Paper>
     </Container>
-  );
+  )
 }
 
-export default OfferForm;
+export default OfferForm
