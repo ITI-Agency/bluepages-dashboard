@@ -32,11 +32,11 @@ const style = {
 };
 
 function Pages() {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [pages, setPages] = useState([]);
+	const [data, setData] = useState([]);
   const navigate = useNavigate();
   const [open, setOpen] = useState({ state: false });
+  const [loading, setLoading] = useState(false);
+  const [pages, setPages] = useState([]);
   useEffect(() => {
     getAllPages();
   }, []);

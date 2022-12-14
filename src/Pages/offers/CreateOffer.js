@@ -19,8 +19,7 @@ import CategoriesServices from "Services/CategoriesServices";
 import OffersServices from "Services/OffersServices";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Container  from "@mui/material/Container";
-import { Paper } from "@mui/material";
+import { Paper, Container } from "@mui/material";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 const discount = {
