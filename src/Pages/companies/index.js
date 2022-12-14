@@ -1,5 +1,4 @@
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import useFetch from "Hooks/useFetch";
 import { useState, useEffect, useRef } from "react";
 import CompaniesServices from "Services/CompaniesServices";
 import LoadingDataLoader from "components/LoadingDataLoader";
@@ -13,8 +12,6 @@ import MDButton from "components/MDButton";
 import Switch from "@mui/material/Switch";
 import MDAvatar from "components/MDAvatar";
 import SelectDataValModal from "components/SelectDataValModal";
-import { useTable, usePagination, useGlobalFilter, useAsyncDebounce, useSortBy } from "react-table";
-import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import CountriesServices from "Services/CountriesServices";
 import CitiesServices from "Services/CitiesServices";

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import LoadingDataLoader from "components/LoadingDataLoader";
-import DataTable from "examples/Tables/DataTable";
 import { Icon } from "@mui/material";
 import MDBox from "components/MDBox";
 import Modal from "@mui/material/Modal";
