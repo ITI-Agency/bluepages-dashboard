@@ -9,6 +9,10 @@ const getSettings = async (settings) => {
   const response = await http.get(`/setting`, settings);
   return response;
 };
+const getStatistics = async () => {
+  const response = await http.get(`/setting/statistics`);
+  return response;
+};
 const updateSettings = async (settings) => {
   const response = await http.put(`/setting`, settings);
   return response;
@@ -17,6 +21,7 @@ const updateSettings = async (settings) => {
 export default {
   getSettings,
   updateSettings,
+	getStatistics
 };
 
 // {

@@ -26,6 +26,7 @@ import Footer from "examples/Footer";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
+import LoadingDataLoader from "components/LoadingDataLoader";
 
 // Data
 import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
@@ -34,9 +35,35 @@ import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 // Dashboard components
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+import SettingsServices from "Services/SettingsServices";
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 function Dashboard() {
+	const [loading, setLoading] = useState(false);
+	const [statistics, setStatistics] = useState([]);
   const { sales, tasks } = reportsLineChartData;
+	useEffect(() => {
+		getAllStatistics();
+	}, []);
+
+	const getAllStatistics = async () => {
+		setLoading(true);
+		try {
+			const response = await SettingsServices.getStatistics();
+			if (response && response.status == 200) {
+				setLoading(false);
+				setStatistics(response.data);
+			} else {
+				toast.error("sorry something went wrong while getting statistics!");
+				setLoading(false);
+			}
+		} catch (error) {
+			toast.error("sorry something went wrong while getting statistics!");
+			setLoading(false);
+		}
+	};
+	if (loading) return <LoadingDataLoader />;
 
   return (
     <DashboardLayout>
@@ -46,13 +73,13 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-                icon="weekend"
-                title="Bookings"
-                count={281}
+								icon="leaderboard"
+                title="Users"
+								count={`${statistics?.usersCount || 100}`}
                 percentage={{
                   color: "success",
-                  amount: "+55%",
-                  label: "than lask week",
+									amount: statistics?.usersCount || 100,
+                  label: "than lask year",
                 }}
               />
             </MDBox>
@@ -60,13 +87,13 @@ function Dashboard() {
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
-                icon="leaderboard"
-                title="Today's Users"
-                count="2,300"
+                icon="menu_book"
+                title="Companies"
+								count={`${statistics?.companiesCount || 100}`}
                 percentage={{
                   color: "success",
-                  amount: "+3%",
-                  label: "than last month",
+									amount: statistics?.companiesCount || 100,
+                  label: "than last year",
                 }}
               />
             </MDBox>
@@ -76,11 +103,11 @@ function Dashboard() {
               <ComplexStatisticsCard
                 color="success"
                 icon="store"
-                title="Revenue"
-                count="34k"
+                title="Offers"
+								count={`${statistics?.offersCount || 100}`}
                 percentage={{
                   color: "success",
-                  amount: "+1%",
+									amount: statistics?.offersCount || 100,
                   label: "than yesterday",
                 }}
               />
@@ -90,19 +117,81 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="primary"
-                icon="person_add"
-                title="Followers"
-                count="+91"
+                icon="newspaper"
+                title="Directories"
+								count={`${statistics?.directoriesCount || 100}`}
                 percentage={{
                   color: "success",
-                  amount: "",
+									amount: statistics?.directoriesCount || 100,
                   label: "Just updated",
                 }}
               />
             </MDBox>
           </Grid>
         </Grid>
-        <MDBox mt={4.5}>
+				<Grid container mt={4.5} spacing={3}>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                color="warning"
+								icon="flag"
+                title="Countries"
+								count={`${statistics?.countriesCount || 100}`}
+                percentage={{
+                  color: "success",
+									amount: statistics?.countriesCount || 100,
+                  label: "than lask year",
+                }}
+              />
+            </MDBox>
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+							<ComplexStatisticsCard
+								color="secondary"
+                icon="location_city"
+                title="Cities"
+								count={`${statistics?.citiesCount || 100}`}
+                percentage={{
+                  color: "success",
+									amount: statistics?.citiesCount || 100,
+                  label: "than last year",
+                }}
+              />
+            </MDBox>
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                color="error"
+                icon="add_shopping_cart"
+                title="Plans"
+								count={`${statistics?.subscriptionPlansCount || 100}`}
+                percentage={{
+                  color: "success",
+									amount: statistics?.subscriptionPlansCount || 100,
+                  label: "than yesterday",
+                }}
+              />
+            </MDBox>
+          </Grid>
+          <Grid item xs={12} md={6} lg={3}>
+            <MDBox mb={1.5}>
+              <ComplexStatisticsCard
+                color="info"
+                icon="request_page"
+                title="Directory Requests"
+								count={`${statistics?.requestDirectoriesCount || 100}`}
+                percentage={{
+                  color: "success",
+									amount: statistics?.requestDirectoriesCount || 100,
+                  label: "Just updated",
+                }}
+              />
+            </MDBox>
+          </Grid>
+        </Grid>
+        {/* <MDBox mt={4.5}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
               <MDBox mb={3}>
@@ -142,7 +231,7 @@ function Dashboard() {
               </MDBox>
             </Grid>
           </Grid>
-        </MDBox>
+        </MDBox> */}
         {/* <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={8}>
