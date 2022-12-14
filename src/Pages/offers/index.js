@@ -280,6 +280,23 @@ function Offers() {
 
 		// getData(offset, limit, params);
 	};
+	const handleCategoryChange = async (value) => {
+		const filterCategory = [];
+		if (value) filterCategory.push({ 'categories[]': value });
+
+		try {
+			const response = await OffersServices.getAllOffersPaginate(filterCategory);
+			if (response && response.status == 200) {
+				setOffers(response.data);
+			} else {
+				toast.error("sorry something went wrong while getting companies!");
+				setLoading(false);
+			}
+		} catch (error) {
+			toast.error("sorry something went wrong while getting companies!");
+			setLoading(false);
+		}
+	};
 	if (loading || !categories) return <LoadingDataLoader />;
 	const columns = [
 		{
@@ -390,7 +407,7 @@ function Offers() {
 					})}
 				</>
 			),
-			filters: categories?.map(c => ({ text: c.name_ar, value: c.id })),
+			// filters: categories?.map(c => ({ text: c.name_ar, value: c.id })),
 			// onFilter: (value, record) => record.cityId == value,
 		},
 		{
@@ -463,6 +480,8 @@ function Offers() {
 			),
 		},
 	];
+
+
 	return (
 		<DashboardLayout>
 			<MDBox marginBottom={2} className="flex justify-between">
@@ -473,8 +492,22 @@ function Offers() {
 						
 						</MDButton>
 					</MDBox>
+					
 				</MDBox>
-
+				<MDBox ml={2}>
+					<Select
+						style={{ width: 200, borderRadius: 30 }}
+						showSearch
+						optionFilterProp="children"
+						filterOption={(input, option) =>
+							(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+						}
+						options={categories?.map((co) => ({ label: co.name_ar, value: co.id }))}
+						placeholder="Search By Category"
+						allowClear
+						onChange={handleCategoryChange}
+					/>
+				</MDBox>
 				
 			</MDBox>
 			<Table

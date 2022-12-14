@@ -70,7 +70,7 @@ function Companies() {
 	const [searchText, setSearchText] = useState('');
 	const [searchedColumn, setSearchedColumn] = useState('');
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
+	const [tableFilter, setTableFilter] = useState([]);
 	const searchInput = useRef(null);
 	const handleSearch = (
 		selectedKeys,
@@ -167,21 +167,20 @@ function Companies() {
 	useEffect(() => {
 		getAllCompanies();
 		getCountries();
+		getCategories();
 	}, []);
 	const getAllCompanies = async () => {
 		setLoading(true);
 		try {
 			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 }]);
 			const { status: countriesStatus, data: countriesData } = await CountriesServices.getAllCountries();
-			const { status: categoriesStatus, data: categoriesData } = await CategoriesServices.getAllCategoriesMapped();
 			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
-			if (response && response.status == 200 && countriesStatus == 200 && citiesStatus == 200  && categoriesStatus == 200  ) {
+			if (response && response.status == 200 && countriesStatus == 200 && citiesStatus == 200) {
 				setLoading(false);
 				setData(response.data);
 				setCompanies(response.data);
 				setCountries(countriesData);
 				setCities(citiesData);
-				setCategories(categoriesData);
 			} else {
 				toast.error("sorry something went wrong while getting companies!");
 				setLoading(false);
@@ -218,17 +217,17 @@ function Companies() {
 		}
 	};
 	const handleStatusChange = async (e, item) => {
-		console.log({ item })
+		console.log({ item });
 		const { id, status } = item;
-		console.log({companies})
+		console.log({ companies });
 		const dd = companies?.items?.map((i) => {
 			if (i.id == item.id) i.status = status;
 			return i;
 		});
-		setCompanies({ items: dd ,meta:companies.meta});
+		setCompanies({ items: dd, meta: companies.meta });
 		try {
 			let formData = new FormData();
-			formData.append('status', `status`);
+			formData.append('status', status);
 			const res = await CompaniesServices.updateCompany(formData, id);
 			if (res.status == 200) {
 				toast.success("your status has updated successfully!");
@@ -257,6 +256,46 @@ function Companies() {
 	//   setCompanies(filtered);
 	// };
 
+
+
+
+
+	const getCountryCities = async (id) => {
+		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(id);
+		if (citiesStatus == 200) {
+			setCities(citiesData);
+		}
+	};
+	const getCountries = async () => {
+		setLoading(true);
+		try {
+			const response = await CountriesServices.getAllCountries();
+			if (response && response.status == 200) {
+				setCountries(response.data);
+				setLoading(false);
+			} else {
+				setLoading(false);
+			}
+		} catch (error) {
+			setLoading(false);
+		}
+	};
+	const getCategories = async () => {
+		try {
+			const { status: categoriesStatus, data: categoriesData } = await CategoriesServices.getAllCategoriesMapped();
+			if (categoriesStatus == 200) {
+				setCategories(categoriesData);
+			} else {
+				toast.error('sorry something went wrong while getting categories!');
+			}
+		} catch (error) {
+			toast.error('sorry something went wrong while getting categories!');
+		}
+	};
+	const onCountryChange = (e) => {
+		console.log("this is e:>", e);
+		getCountryCities(e);
+	};
 	const handleImportFile = (e) => {
 		setLoading(true);
 		e.preventDefault();
@@ -293,73 +332,51 @@ function Companies() {
 			reader.readAsArrayBuffer(e.target.files[0]);
 		};
 	};
+	const handleExport = async () => {
+		const filterForExport = tableFilter.filter(filter => Object.keys(filter)[0] != 'page' && Object.keys(filter)[0] != 'limit');
+		console.log({ filterForExport });
+		const response = await CompaniesServices.getAllCompanies(filterForExport);
+		if (response && response.status == 200) {
+			const comp = response?.data?.map((c) => {
+				c.categories.length ? (c.categories = c.categories?.map((cat) => cat.id).join(",")) : "";
+				return c;
+			});
+			const columns = [
+				{
+					label: "name_en",
+					value: "name_en",
+				},
+				{
+					label: "name_ar",
+					value: "name_ar",
+				},
+				{
+					label: "email",
+					value: "email",
+				},
+				{ label: "standard_phone", value: "standard_phone" },
+				{ label: "website", value: "website" },
+				{ label: "categoryIds", value: "categories" },
+			];
+			const settings = {
+				fileName: "bluePages Companies",
+			};
+			const data = [
+				{
+					sheet: "Companies",
+					columns,
+					content: comp,
+				},
+			];
+			xlsx(data, settings, (sheet) => {
+				console.log("Download complete:", sheet);
+			});
+		} else {
+			toast.error('sorry something went wrong while getting companies!');
+		}
 
-	const handleExport = () => {
-		const comp = companies?.items?.map((c) => {
-			c.categories.length ? (c.categories = c.categories?.map((cat) => cat.id).join(",")) : "";
-			return c;
-		});
-
-		console.log(comp);
-		const columns = [
-			{
-				label: "name_en",
-				value: "name_en",
-			},
-			{
-				label: "name_ar",
-				value: "name_ar",
-			},
-			{
-				label: "email",
-				value: "email",
-			},
-			{ label: "standard_phone", value: "standard_phone" },
-			{ label: "website", value: "website" },
-			{ label: "categoryIds", value: "categories" },
-		];
-		const settings = {
-			fileName: "bluePages Companies",
-		};
-		const data = [
-			{
-				sheet: "Companies",
-				columns,
-				content: comp,
-			},
-		];
-
-		xlsx(data, settings, (sheet) => {
-			console.log("Download complete:", sheet);
-		});
 		// console.log("this is companies:>", companies);
 	};
-
-	const getCountryCities = async (id) => {
-		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(id);
-		if (citiesStatus == 200) {
-			setCities(citiesData);
-		}
-	};
-	const getCountries = async () => {
-		setLoading(true);
-		try {
-			const response = await CountriesServices.getAllCountries();
-			if (response && response.status == 200) {
-				setCountries(response.data);
-				setLoading(false);
-			} else {
-				setLoading(false);
-			}
-		} catch (error) {
-			setLoading(false);
-		}
-	};
-	const onCountryChange = (e) => {
-		console.log("this is e:>", e);
-		getCountryCities(e);
-	};
-
 	useEffect(() => {
 		if (importedData.length) {
 			setLoading(false);
@@ -390,7 +407,7 @@ function Companies() {
 		}
 	};
 	const handleDeleteData = async (value) => {
-		console.log(value.planId )
+		console.log(value.planId);
 		setLoading(true);
 		try {
 			const response = await CompaniesServices.deleteByPlan(value.planId);
@@ -417,16 +434,16 @@ function Companies() {
 			});
 			if (response && response.status == 200) {
 				toast.success("success to delete data");
-		setLoading(false);
+				setLoading(false);
 				getAllCompanies();
 			} else {
 				toast.error("something went wrong!");
-		setLoading(false);
+				setLoading(false);
 				getAllCompanies();
 			}
 		} catch (error) {
 			toast.error("something went wrong!");
-		setLoading(false);
+			setLoading(false);
 			getAllCompanies();
 		}
 	};
@@ -507,7 +524,7 @@ function Companies() {
 									</Select>
 								</Form.Item>
 							</Grid>
-						
+
 							<Grid item xs={12} sm={6}>
 								<MDBox
 									display="flex"
@@ -602,11 +619,11 @@ function Companies() {
 			filters: cities?.map(c => ({ text: c.name_ar, value: c.id })),
 			// onFilter: (value, record) => record.cityId == value,
 		},
-		
+
 		{
 			title: "plan",
 			key: 'packageId',
-			
+
 			render: (_, record) => (
 				<MDBox lineHeight={1}>
 					<MDTypography display="block" variant="button" fontWeight="medium">
@@ -631,7 +648,7 @@ function Companies() {
 					})}
 				</>
 			),
-			filters: categories?.map(c => ({ text: c.name_ar, value: c.id })),
+			// filters: categories?.map(c => ({ text: c.name_ar, value: c.id })),
 			// onFilter: (value, record) => record.cityId == value,
 		},
 		// {
@@ -713,7 +730,7 @@ function Companies() {
 		{
 			title: "control",
 			key: 'action',
-			width:"20%",
+			width: "20%",
 			render: (_, record) => (
 				<>
 					<MDBox
@@ -723,17 +740,17 @@ function Companies() {
 						ml={{ xs: -1.5, sm: 0 }}
 					>
 						<Link to={`/companies/${record.id}`}>
-							<MDButton  style={{padding:0}} className="px-0" variant="text" color="info">
+							<MDButton style={{ padding: 0 }} className="px-0" variant="text" color="info">
 								<Icon>preview</Icon>&nbsp;show
 							</MDButton>
 						</Link>
 						<Link to={`/companies/${record.id}/edit-info`}>
-							<MDButton style={{padding:0}} className="px-0" variant="text" color="dark">
+							<MDButton style={{ padding: 0 }} className="px-0" variant="text" color="dark">
 								<Icon>edit</Icon>&nbsp;edit
 							</MDButton>
 						</Link>
 						<MDBox mr={1}>
-							<MDButton  style={{padding:0}} className="px-0" onClick={() => handleOpen(record)} variant="text" color="error">
+							<MDButton style={{ padding: 0 }} className="px-0" onClick={() => handleOpen(record)} variant="text" color="error">
 								<Icon>delete</Icon>&nbsp;delete
 							</MDButton>
 						</MDBox>
@@ -748,20 +765,22 @@ function Companies() {
 			if (f[1] && f[1].length) {
 				if (f[0] === 'packageId') {
 					f[1].forEach(it => {
-						filtersArray.push({ 'packages[]': it })
-					})
+						filtersArray.push({ 'packages[]': it });
+					});
 				} else if (f[0] === 'categories') {
 					f[1].forEach(it => {
 						filtersArray.push({ 'categories[]': it });
 					});
 				} else {
-					filtersArray.push({[f[0]]:f[1][0]})
+					filtersArray.push({ [f[0]]: f[1][0] });
 				}
 			}
-		})
+		});
 		try {
+
 			const response = await CompaniesServices.getAllCompaniesPaginate(filtersArray);
 			if (response && response.status == 200) {
+				setTableFilter(filtersArray);
 				setCompanies(response.data);
 			} else {
 				toast.error("sorry something went wrong while getting companies!");
@@ -782,6 +801,25 @@ function Companies() {
 
 		// getData(offset, limit, params);
 	};
+	const handleCategoryChange = async (value) => {
+		const filterCategory = [];
+		if (value) filterCategory.push({ 'categories[]': value });
+
+		try {
+			const response = await CompaniesServices.getAllCompaniesPaginate(filterCategory);
+			if (response && response.status == 200) {
+				setTableFilter((oldFilter) => [...oldFilter, filterCategory]);
+				setCompanies(response.data);
+			} else {
+				toast.error("sorry something went wrong while getting companies!");
+				setLoading(false);
+			}
+		} catch (error) {
+			toast.error("sorry something went wrong while getting companies!");
+			setLoading(false);
+		}
+	};
+
 	const rowSelection = {
 		onChange: (selectedRowKeys, selectedRows) => {
 			console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
@@ -813,9 +851,8 @@ function Companies() {
 							/>
 						</MDButton>
 					</MDBox>
-
-					<MDBox ml={2}>
-						<MDButton onClick={handleDeleteSelected}   variant="gradient" component="label" color="warning">
+					<MDBox ml={2} mr={2}>
+						<MDButton onClick={handleDeleteSelected} variant="gradient" component="label" color="warning">
 							<Icon>delete</Icon>Delete Selected
 							{/* <input
 								hidden
@@ -826,10 +863,7 @@ function Companies() {
 							/> */}
 						</MDButton>
 					</MDBox>
-				</MDBox>
-
-				<MDBox ml={2}>
-					<MDButton onClick={() => setOpenDeleteModal(true)} variant="gradient" component="label" color="error">
+					<MDButton ml={2} onClick={() => setOpenDeleteModal(true)} variant="gradient" component="label" color="error">
 						<Icon>delete</Icon>Delete By Plan
 						{/* <input
 							hidden
@@ -840,12 +874,30 @@ function Companies() {
 						/> */}
 					</MDButton>
 				</MDBox>
+
+				<MDBox ml={2}>
+					<MDBox ml={2}>
+						<Select
+							style={{ width: 200, borderRadius: 30 }}
+							showSearch
+							optionFilterProp="children"
+							filterOption={(input, option) =>
+								(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+							}
+							options={categories?.map((co) => ({ label: co.name_ar, value: co.id }))}
+							placeholder="Search By Category"
+							allowClear
+							onChange={handleCategoryChange}
+						/>
+					</MDBox>
+
+				</MDBox>
 			</MDBox>
 			<Table
 				onChange={handleChange}
 				columns={columns}
 				dataSource={companies.items}
-				pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50','100'], total: companies?.meta?.totalItems }}
+				pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50', '100'], total: companies?.meta?.totalItems }}
 				rowKey={(record) => record.id}
 				rowSelection={{
 					selectedRowKeys,
@@ -855,7 +907,7 @@ function Companies() {
 				}}
 
 			/>
-		
+
 			<MDBox
 				display="flex"
 				justifyContent="center"
