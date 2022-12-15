@@ -860,22 +860,10 @@ function Companies() {
 							/> */}
 						</MDButton>
 					</MDBox>
-					<MDButton ml={2} onClick={() => setOpenDeleteModal(true)} variant="gradient" component="label" color="error">
-						<Icon>delete</Icon>Delete By Plan
-						{/* <input
-							hidden
-							accept=".xlsx, .xls, .csv"
-							name="excelFile"
-							type="file"
-							onChange={handleImportFile}
-						/> */}
-					</MDButton>
-				</MDBox>
-
-				<MDBox ml={2}>
 					<MDBox ml={2}>
 						<Select
-							style={{ width: 200, borderRadius: 30 }}
+							style={{ width: 250, borderRadius: 30 }}
+							size="large"
 							showSearch
 							optionFilterProp="children"
 							filterOption={(input, option) =>
@@ -887,6 +875,20 @@ function Companies() {
 							onChange={handleCategoryChange}
 						/>
 					</MDBox>
+				</MDBox>
+
+				<MDBox ml={2}>
+					<MDButton ml={2} onClick={() => setOpenDeleteModal(true)} variant="gradient" component="label" color="error">
+						<Icon>delete</Icon>Delete By Plan
+						{/* <input
+							hidden
+							accept=".xlsx, .xls, .csv"
+							name="excelFile"
+							type="file"
+							onChange={handleImportFile}
+						/> */}
+					</MDButton>
+				
 
 				</MDBox>
 			</MDBox>

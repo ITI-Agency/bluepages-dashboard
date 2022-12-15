@@ -483,9 +483,9 @@ function Offers() {
 
 	return (
 		<DashboardLayout>
-			<MDBox marginBottom={2} className="flex justify-between">
+			<MDBox marginBottom={2} className="flex justify-start">
 				<MDBox className="flex">
-					<MDBox ml={2}>
+					<MDBox ml={2} mr={4}>
 						<MDButton onClick={handleDeleteSelected} variant="gradient" component="label" color="warning">
 							<Icon>delete</Icon>Delete Selected
 						
@@ -495,7 +495,8 @@ function Offers() {
 				</MDBox>
 				<MDBox ml={2}>
 					<Select
-						style={{ width: 200, borderRadius: 30 }}
+						size="large"
+						style={{ width: 250, borderRadius: 30 }}
 						showSearch
 						optionFilterProp="children"
 						filterOption={(input, option) =>
