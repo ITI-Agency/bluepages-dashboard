@@ -269,6 +269,17 @@ function CreateOffer() {
 								</Form.Item>
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >
+								<Form.Item className="ltr:mr-4 rtl:ml-4 " label="السعر" name="price" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: "برجاء إدخال السعر" }]}>
+									<Input type="number" placeholder="السعر" />
+								</Form.Item>
+								<Form.Item className="ltr:mr-4 rtl:ml-4 " label="الكود" name="code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+									<Input placeholder="الكود" />
+								</Form.Item>
+								<Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+									<Input placeholder="رابط الخريطه" />
+								</Form.Item>
+							</Form.Item>
+							<Form.Item style={{ marginBottom: 0 }} >
 								<Form.Item label="العنوان بالعربيه" name="address_ar" rules={[{ required: true, message: 'العنوان باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 									<Input placeholder='العنوان باللغه العربيه' />
 
@@ -314,7 +325,6 @@ function CreateOffer() {
 								<Form.Item label="الوصف بالإنجليزيه" className=""  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 									{/* <TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
 									<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
-
 								</Form.Item>
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >
@@ -324,9 +334,9 @@ function CreateOffer() {
 								<Form.Item label="عرض مدفوع" name="paid" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="checked">
 									<Switch defaultChecked={paid} className={`${paid ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={onChangePaid} />
 								</Form.Item>
-								<Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								{/* <Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 									<Input placeholder="رابط الخريطه" />
-								</Form.Item>
+								</Form.Item> */}
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >
 								<Form.Item label="إستعمال خصم" name="on_sale" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="checked">

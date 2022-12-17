@@ -330,9 +330,12 @@ function Companies() {
 		};
 	};
 	const handleExport = async () => {
+		console.log('filter before export', tableFilter)
 		const filterForExport = tableFilter.filter(filter => Object.keys(filter)[0] != 'page' && Object.keys(filter)[0] != 'limit');
+		console.log("filter for export", filterForExport)
 		console.log({ filterForExport });
 		const response = await CompaniesServices.getAllCompanies(filterForExport);
+		console.log({ companies: response?.data})
 		if (response && response.status == 200) {
 			const comp = response?.data?.map((c) => {
 				c.categories.length ? (c.categories = c.categories?.map((cat) => cat.id).join(",")) : "";
@@ -372,7 +375,6 @@ function Companies() {
 			toast.error('sorry something went wrong while getting companies!');
 		}
 
-		// console.log("this is companies:>", companies);
 	};
 	useEffect(() => {
 		if (importedData.length) {
@@ -774,7 +776,7 @@ function Companies() {
 			}
 		});
 		try {
-
+			console.log("filterAFterChange", filtersArray)
 			const response = await CompaniesServices.getAllCompaniesPaginate(filtersArray);
 			if (response && response.status == 200) {
 				setTableFilter(filtersArray);
@@ -803,9 +805,10 @@ function Companies() {
 		if (value) filterCategory.push({ 'categories[]': value });
 
 		try {
+			console.log("filter After Change Category", filterCategory)
 			const response = await CompaniesServices.getAllCompaniesPaginate(filterCategory);
 			if (response && response.status == 200) {
-				setTableFilter((oldFilter) => [...oldFilter, filterCategory]);
+				setTableFilter((oldFilter) => [...oldFilter, filterCategory[0]]);
 				setCompanies(response.data);
 			} else {
 				toast.error("sorry something went wrong while getting companies!");

@@ -304,6 +304,8 @@ const EditOfferForm = ({ offer, id, }) => {
 		sale_type: offer?.sale_type,
 		sale_amount: offer?.sale_amount,
 		location_link: offer?.location_link || "",
+		code: offer?.code || "",
+		price: offer?.price || "",
 	};
 	return (
 		<div className='mx-4'>
@@ -362,7 +364,6 @@ const EditOfferForm = ({ offer, id, }) => {
 
 					</Form.Item>
 					<Form.Item style={{ marginBottom: 0 }} >
-
 						{/* <Form.Item label="الشركه" name="companyId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار شركه' }]}>
 							<Select
 								showSearch
@@ -390,6 +391,17 @@ const EditOfferForm = ({ offer, id, }) => {
 								// onChange={handleChange}
 								options={categories.map((cat) => ({ label: cat[`name_ar`], value: cat.id }))}
 							/>
+						</Form.Item>
+					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+						<Form.Item className="ltr:mr-4 rtl:ml-4 " label="السعر" name="price" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: "برجاء إدخال السعر" }]}>
+							<Input type="number" placeholder="السعر" />
+						</Form.Item>
+						<Form.Item className="ltr:mr-4 rtl:ml-4 " label="الكود" name="code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Input placeholder="الكود" />
+						</Form.Item>
+						<Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Input placeholder="رابط الخريطه" />
 						</Form.Item>
 					</Form.Item>
 					<Form.Item style={{ marginBottom: 0 }} >
@@ -460,9 +472,9 @@ const EditOfferForm = ({ offer, id, }) => {
 						<Form.Item label="مدفوع" name="paid" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="checked">
 							<Switch defaultChecked={paid} className={`${paid ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={onChangePaid} />
 						</Form.Item>
-						<Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						{/* <Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 							<Input placeholder="رابط الخريطه" />
-						</Form.Item>
+						</Form.Item> */}
 					</Form.Item>
 					<Form.Item style={{ marginBottom: 0 }} >
 						<Form.Item label="إستعمال خصم" name="on_sale" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(30% - 8px)' }}>
