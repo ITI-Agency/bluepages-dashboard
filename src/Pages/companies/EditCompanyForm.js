@@ -97,7 +97,6 @@ const EditCompanyForm = ({ company, id }) => {
 				url: company?.logo,
 			}])
 		}
-
 	}, []);
 	const getCountryCities = async (id) => {
 		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(id);

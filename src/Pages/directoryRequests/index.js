@@ -224,6 +224,7 @@ function Pages() {
 					</MDTypography>
 				</MDBox>
 			),
+			width:"20%"
 		},
 		{
 			title: "Phone",
@@ -268,7 +269,9 @@ function Pages() {
 				<>
 					<MDBox
 						display="flex"
+						flexDirection={{ xs: 'column', sm: 'column' }}
 						alignItems="center"
+						justifyContent="center"
 						mt={{ xs: 2, sm: 0 }}
 						ml={{ xs: -1.5, sm: 0 }}
 					>
