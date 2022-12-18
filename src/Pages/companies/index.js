@@ -338,7 +338,7 @@ function Companies() {
 		console.log({ companies: response?.data})
 		if (response && response.status == 200) {
 			const comp = response?.data?.map((c) => {
-				c.categories.length ? (c.categories = c.categories?.map((cat) => cat.id).join(",")) : "";
+				c.categories.length ? (c.categories = c.categories?.map((cat) => cat.name_ar).join(",")) : "";
 				return c;
 			});
 			const columns = [
@@ -356,7 +356,7 @@ function Companies() {
 				},
 				{ label: "standard_phone", value: "standard_phone" },
 				{ label: "website", value: "website" },
-				{ label: "categoryIds", value: "categories" },
+				{ label: "categoryNames", value: "categories" },
 			];
 			const settings = {
 				fileName: "bluePages Companies",
