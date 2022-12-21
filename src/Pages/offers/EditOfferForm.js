@@ -138,7 +138,12 @@ const EditOfferForm = ({ offer, id, }) => {
 		}
 		delete data.categories;
 		for (const [key, value] of Object.entries(data)) {
-			formData.append(key, value);
+			if(key==="on_sale"){
+        formData.append(key,  (value===true || value==="true") ? "true" : "false");
+        }else{
+          formData.append(key,  value && value !=
+            "undefined" ? value : "");
+        }
 		}
 		// upload images
 		formData.append("description_en", descriptionen);
@@ -305,7 +310,7 @@ const EditOfferForm = ({ offer, id, }) => {
 		sale_amount: offer?.sale_amount,
 		location_link: offer?.location_link || "",
 		code: offer?.code || "",
-		price: offer?.price || "",
+		// price: offer?.price || "",
 	};
 	return (
 		<div className='mx-4'>
@@ -394,9 +399,9 @@ const EditOfferForm = ({ offer, id, }) => {
 						</Form.Item>
 					</Form.Item>
 					<Form.Item style={{ marginBottom: 0 }} >
-						<Form.Item className="ltr:mr-4 rtl:ml-4 " label="السعر" name="price" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: "برجاء إدخال السعر" }]}>
+						{/* <Form.Item className="ltr:mr-4 rtl:ml-4 " label="السعر" name="price" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
 							<Input type="number" placeholder="السعر" />
-						</Form.Item>
+						</Form.Item> */}
 						<Form.Item className="ltr:mr-4 rtl:ml-4 " label="الكود" name="code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 							<Input placeholder="الكود" />
 						</Form.Item>

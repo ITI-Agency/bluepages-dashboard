@@ -277,16 +277,19 @@ function CreateCompany() {
 		},
 	});
 	const submitAndStay = () => {
-		setStay(true);
 		form.validateFields()
-			.then((values) => {
+		.then((values) => {
+				setStay(true);
 				setTimeout(() => {
 					mutation.mutate(values);
 				}, 500);
 				// Submit values
 				// submitValues(values);
 			})
-			.catch((errorInfo) => { });
+			.catch((errorInfo) => { 
+				setStay(false);
+
+			});
 	};
 	const handleCountryChange = async (value) => {
 		// form.setFieldsValue({ countryId: value });
@@ -329,11 +332,15 @@ function CreateCompany() {
 							<Form.Item
 								noStyle
 								shouldUpdate={(prevValues, currentValues) => prevValues.subscriptionPlanId !== currentValues.subscriptionPlanId}
+								onChange={()=>setStay(false)}
+
 							>
 								{({ getFieldValue }) =>
 									getFieldValue('subscriptionPlanId') !== 1 && !!getFieldValue('subscriptionPlanId') ? (
 										<>
-											<Form.Item label="باقه الخطه" name="subscriptionPlanPackageId" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار باقه الإشتراك' }]}>
+											<Form.Item label="باقه الخطه" name="subscriptionPlanPackageId" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} 
+											rules={[{ required: true, message: 'برجاء إختيار باقه الإشتراك' }]}
+											>
 												<Select
 													placeholder='برجاء إختيار الباقه '
 													allowClear

@@ -87,7 +87,12 @@ function CreateOffer() {
 		delete data.videos;
 		data.on_sale = saleChecked;
 		for (const [key, value] of Object.entries(data)) {
-			formData.append(key, value);
+			if(key==="on_sale"){
+        formData.append(key,  (value===true || value==="true") ? "true" : "false");
+        }else{
+          formData.append(key,  value && value !=
+            "undefined" ? value : "");
+        }
 		}
 		if (logoFile?.length) {
 			formData.append("logoFile", logoFile[0].originFileObj);
@@ -269,9 +274,9 @@ function CreateOffer() {
 								</Form.Item>
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >
-								<Form.Item className="ltr:mr-4 rtl:ml-4 " label="السعر" name="price" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: "برجاء إدخال السعر" }]}>
+								{/* <Form.Item className="ltr:mr-4 rtl:ml-4 " label="السعر" name="price" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
 									<Input type="number" placeholder="السعر" />
-								</Form.Item>
+								</Form.Item> */}
 								<Form.Item className="ltr:mr-4 rtl:ml-4 " label="الكود" name="code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 									<Input placeholder="الكود" />
 								</Form.Item>
