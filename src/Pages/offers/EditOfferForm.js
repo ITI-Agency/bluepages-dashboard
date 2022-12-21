@@ -387,7 +387,7 @@ const EditOfferForm = ({ offer, id, }) => {
 								optionFilterProp="children"
 								filterOption={(input, option) =>
 									(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-								}
+								} 
 								mode="multiple"
 								allowClear
 								style={{ width: '100%' }}
