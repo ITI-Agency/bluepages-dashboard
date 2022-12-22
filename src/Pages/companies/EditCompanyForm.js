@@ -72,7 +72,7 @@ const EditCompanyForm = ({ company, id }) => {
 	const [categories, setCategories] = useState([]);
 	const [users, setUsers] = useState(null);
 	const [subscriptionPlanPackages, setSubscriptionPlanPackages] = useState(null);
-	// const [verified, setVerified] = useState(company?.verified);
+	const [verified, setVerified] = useState(company?.verified);
 	const [descriptionar, setDescriptionar] = useState(company?.description_ar);
 	const [descriptionen, setDescriptionen] = useState(company?.description_en);
 	const [imageDeleted, setImageDeleted] = useState(false);
@@ -549,14 +549,14 @@ const EditCompanyForm = ({ company, id }) => {
 					<Form.Item label='المنطقه باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="district_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder='المنطقه باللغه الإنجليزيه' />
 					</Form.Item>
-					<Form.Item label='الحي باللغه العربيه' name="street_ar" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder='الحي باللغه العربيه' />
+					<Form.Item label='الشارع باللغه العربيه' name="street_ar" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						<Input placeholder='الشارع باللغه العربيه' />
 					</Form.Item>
 
 				</Form.Item>
 				<Form.Item className='mb-0'  >
-					<Form.Item label='الحي باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="street_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder='الحي باللغه الإنجليزيه' />
+					<Form.Item label='الشارع باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="street_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						<Input placeholder='الشارع باللغه الإنجليزيه' />
 					</Form.Item>
 					<Form.Item label="رقم المبني" name="building_no" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="رقم المبني" />
@@ -618,9 +618,9 @@ const EditCompanyForm = ({ company, id }) => {
 					<div className="w-full h-[1px] bg-gray-500"></div>
 				</div> */}
 				<Form.Item style={{ width: "100%", marginBottom: "20px" }} >
-					{/* <Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Switch defaultChecked={verified} className={`${verified ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={() => setVerified(!verified)} />
-					</Form.Item> */}
+					</Form.Item>
 					<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="رابط الخريطه" />
 					</Form.Item>
