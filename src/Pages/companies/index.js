@@ -409,18 +409,18 @@ function Companies() {
 		console.log(value.planId);
 		setLoading(true);
 		try {
-			const response = await CompaniesServices.deleteByPlan(value.planId);
+			const response = await CompaniesServices.deleteByPlan(value.planId,value.cityId);
 			if (response && response.status == 200) {
-				toast.success("success to delete data");
+				toast.success("تم الحذف بنجاح");
 				setOpenDeleteModal(false);
 				getAllCompanies();
 			} else {
-				toast.error("something went wrong!");
+				toast.error("حدث خطأ ما");
 				setOpenDeleteModal(false);
 				getAllCompanies();
 			}
 		} catch (error) {
-			toast.error("something went wrong!");
+			toast.error("حدث خطأ ما");
 			setOpenDeleteModal(false);
 			getAllCompanies();
 		}
@@ -460,7 +460,7 @@ function Companies() {
 									<Select placeholder="Select a Country" onChange={onCountryChange} allowClear>
 										{countries.map((country) => (
 											<Option value={country.id} key={country.id}>
-												{country.name_en}
+												{country.name_ar}
 											</Option>
 										))}
 									</Select>
@@ -472,7 +472,7 @@ function Companies() {
 										<Select placeholder="Select a City" allowClear>
 											{cities.map((city) => (
 												<Option value={city.id} key={city.id}>
-													{city.name_en}
+													{city.name_ar}
 												</Option>
 											))}
 										</Select>
@@ -510,7 +510,7 @@ function Companies() {
 		return (
 			<DashboardLayout>
 				<Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
-					<Form {...layout} name="control-hooks" onFinish={handleDeleteData}>
+					<Form layout="vertical" {...layout} name="control-hooks" onFinish={handleDeleteData}>
 						{/* <MDBox sx={style}> */}
 						<Grid container spacing={5}>
 							<Grid item xs={12} sm={6}>
@@ -522,6 +522,17 @@ function Companies() {
 										{plans?.map((p) => (<Option key={p.package_id} value={p.package_id}>{p[`name_ar`]}</Option>))}
 									</Select>
 								</Form.Item>
+							</Grid>
+							<Grid item xs={12} sm={6}>
+									<Form.Item name="cityId" label="المدينه" rules={[{ required: true }]}>
+										<Select placeholder="برجاء إختيار المدينه" allowClear>
+											{cities.map((city) => (
+												<Option value={city.id} key={city.id}>
+													{city.name_ar}
+												</Option>
+											))}
+										</Select>
+									</Form.Item>
 							</Grid>
 
 							<Grid item xs={12} sm={6}>
