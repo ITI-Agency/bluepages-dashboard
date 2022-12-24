@@ -17,6 +17,7 @@ import CountriesServices from "Services/CountriesServices";
 import CitiesServices from "Services/CitiesServices";
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Form, Select, Table, Input, Space, Tag } from "antd";
+import pLimit from 'p-limit';
 
 const { Option } = Select;
 
@@ -382,15 +383,38 @@ function Companies() {
 			setOpenSelectModal(true);
 		}
 	}, [importedData]);
+	const sliceIntoChunks = (arr, chunkSize) => {
+		const res = [];
+		for (let i = 0; i < arr.length; i += chunkSize) {
+			const chunk = arr.slice(i, i + chunkSize);
+			res.push(chunk);
+		}
+		return res;
+	};
+
 	const handleImportData = async (value) => {
-		setLoading(true);
-		try {
-			const response = await CompaniesServices.createMultipleCompany({
-				data: importedData,
+		const sliceIntoChunks = (arr, chunkSize) => {
+			const res = [];
+			for (let i = 0; i < arr.length; i += chunkSize) {
+				const chunk = arr.slice(i, i + chunkSize);
+				res.push(chunk);
+			}
+			return res;
+		};
+		const chunkedData = sliceIntoChunks(importedData, 5000);
+		const limit = pLimit(1);
+		const request = chunkedData.map(async(dataChunk)=>{
+			return limit(() =>CompaniesServices.createMultipleCompany({
+				data: dataChunk,
 				countryId: value.countryId,
 				cityId: value.cityId,
-			});
-			if (response && response.status == 201) {
+			}))
+		});
+		setLoading(true);
+		try {
+			const response = await Promise.allSettled(request);
+			console.log({response})
+			if (response && (response.status == 201 || response.status == 200)) {
 				toast.success("success to import data");
 				setOpenSelectModal(false);
 				getAllCompanies();
