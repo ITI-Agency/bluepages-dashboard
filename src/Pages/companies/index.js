@@ -414,17 +414,12 @@ function Companies() {
 		try {
 			const response = await Promise.allSettled(request);
 			console.log({response})
-			if (response && (response.status == 201 || response.status == 200)) {
 				toast.success("success to import data");
 				setOpenSelectModal(false);
 				getAllCompanies();
-			} else {
-				toast.error("something went wrong!");
-				setOpenSelectModal(false);
-				getAllCompanies();
-			}
 		} catch (error) {
-			toast.error("something went wrong!");
+			// toast.error("something went wrong!");
+			console.log({error})
 			setOpenSelectModal(false);
 			getAllCompanies();
 		}
