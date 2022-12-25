@@ -9,14 +9,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { Icon } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import MDButton from "components/MDButton";
-import Switch from "@mui/material/Switch";
+// import Switch from "@mui/material/Switch";
 import MDAvatar from "components/MDAvatar";
 import SelectDataValModal from "components/SelectDataValModal";
 import Paper from "@mui/material/Paper";
 import CountriesServices from "Services/CountriesServices";
 import CitiesServices from "Services/CitiesServices";
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Form, Select, Table, Input, Space, Tag } from "antd";
+import { Button, Form, Select, Table, Input, Space, Tag,Switch } from "antd";
 import pLimit from 'p-limit';
 
 const { Option } = Select;
@@ -237,6 +237,31 @@ function Companies() {
 			}
 		} catch (error) {
 			toast.error("sorry something went wrong while updating status!");
+			setLoading(false);
+			getAllCompanies();
+		}
+	};
+	const handleVerifiedChange = async (e, item) => {
+		const { id, verified } = item;
+		const dd = companies?.items?.map((i) => {
+			if (i.id == item.id) i.verified = verified;
+			return i;
+		});
+		setCompanies({ items: dd, meta: companies.meta });
+		try {
+			let formData = new FormData();
+			formData.append('verified', verified);
+			const res = await CompaniesServices.updateCompany(formData, id);
+			if (res.status == 200) {
+				toast.success("your verified has updated successfully!");
+				setLoading(false);
+			} else {
+				toast.error("sorry something went wrong while updating verified!");
+				setLoading(false);
+				getAllCompanies();
+			}
+		} catch (error) {
+			toast.error("sorry something went wrong while updating verified!");
 			setLoading(false);
 			getAllCompanies();
 		}
@@ -723,11 +748,39 @@ function Companies() {
 		// 	onFilter: (value, record) => record.verified === value,
 		// },
 		{
+			title: "Verified",
+			key: 'verified',
+			render: (_, record) => (
+				<>
+					<Switch
+						className={`${record.verified ? "bg-blue-500" : "bg-gray-200"}`}
+						checked={record.verified}
+						onChange={(e) => {
+							record.verified = !record.verified;
+							handleVerifiedChange(e, record);
+						}}
+					/>
+				</>
+			),
+			// filters: [
+			// 	{
+			// 		text: 'Active',
+			// 		value: true
+			// 	},
+			// 	{
+			// 		text: 'Not Active',
+			// 		value: false
+			// 	},
+			// ],
+			// onFilter: (value, record) => record.status === value,
+		},
+		{
 			title: "Active",
 			key: 'status',
 			render: (_, record) => (
 				<>
 					<Switch
+						className={`${record.status ? "bg-green-500" : "bg-gray-200"}`}
 						checked={record.status}
 						onChange={(e) => {
 							record.status = !record.status;
