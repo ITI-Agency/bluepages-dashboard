@@ -437,13 +437,13 @@ function Companies() {
 		});
 		setLoading(true);
 		try {
-			const response = await Promise.allSettled(request);
+			const response = await Promise.all(request);
 			console.log({response})
-				toast.success("success to import data");
+				toast.success("تم إدخال البيانات بنجاح");
 				setOpenSelectModal(false);
 				getAllCompanies();
 		} catch (error) {
-			// toast.error("something went wrong!");
+			toast.error("لقد حدث خطأ ما, يرجي التحقق من بياناتك");
 			console.log({error})
 			setOpenSelectModal(false);
 			getAllCompanies();

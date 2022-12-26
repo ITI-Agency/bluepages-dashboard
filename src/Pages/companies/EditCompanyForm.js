@@ -414,7 +414,7 @@ const EditCompanyForm = ({ company, id }) => {
 				<Form.Item style={{ marginBottom: 0 }} >
 
 
-					<Form.Item label='الأنشطه' style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
+					<Form.Item label='الأنشطه' style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories"  className="ltr:mr-4 rtl:ml-4 " rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
 						<Select
 							showSearch
 							optionFilterProp="children"
@@ -430,7 +430,25 @@ const EditCompanyForm = ({ company, id }) => {
 							options={categories.map((cat) => ({ label: cat[`name_ar`], value: cat.id }))}
 						/>
 					</Form.Item>
+					<Form.Item label="الدرجه" name="degree" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="الدرجه" />
+							</Form.Item>
 				</Form.Item>
+				<Form.Item   >
+							<Form.Item label="رقم السجل" name="commercial_reg" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="رقم السجل" />
+							</Form.Item>
+
+							<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="رابط الخريطه" />
+							</Form.Item>
+							<Form.Item label="موثق" name="verified"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						<Switch defaultChecked={verified} className={`${verified ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={() => setVerified(!verified)} />
+					</Form.Item>
+							{/* <Form.Item name="post_code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Input placeholder="الرمز البريدي" />
+						</Form.Item> */}
+						</Form.Item>
 				<Form.Item style={{ marginBottom: 0 }} >
 					<Form.Item label='الوصف باللغه العربيه'  className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
@@ -538,7 +556,7 @@ const EditCompanyForm = ({ company, id }) => {
 					</Form.Item> */}
 				<div className="divider">
 					<h1 className="mb-1 text-lg font-bold text-center text-[#0f6fbd]">
-						address
+						العنوان
 					</h1>
 					<div className="w-full h-[1px] bg-gray-500"></div>
 				</div>
@@ -567,37 +585,22 @@ const EditCompanyForm = ({ company, id }) => {
 					</Form.Item>
 
 				</Form.Item>
-				<Form.Item   >
-					<Form.Item  label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
-						<Input placeholder='رقم الهاتف الرئيسي' />
-					</Form.Item>
-					<Form.Item label="الرقم الموحد" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="الرقم الموحد" />
-					</Form.Item>
-					<Form.Item label="رقم السجل" name="commercial_reg" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="رقم السجل" />
-					</Form.Item>
-
-					{/* <Form.Item name="post_code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-							<Input placeholder="الرمز البريدي" />
-						</Form.Item> */}
-
-				</Form.Item>
+	
 				<div className="divider">
 					<h1 className="mb-1 text-lg font-bold text-center text-[#0f6fbd]">
-						social_media
+						وسائل التواصل
 					</h1>
 					<div className="w-full h-[1px] bg-gray-500"></div>
 				</div>
 				<Form.Item className='mt-4 mb-0'  >
-					<Form.Item label="الدرجه" name="degree" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="الدرجه" />
-					</Form.Item>
 					<Form.Item label="فيسبوك" className="ltr:mr-4 rtl:ml-4 " name="facebook" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="فيسبوك" />
 					</Form.Item>
-					<Form.Item label="تويتر" name="twitter" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label="تويتر"  className="ltr:mr-4 rtl:ml-4 " name="twitter" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="تويتر" />
+					</Form.Item>
+					<Form.Item label="انستجرام" name="instagram" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						<Input placeholder="انستجرام" />
 					</Form.Item>
 				</Form.Item>
 				<Form.Item className='mt-4 mb-0'  >
@@ -607,9 +610,21 @@ const EditCompanyForm = ({ company, id }) => {
 					<Form.Item label="سناب شات" className="ltr:mr-4 rtl:ml-4 " name="snapchat" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="سناب شات" />
 					</Form.Item>
-					<Form.Item label="انستجرام" name="instagram" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="انستجرام" />
+
+				</Form.Item>
+				<Form.Item   >
+					<Form.Item  label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+						<Input placeholder='رقم الهاتف الرئيسي' />
 					</Form.Item>
+					<Form.Item label="الرقم الموحد" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						<Input placeholder="الرقم الموحد" />
+					</Form.Item>
+
+
+					{/* <Form.Item name="post_code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Input placeholder="الرمز البريدي" />
+						</Form.Item> */}
+
 				</Form.Item>
 				{/* <div className="my-4 divider">
 					<h1 className="mb-4 text-lg font-bold text-center text-[#0f6fbd] ">
@@ -617,21 +632,7 @@ const EditCompanyForm = ({ company, id }) => {
 					</h1>
 					<div className="w-full h-[1px] bg-gray-500"></div>
 				</div> */}
-				<Form.Item style={{ width: "100%", marginBottom: "20px" }} >
-					<Form.Item label="موثق" name="verified" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Switch defaultChecked={verified} className={`${verified ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={() => setVerified(!verified)} />
-					</Form.Item>
-					<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="رابط الخريطه" />
-					</Form.Item>
-					{/* <Form.Item label="خط العرض Latitude" name="latitude" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="خط العرض Latitude" />
-					</Form.Item>
-					<Form.Item label="خط الطول Longitude" name="longitude" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="خط الطول Longitude" />
-					</Form.Item> */}
 
-				</Form.Item>
 
 
 				<Form.Item {...tailLayout}>
