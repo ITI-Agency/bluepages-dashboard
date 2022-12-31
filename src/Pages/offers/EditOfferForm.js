@@ -98,7 +98,7 @@ const EditOfferForm = ({ offer, id, }) => {
 		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(offer.countryId);
 		const { status: usersStatus, data: usersData } = await UserServices.getAllUsers();
 		const { status: categoriesStatus, data: categoriesData } =
-			await CategoriesServices.getAllCategories();
+			await CategoriesServices.getAllCategories([{offer:true}]);
 		// const { status: companiesStatus, data: companiesData } =
 		// 	await CompaniesServices.getAllCompanies();
 
@@ -138,9 +138,12 @@ const EditOfferForm = ({ offer, id, }) => {
 		}
 		delete data.categories;
 		for (const [key, value] of Object.entries(data)) {
-			if(key==="on_sale"){
+			if(key==="on_sale" || key==="paid" || key==='main_page_paid'){
         formData.append(key,  (value===true || value==="true") ? "true" : "false");
-        }else{
+        }else if(key==='sale_amount'){
+					formData.append(key,  (value && value != "undefined") ? value : "0");
+				}
+				else{
           formData.append(key,  value && value !=
             "undefined" ? value : "");
         }
@@ -307,7 +310,7 @@ const EditOfferForm = ({ offer, id, }) => {
 		categories: offer?.categories?.map(it => it.id) || [],
 		on_sale: offer?.on_sale,
 		sale_type: offer?.sale_type,
-		sale_amount: offer?.sale_amount,
+		sale_amount: offer?.sale_amount ? Number(offer?.sale_amount) : 0,
 		location_link: offer?.location_link || "",
 		code: offer?.code || "",
 		// price: offer?.price || "",

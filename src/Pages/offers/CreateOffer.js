@@ -171,7 +171,7 @@ function CreateOffer() {
 			await CountriesServices.getAllCountries([{ city: true }]);
 		const { status: usersStatus, data: usersData } = await UserServices.getAllUsers();
 		const { status: categoriesStatus, data: categoriesData } =
-			await CategoriesServices.getAllCategories();
+			await CategoriesServices.getAllCategories([{offer:true}]);
 		// const { status: companiesStatus, data: companiesData } =
 		// await CompaniesServices.getAllCompanies();
 
