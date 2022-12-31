@@ -73,7 +73,7 @@ function Offers() {
 	};
 	const getCategories = async () => {
 		try {
-			const { status: categoriesStatus, data: categoriesData } = await CategoriesServices.getAllCategoriesMapped();
+			const { status: categoriesStatus, data: categoriesData } = await CategoriesServices.getAllCategories([{offer:true}]);
 			if (categoriesStatus == 200 ) {
 				setCategories(categoriesData);
 			} else {
