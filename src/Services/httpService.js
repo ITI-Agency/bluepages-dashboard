@@ -2,7 +2,7 @@ import axios from "axios";
 
 const HTTP = axios.create({
 	baseURL: process.env.REACT_APP_API_BASE_URL,
-	// baseURL: "https://bluepages.sa/api/",
+	// baseURL: "https://bluepages.com.sa/api/",
 	headers: {
 		common: {
 			"Access-Control-Allow-Origin": "*",
