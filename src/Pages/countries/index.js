@@ -184,9 +184,9 @@ function Countries() {
         shadow="sm"
         borderRadius="50%"
         position="fixed"
-        right="2rem"
-        bottom="2rem"
-        zIndex={99}
+				right="8rem"
+				top="2rem"
+				zIndex={9999}
         color="dark"
         sx={{ cursor: "pointer" }}
         onClick={() => navigate("/countries/create")}
