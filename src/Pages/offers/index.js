@@ -15,7 +15,7 @@ import useFetch from "Hooks/useFetch";
 import Highlighter from "react-highlight-words";
 
 import OffersServices from "Services/OffersServices";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Form, Select, Table, Input, Space, Tag } from "antd";
 
 import { toast } from "react-toastify";
@@ -44,15 +44,16 @@ function Offers() {
 	const [cities, setCities] = useState([]);
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 	const [categories, setCategories] = useState([]);
+	const location = useLocation();
 
 	useEffect(() => {
 		getAllOffers();
 		getCategories();
-	}, []);
+	}, [location.pathname]);
 	const getAllOffers = async () => {
 		setLoading(true);
 		try {
-			const response = await OffersServices.getAllOffersPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 }]);
+			const response = await OffersServices.getAllOffersPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 },{requests: location.pathname ==='/offers-requests' ? 'true' : 'false'}]);
 			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
 
 			if (response && response.status == 200 && citiesStatus == 200) {

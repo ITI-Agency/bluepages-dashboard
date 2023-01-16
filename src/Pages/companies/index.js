@@ -5,7 +5,7 @@ import LoadingDataLoader from "components/LoadingDataLoader";
 import MDBox from "components/MDBox";
 import Grid from "@mui/material/Grid";
 import MDTypography from "components/MDTypography";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useResolvedPath } from "react-router-dom";
 import { Icon } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import MDButton from "components/MDButton";
@@ -70,6 +70,9 @@ function Companies() {
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 	const [tableFilter, setTableFilter] = useState([]);
 	const searchInput = useRef(null);
+	const location = useLocation();
+
+  
 	const handleSearch = (
 		selectedKeys,
 		confirm,
@@ -166,11 +169,11 @@ function Companies() {
 		getAllCompanies();
 		getCountries();
 		getCategories();
-	}, []);
+	}, [location.pathname]);
 	const getAllCompanies = async () => {
 		setLoading(true);
 		try {
-			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 }]);
+			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 },{requests: location.pathname ==='/companies-requests' ? 'true' : 'false'}]);
 			const { status: countriesStatus, data: countriesData } = await CountriesServices.getAllCountries();
 			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
 			if (response && response.status == 200 && countriesStatus == 200 && citiesStatus == 200) {

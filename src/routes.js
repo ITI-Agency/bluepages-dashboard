@@ -98,9 +98,22 @@ const routes = [
   {
     type: "collapse",
     name: "Companies",
-    key: "companies",
+    key: "companies-admins",
     icon: <Icon fontSize="small">business</Icon>,
-    route: "/companies",
+    route: "/companies-admins",
+    component: (
+      <RequireAuth>
+        <Companies />
+      </RequireAuth>
+    ),
+    // child:
+  },
+  {
+    type: "collapse",
+    name: "Company Requests",
+    key: "companies-requests",
+    icon: <Icon fontSize="small">business</Icon>,
+    route: "/companies-requests",
     component: (
       <RequireAuth>
         <Companies />
@@ -111,16 +124,27 @@ const routes = [
   {
     type: "collapse",
     name: "Offers",
-    key: "offers",
+    key: "offers-admins",
     icon: <Icon fontSize="small">local_offer</Icon>,
-    route: "/offers",
+    route: "/offers-admins",
     component: (
       <RequireAuth>
         <Offers />
       </RequireAuth>
     ),
   },
-
+  {
+    type: "collapse",
+    name: "Offer Requests",
+    key: "offers-requests",
+    icon: <Icon fontSize="small">local_offer</Icon>,
+    route: "/offers-requests",
+    component: (
+      <RequireAuth>
+        <Offers />
+      </RequireAuth>
+    ),
+  },
   {
     type: "collapse",
     name: "Categories",

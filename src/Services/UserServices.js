@@ -11,7 +11,7 @@ const signup = async () => {
 };
 
 const getAllUsers = async () => {
-  const response = await http.get("/users?role=USER");
+  const response = await http.get("/users");
   return response;
 };
 
