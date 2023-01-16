@@ -549,7 +549,7 @@ const EditOfferForm = ({ offer, id, }) => {
 			<section className="overflow-hidden text-gray-700 ">
 				<div className="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
 					<div className="flex flex-wrap -m-1 md:-m-2">
-						{offer.images.map((img, i) => (
+						{offer?.images?.sort((a,b)=>a.id-b.id)?.map((img, i) => (
 							<div key={i} className="flex flex-wrap w-1/3">
 								<div className="flex flex-col w-full p-1 mx-4 md:p-2">
 									<img width={150} height={150} alt="gallery" className="block object-cover object-center w-full h-full rounded-lg "
