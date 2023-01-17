@@ -651,7 +651,7 @@ function CreateCompany() {
 
 						</Form.Item>
 						<Form.Item   >
-							<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+							<Form.Item  label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
 								<Input placeholder='رقم الهاتف الرئيسي' />
 							</Form.Item>
 							<Form.Item label="الرقم الموحد" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
