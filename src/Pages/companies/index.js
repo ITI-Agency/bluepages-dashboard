@@ -173,7 +173,7 @@ function Companies() {
 	const getAllCompanies = async () => {
 		setLoading(true);
 		try {
-			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 },{requests: location.pathname ==='/companies-requests' ? 'true' : 'false'}]);
+			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 },{requests: location.pathname ==='/companies-requests' ? 'true' : 'false'},{user:'true'}]);
 			const { status: countriesStatus, data: countriesData } = await CountriesServices.getAllCountries();
 			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
 			if (response && response.status == 200 && countriesStatus == 200 && citiesStatus == 200) {
@@ -646,6 +646,16 @@ function Companies() {
 			// width: '20%',
 			...getColumnSearchProps('name_ar'),
 		},
+		{
+			title: "user",
+			render: (text, record) => (
+					<MDBox lineHeight={1}>
+						<MDTypography display="block" variant="button" fontWeight="medium" color="info">
+							{record?.user?.name}
+						</MDTypography>
+					</MDBox>
+			),
+		},
 		// {
 		// 	title: "Country",
 		// 	key: 'countryId',
@@ -816,6 +826,7 @@ function Companies() {
 			title: "control",
 			key: 'action',
 			width: "20%",
+			fixed: "right",
 			render: (_, record) => (
 				<>
 					<MDBox
@@ -845,7 +856,7 @@ function Companies() {
 		},
 	];
 	const handleChange = async (pagination, filters, sorter) => {
-		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }];
+		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current },{requests: location.pathname ==='/companies-requests' ? 'true' : 'false'},{user:'true'}];
 		Object.entries(filters).forEach(f => {
 			if (f[1] && f[1].length) {
 				if (f[0] === 'packageId') {

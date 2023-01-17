@@ -53,7 +53,7 @@ function Offers() {
 	const getAllOffers = async () => {
 		setLoading(true);
 		try {
-			const response = await OffersServices.getAllOffersPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 },{requests: location.pathname ==='/offers-requests' ? 'true' : 'false'}]);
+			const response = await OffersServices.getAllOffersPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 },{requests: location.pathname ==='/offers-requests' ? 'true' : 'false'},{user:'true'}]);
 			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
 
 			if (response && response.status == 200 && citiesStatus == 200) {
@@ -245,7 +245,7 @@ function Offers() {
 			),
 	});
 	const handleChange = async (pagination, filters, sorter) => {
-		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }];
+		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current }, { page: 1 },{requests: location.pathname ==='/offers-requests' ? 'true' : 'false'},{user:'true'}];
 		Object.entries(filters).forEach(f => {
 			if (f[1] && f[1].length) {
 				if (f[0] === 'categories') {
@@ -340,7 +340,16 @@ function Offers() {
 			),
 			...getColumnSearchProps('name_ar'),
 		},
-
+		{
+			title: "user",
+			render: (text, record) => (
+					<MDBox lineHeight={1}>
+						<MDTypography display="block" variant="button" fontWeight="medium" color="info">
+							{record?.user?.name}
+						</MDTypography>
+					</MDBox>
+			),
+		},
 
 		// {
 		// 	title: "Country",
@@ -461,17 +470,17 @@ function Offers() {
 						ml={{ xs: -1.5, sm: 0 }}
 					>
 						<Link to={`/offers/${record.id}`}>
-							<MDButton variant="text" color="info">
+							<MDButton  style={{ padding: 0 }} className="px-0" variant="text" color="info">
 								<Icon>preview</Icon>&nbsp;show
 							</MDButton>
 						</Link>
 						<Link to={`/offers/edit/${record.id}`}>
-							<MDButton variant="text" color="dark">
+							<MDButton  style={{ padding: 0 }} className="px-0" variant="text" color="dark">
 								<Icon>edit</Icon>&nbsp;edit
 							</MDButton>
 						</Link>
 						<MDBox mr={1}>
-							<MDButton onClick={() => handleOpen(record)} variant="text" color="error">
+							<MDButton  style={{ padding: 0 }} className="px-0" onClick={() => handleOpen(record)} variant="text" color="error">
 								<Icon>delete</Icon>&nbsp;delete
 							</MDButton>
 						</MDBox>
