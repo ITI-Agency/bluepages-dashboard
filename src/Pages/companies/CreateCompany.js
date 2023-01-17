@@ -32,6 +32,7 @@ import { toast } from "react-toastify";
 import Util from "../../Utils";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { abs } from "stylis";
 const plans = Util.plans;
 const layout = {
 	labelCol: { span: 2 },
@@ -313,7 +314,15 @@ function CreateCompany() {
 									filterOption={(input, option) =>
 										(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
 									}
-									options={users?.map((co) => ({ label: co.name, value: co.id }))}
+									options={users?.sort(function (a, b) {
+										if (a.role < b.role) {
+											return -1;
+										}
+										if (a.role > b.role) {
+											return 1;
+										}
+										return 0;
+									})?.map((co) => ({ label: co.name, value: co.id }))}
 									placeholder='برجاء إختيار إسم المستخدم'
 									allowClear
 								/>

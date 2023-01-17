@@ -332,7 +332,15 @@ const EditCompanyForm = ({ company, id }) => {
 							filterOption={(input, option) =>
 								(option?.label ?? '').toLowerCase().includes(input.toLowerCase())
 							}
-							options={users?.map((co) => ({ label: co.name, value: co.id }))}
+							options={users?.sort(function (a, b) {
+								if (a.role < b.role) {
+									return -1;
+								}
+								if (a.role > b.role) {
+									return 1;
+								}
+								return 0;
+							})?.map((co) => ({ label: co.name, value: co.id }))}
 							placeholder='برجاء إختيار إسم المستخدم'
 							allowClear
 						/>
