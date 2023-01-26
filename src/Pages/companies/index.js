@@ -69,10 +69,13 @@ function Companies() {
 	const [searchedColumn, setSearchedColumn] = useState('');
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 	const [tableFilter, setTableFilter] = useState([]);
+	const [isExporting, setIsExporting] = useState(false);
 	const searchInput = useRef(null);
 	const location = useLocation();
 
-  
+	useEffect(()=>{
+		console.log("tableFilter",tableFilter)
+	},[tableFilter])
 	const handleSearch = (
 		selectedKeys,
 		confirm,
@@ -218,9 +221,7 @@ function Companies() {
 		}
 	};
 	const handleStatusChange = async (e, item) => {
-		console.log({ item });
 		const { id, status } = item;
-		console.log({ companies });
 		const dd = companies?.items?.map((i) => {
 			if (i.id == item.id) i.status = status;
 			return i;
@@ -319,7 +320,6 @@ function Companies() {
 		}
 	};
 	const onCountryChange = (e) => {
-		console.log("this is e:>", e);
 		getCountryCities(e);
 	};
 	const handleImportFile = (e) => {
@@ -359,9 +359,14 @@ function Companies() {
 		};
 	};
 	const handleExport = async () => {
+		setIsExporting(true);
+
 		console.log('filter before export', tableFilter)
-		const filterForExport = tableFilter.filter(filter => Object.keys(filter)[0] != 'page' && Object.keys(filter)[0] != 'limit');
-		console.log("filter for export", filterForExport)
+
+		const filterForExport = tableFilter.filter(filter => Object.keys(filter)[0] != 'page' && Object.keys(filter)[0] != 'limit' && Object.keys(filter)[0] !== 'requests');
+		// add requests exports 
+		filterForExport.push({requests: location.pathname ==='/companies-requests' ? 'true' : 'false'})
+		console.log("filter for export", filterForExport);
 		console.log({ filterForExport });
 		const response = await CompaniesServices.getAllCompanies(filterForExport);
 		console.log({ companies: response?.data})
@@ -400,7 +405,10 @@ function Companies() {
 			xlsx(data, settings, (sheet) => {
 				console.log("Download complete:", sheet);
 			});
+		setIsExporting(false);
+
 		} else {
+		setIsExporting(false);
 			toast.error('sorry something went wrong while getting companies!');
 		}
 
@@ -840,7 +848,7 @@ function Companies() {
 								<Icon>preview</Icon>&nbsp;show
 							</MDButton>
 						</Link>
-						<Link to={`/companies/${record.id}/edit-info`}>
+						<Link to={`/companies/${record.id}/edit-info?router=${location.pathname}`}>
 							<MDButton style={{ padding: 0 }} className="px-0" variant="text" color="dark">
 								<Icon>edit</Icon>&nbsp;edit
 							</MDButton>
@@ -857,15 +865,13 @@ function Companies() {
 	];
 	const handleChange = async (pagination, filters, sorter) => {
 		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current },{requests: location.pathname ==='/companies-requests' ? 'true' : 'false'},{user:'true'}];
+		const categoryInTableFilter = tableFilter.find(it => it.hasOwnProperty('categories[]'));
+		if (categoryInTableFilter) filtersArray.push(categoryInTableFilter);
 		Object.entries(filters).forEach(f => {
 			if (f[1] && f[1].length) {
 				if (f[0] === 'packageId') {
 					f[1].forEach(it => {
 						filtersArray.push({ 'packages[]': it });
-					});
-				} else if (f[0] === 'categories') {
-					f[1].forEach(it => {
-						filtersArray.push({ 'categories[]': it });
 					});
 				} else {
 					filtersArray.push({ [f[0]]: f[1][0] });
@@ -873,7 +879,6 @@ function Companies() {
 			}
 		});
 		try {
-			console.log("filterAFterChange", filtersArray)
 			const response = await CompaniesServices.getAllCompaniesPaginate(filtersArray);
 			if (response && response.status == 200) {
 				setTableFilter(filtersArray);
@@ -897,21 +902,28 @@ function Companies() {
 
 		// getData(offset, limit, params);
 	};
-	const handleCategoryChange = async (value) => {
-		const filterCategory = [];
-		if (value) filterCategory.push({ 'categories[]': value });
 
+	const handleCategoryChange = async (value) => {
+		const filtersArray = [{ country: "true" }, { city: "true" },{requests: location.pathname ==='/companies-requests' ? 'true' : 'false'},{user:'true'}];
+		const excludeProperties = o=>!(o.hasOwnProperty('categories[]') || o.hasOwnProperty('country') || o.hasOwnProperty('city') || o.hasOwnProperty('requests') || o.hasOwnProperty('user')) ;
+		
+		const tableFilterWithoutCategory = tableFilter.filter(excludeProperties);
+		if (value) {
+			tableFilterWithoutCategory.push({'categories[]':value}) 
+		}
+		const filterToSend = [...tableFilterWithoutCategory, ...filtersArray];
 		try {
-			console.log("filter After Change Category", filterCategory)
-			const response = await CompaniesServices.getAllCompaniesPaginate(filterCategory);
+			const response = await CompaniesServices.getAllCompaniesPaginate(filterToSend);
 			if (response && response.status == 200) {
-				setTableFilter((oldFilter) => [...oldFilter, filterCategory[0]]);
+				setTableFilter(filterToSend);
 				setCompanies(response.data);
+				setLoading(false);
 			} else {
 				toast.error("sorry something went wrong while getting companies!");
 				setLoading(false);
 			}
 		} catch (error) {
+			console.log(error)
 			toast.error("sorry something went wrong while getting companies!");
 			setLoading(false);
 		}
@@ -931,11 +943,15 @@ function Companies() {
 		<DashboardLayout>
 			<MDBox marginBottom={2} className="flex justify-between">
 				<MDBox className="flex">
-					<MDBox>
-						<MDButton variant="gradient" color="info" onClick={handleExport}>
-							<Icon>edit</Icon>Export Excel
-						</MDButton>
-					</MDBox>
+					{/* <MDBox> */}
+						<Button className={`h-full text-white hover:text-white rounded-lg bg-blue-700 hover:bg-blue-600  flex items-center text-[16px] font-semibold ${isExporting ? 'bg-blue-400 text-white' : 'bg-blue-700 text-white'}`} loading={isExporting}  onClick={handleExport}>
+								{/* <div className="flex items-center text-[16px] font-semibold"> */}
+								<Icon>edit</Icon>Export Excel
+								{/* </div> */}
+						</Button>
+					{/* </MDBox> */}
+					{
+					location.pathname ==='/companies-requests' ? '' : 
 					<MDBox ml={2}>
 						<MDButton variant="gradient" component="label" color="success">
 							<Icon>edit</Icon>Import Excel
@@ -948,6 +964,7 @@ function Companies() {
 							/>
 						</MDButton>
 					</MDBox>
+					}
 					<MDBox ml={2} mr={2}>
 						<MDButton onClick={handleDeleteSelected} variant="gradient" component="label" color="warning">
 							<Icon>delete</Icon>Delete Selected
@@ -976,8 +993,9 @@ function Companies() {
 						/>
 					</MDBox>
 				</MDBox>
-
-				<MDBox ml={2}>
+				{
+					location.pathname ==='/companies-requests' ? '' : 
+					<MDBox ml={2}>
 					<MDButton ml={2} onClick={() => setOpenDeleteModal(true)} variant="gradient" component="label" color="error">
 						<Icon>delete</Icon>Delete By Plan
 						{/* <input
@@ -991,6 +1009,8 @@ function Companies() {
 				
 
 				</MDBox>
+				}
+				
 			</MDBox>
 			<Table
 				onChange={handleChange}

@@ -4,7 +4,7 @@ import { Input, Skeleton, Space, Tabs, Upload } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import LoadingDataLoader from "components/LoadingDataLoader";
 import CompaniesServices from "../../Services/CompaniesServices";
@@ -78,6 +78,10 @@ const EditCompanyForm = ({ company, id }) => {
 	const [imageDeleted, setImageDeleted] = useState(false);
 	const [form] = Form.useForm();
 	const [imagesForm] = Form.useForm();
+	const location = useLocation();
+	const queryParams = new URLSearchParams(location.search)
+  const routerToMainPage = queryParams.get("router")
+  console.log("🚀 ~ file: EditCompanyForm.js:84 ~ EditCompanyForm ~ routerToMainPage", routerToMainPage)
 
 	const onReset = () => {
 		form.resetFields();
@@ -159,6 +163,7 @@ const EditCompanyForm = ({ company, id }) => {
 		}
 	};
 	const mutation = useMutation(data => {
+		console.log("🚀 ~ file: EditCompanyForm.js:166 ~ mutation ~ data", data)
 		// company upload
 		console.log({ data });
 		console.log({ countrySelected: countries.find(co => co.id == data.countryId)?.cities?.map(c => c.id) });
@@ -218,7 +223,7 @@ const EditCompanyForm = ({ company, id }) => {
 			// Boom baby!
 			toast.success('لقد تم تعديل الصفحه بنجاح');
 			setLoading(false);
-			navigate(`/companies`);
+			navigate(`${routerToMainPage}`);
 		},
 	});
 	const addImages = useMutation(() => {
