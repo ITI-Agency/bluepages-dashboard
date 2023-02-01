@@ -15,6 +15,13 @@ const createDirectory = async (directory) => {
   // }
   return await http.post(`/request-directory`, directory);
 };
+const updateAutomaticAcceptance = async (acceptance) => {
+  // {
+  //   pdf: File,
+  //   cityId
+  // }
+  return await http.patch(`/request-directory/automatic-acceptance`, acceptance);
+};
 
 const updateDirectoryRequest = async (directory,id) => {
   return await http.put(`/request-directory/${id}`, directory);
@@ -29,4 +36,5 @@ export default {
   createDirectory,
   updateDirectoryRequest,
   removeDirectory,
+  updateAutomaticAcceptance
 };

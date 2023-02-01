@@ -5,12 +5,12 @@ import OfferForm from "components/PostForms/OfferForm";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import LoadingDataLoader from "components/LoadingDataLoader";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Input, Select, Switch, Upload } from 'antd';
+import { Button, DatePicker, Form, Input, Select, Switch, Upload } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 // hooks
 import useLoading from "Hooks/useLoading";
-
+import dayjs from 'dayjs';
 // services & utlities
 import CompaniesServices from "Services/CompaniesServices";
 import CountriesServices from "Services/CountriesServices";
@@ -21,6 +21,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Paper, Container } from "@mui/material";
 import ReactQuill from 'react-quill';
+import { useSearchParams } from 'react-router-dom'
+
 import 'react-quill/dist/quill.snow.css';
 const discount = {
 	percentage: "نسبه %",
@@ -56,6 +58,9 @@ function CreateOffer() {
 	const [images, setImages] = useState([]);
 	const [descriptionar, setDescriptionar] = useState("");
 	const [descriptionen, setDescriptionen] = useState("");
+	const [endDate,setEndDate] = useState(null);
+	const [searchParams, setSearchParams] = useSearchParams()
+
 	const postOffer = async (offerData) => {
 		setLoading(true);
 		const res = await OffersServices.createOffer(offerData);
@@ -81,6 +86,9 @@ function CreateOffer() {
 		data?.videos?.forEach(vid => {
 			formData.append("videos[]", vid);
 		});
+		if(endDate){
+			formData.append("endAt", endDate);
+		}
 		formData.append("description_en", descriptionen);
 		formData.append("description_ar", descriptionar);
 		delete data.categories;
@@ -125,7 +133,7 @@ function CreateOffer() {
 			if (res) {
 				setLoading(false);
 				toast.success('لقد تم إنشاء العرض بنجاح');
-				navigate("/offers");
+				navigate(searchParams.get('referrer'));
 			}
 			// if (!res) return;
 			// // Boom baby!
@@ -134,7 +142,13 @@ function CreateOffer() {
 			// // Router.push('/login')
 		},
 	});
-
+	const onChangeDate = (date, dateString) => {
+		setEndDate(dateString);
+	};
+	const disabledDate = (current) => {
+		// Can not select days before today and today
+		return current && current < dayjs().endOf('day');
+	};
 	const getCountryCities = async (id) => {
 		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(id);
 		if (citiesStatus == 200) {
@@ -346,6 +360,11 @@ function CreateOffer() {
 								</Form.Item>
 								<Form.Item label="عرض مدفوع" name="paid" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="checked">
 									<Switch defaultChecked={paid} className={`${paid ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={onChangePaid} />
+								</Form.Item>
+								<Form.Item label="موعد إنتهاء العرض"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
+									<DatePicker  disabledDate={disabledDate}       showTime={{
+        defaultValue: dayjs('00:00:00', 'HH:mm:ss'),
+      }}   onChange={onChangeDate} />
 								</Form.Item>
 								{/* <Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 									<Input placeholder="رابط الخريطه" />

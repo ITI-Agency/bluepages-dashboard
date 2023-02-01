@@ -31,6 +31,8 @@ import SubscriptionPlanPackagesServices from "Services/SubscriptionPlanPackagesS
 import { toast } from "react-toastify";
 import Util from "../../Utils";
 import ReactQuill from 'react-quill';
+import { useSearchParams } from 'react-router-dom'
+
 import 'react-quill/dist/quill.snow.css';
 import { abs } from "stylis";
 const plans = Util.plans;
@@ -79,6 +81,7 @@ function CreateCompany() {
 	const [subscriptionPlanPackages, setSubscriptionPlanPackages] = useState([]);
 	const [descriptionar, setDescriptionar] = useState("");
 	const [descriptionen, setDescriptionen] = useState("");
+	const [searchParams, setSearchParams] = useSearchParams()
 
 	const [verified, setVerified] = useState(false);
 	const [stay, setStay] = useState(false);
@@ -267,7 +270,7 @@ function CreateCompany() {
 			setLoading(false);
 			setStay(false);
 			if (!stay) {
-				navigate(`/companies`);
+				navigate(searchParams.get('referrer'));
 			}
 			// Boom baby!
 			// if (!res) return;

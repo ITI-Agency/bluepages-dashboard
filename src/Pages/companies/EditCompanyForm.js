@@ -80,7 +80,7 @@ const EditCompanyForm = ({ company, id }) => {
 	const [imagesForm] = Form.useForm();
 	const location = useLocation();
 	const queryParams = new URLSearchParams(location.search)
-  const routerToMainPage = queryParams.get("router")
+  const routerToMainPage = queryParams.get("referrer")
   console.log("🚀 ~ file: EditCompanyForm.js:84 ~ EditCompanyForm ~ routerToMainPage", routerToMainPage)
 
 	const onReset = () => {

@@ -848,7 +848,7 @@ function Companies() {
 								<Icon>preview</Icon>&nbsp;show
 							</MDButton>
 						</Link>
-						<Link to={`/companies/${record.id}/edit-info?router=${location.pathname}`}>
+						<Link to={`/companies/${record.id}/edit-info?referrer=${location.pathname}`}>
 							<MDButton style={{ padding: 0 }} className="px-0" variant="text" color="dark">
 								<Icon>edit</Icon>&nbsp;edit
 							</MDButton>
@@ -1042,7 +1042,7 @@ function Companies() {
 				zIndex={9999}
 				color="dark"
 				sx={{ cursor: "pointer" }}
-				onClick={() => navigate("/companies/create")}
+				onClick={() => navigate(`/companies/create?referrer=${location.pathname}`)}
 			>
 				<Icon fontSize="medium" color="inherit">
 					add

@@ -1,4 +1,4 @@
-import { Input, Skeleton, Space, Switch, Tabs, Upload } from 'antd';
+import { DatePicker, Input, Skeleton, Space, Switch, Tabs, Upload } from 'antd';
 import React, { createRef, useEffect, useState } from 'react';
 import { BsBackspaceFill } from 'react-icons/bs';
 import { Button, Form, Select } from 'antd';
@@ -20,9 +20,25 @@ import CategoriesServices from "../../Services/CategoriesServices";
 import CitiesServices from 'Services/CitiesServices';
 import { useNavigate } from 'react-router-dom';
 import CompaniesServices from 'Services/CompaniesServices';
+import { useSearchParams } from 'react-router-dom'
+
 const { Option } = Select;
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import dayjs from 'dayjs';
+import advancedFormat from 'dayjs/plugin/advancedFormat'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import localeData from 'dayjs/plugin/localeData'
+import weekday from 'dayjs/plugin/weekday'
+import weekOfYear from 'dayjs/plugin/weekOfYear'
+import weekYear from 'dayjs/plugin/weekYear'
+
+dayjs.extend(customParseFormat)
+dayjs.extend(advancedFormat)
+dayjs.extend(weekday)
+dayjs.extend(localeData)
+dayjs.extend(weekOfYear)
+dayjs.extend(weekYear)
 const layout = {
 	labelCol: { span: 2 },
 	wrapperCol: { span: 20 },
@@ -69,6 +85,9 @@ const EditOfferForm = ({ offer, id, }) => {
 	const [users, setUsers] = useState(null);
 	// const [companies, setCompanies] = useState([]);
 	const [logoFile, setLogoFile] = useState([]);
+	const [searchParams, setSearchParams] = useSearchParams();
+	const [endDate,setEndDate] = useState(offer?.endAt);
+
 
 	const navigate = useNavigate();
 	const discount = {
@@ -130,6 +149,9 @@ const EditOfferForm = ({ offer, id, }) => {
 		// data.categories = [data.categories];
 		let formData = new FormData();
 		// upload categories
+		if(endDate){
+			formData.append("endAt", endDate);
+		}
 		data.categories.forEach(cat => {
 			formData.append("categories[]", cat);
 		});
@@ -167,7 +189,9 @@ const EditOfferForm = ({ offer, id, }) => {
 	}, {
 		onError: (error) => {
 			console.log({ error });
-			toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+			if(error){
+				toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+			}
 			setLoading(false);
 
 		},
@@ -175,10 +199,9 @@ const EditOfferForm = ({ offer, id, }) => {
 			// Boom baby!
 			if (res) {
 				toast.success('لقد تم تعديل العرض بنجاح');
-				navigate(`/offers`);
+				navigate(searchParams.get('referrer'));
 			}
 			setLoading(false);
-
 			// Router.push('/login')
 		},
 	});
@@ -242,6 +265,14 @@ const EditOfferForm = ({ offer, id, }) => {
 	};
 	const onChangePaid = () => {
 		setPaid(!paid);
+	};
+	const onChangeDate = (date, dateString) => {
+		console.log("dateString", dateString)
+		setEndDate(dateString);
+	};
+	const disabledDate = (current) => {
+		// Can not select days before today and today
+		return current && current < dayjs().endOf('day');
 	};
 	const getUserCompanies = async (id) => {
 		const { status: companiesStatus, data: companiesData } =
@@ -488,6 +519,9 @@ const EditOfferForm = ({ offer, id, }) => {
 						<Form.Item label="مدفوع" name="paid" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="checked">
 							<Switch defaultChecked={paid} className={`${paid ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={onChangePaid} />
 						</Form.Item>
+						<Form.Item label="موعد إنتهاء العرض"   style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
+									<DatePicker  disabledDate={disabledDate} defaultValue={dayjs(endDate, 'YYYY-MM-DD HH:mm:ss')}  format={'YYYY-MM-DD HH:mm:ss'}      showTime  onChange={onChangeDate} />
+								</Form.Item>
 						{/* <Form.Item label="رابط الخريطه" name="location_link" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 							<Input placeholder="رابط الخريطه" />
 						</Form.Item> */}

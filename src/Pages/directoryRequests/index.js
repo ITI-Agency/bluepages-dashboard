@@ -23,7 +23,8 @@ import DirectoryRequestService from "Services/DirectoryRequestService";
 import { useMutation } from '@tanstack/react-query';
 const { Option } = Select;
 import { Button, Form, Select, Table, Input, Space, Radio } from "antd";
-
+import xlsx from "json-as-xlsx";
+import SettingsServices from "Services/SettingsServices";
 const style = {
 	position: "absolute",
 	top: "50%",
@@ -48,18 +49,81 @@ function Pages() {
 	const [open, setOpen] = useState({ state: false });
 	const [edit, setEdit] = useState({ state: false });
 	const [decision, setDecision] = useState();
+	const [isExporting, setIsExporting] = useState(false);
+	const [automaticAcceptance, setAutomaticAcceptance] = useState(false);
+	const [settings, setSettings] = useState({});
 	useEffect(() => {
 		getAllDirectoryRequests();
 	}, []);
-
+	useEffect(() => {
+		if(settings){
+			setAutomaticAcceptance(settings.automaticDirectoryAcceptance)
+		}
+	}, [settings]);
+	const handleAutomaticAcceptance = async()=>{
+		setAutomaticAcceptance(!automaticAcceptance);
+		try {
+			const response = await DirectoryRequestService.updateAutomaticAcceptance({acceptance: !automaticAcceptance});
+			if (response && response.status == 200) {
+				toast.success('لقد تم تعديل الإعدادات بنجاح');
+				if(!automaticAcceptance) window.location.reload();
+			} else {
+				toast.error("sorry something went wrong while updating directories!");
+			}
+		} catch (error) {
+			toast.error("sorry something went wrong while updating directories!");
+		}
+	}
+	const handleExport = async () => {
+		console.log({directories})
+		setIsExporting(true);
+		const comp = directories.map((c) => {
+			c.cityName = c.city.name_ar;
+			return c;
+		});
+		const columns = [
+			{
+				label: "id",
+				value: "id",
+			},
+			{
+				label: "City",
+				value: "cityName",
+			},
+			{
+				label: "type",
+				value: "type",
+			},
+			{ label: "company_name", value: "company_name" },
+			{ label: "email", value: "email" },
+			{ label: "phone", value: "phone" },
+			{ label: "status", value: "status" },
+		];
+		const settings = {
+			fileName: "bluePages Directory Requests",
+		};
+		const data = [
+			{
+				sheet: "DirectoryRequests",
+				columns,
+				content: comp,
+			},
+		];
+		xlsx(data, settings, (sheet) => {
+			console.log("Download complete:", sheet);
+		});
+		setIsExporting(false);
+	};
 	const getAllDirectoryRequests = async () => {
 		setLoading(true);
 		try {
 			const response = await DirectoryRequestService.getAllDirectoryRequests();
-			if (response && response.status == 200) {
+			const settings = await SettingsServices.getSettings();
+			if (response && response.status == 200 && settings && settings.status == 200) {
 				setLoading(false);
 				setData(response.data);
 				setDirectories(response.data);
+				setSettings(settings.data);
 			} else {
 				toast.error("sorry something went wrong while getting directories!");
 				setLoading(false);
@@ -83,7 +147,6 @@ function Pages() {
 		setEdit({ state: false });
 	};
 	const handleOkEdit = useMutation(data => {
-		console.log(data);
 		if (!decision) {
 			toast.error("برجاء إختيار القرار قبل التأكيد");
 			handleCloseEdit();
@@ -224,7 +287,7 @@ function Pages() {
 					</MDTypography>
 				</MDBox>
 			),
-			width:"20%"
+			width: "20%"
 		},
 		{
 			title: "Phone",
@@ -299,6 +362,24 @@ function Pages() {
 	];
 	return (
 		<DashboardLayout>
+			<MDBox marginBottom={2} className="flex justify-between">
+				<Button className={`h-full text-white hover:text-white rounded-lg bg-blue-700 hover:bg-blue-600  flex items-center text-[16px] font-semibold ${isExporting ? 'bg-blue-400 text-white' : 'bg-blue-700 text-white'}`} loading={isExporting} onClick={handleExport}>
+					{/* <div className="flex items-center text-[16px] font-semibold"> */}
+					<Icon>edit</Icon>Export Excel
+					{/* </div> */}
+				</Button>
+
+				<MDBox className="flex.items-center">
+					<MDTypography variant="button" fontWeight="medium" className="mr-2">
+						Automatic Acceptance
+					</MDTypography>
+				<Switch
+					className={`${automaticAcceptance ? "text-blue-500" : "text-gray-200"}`}
+					checked={automaticAcceptance}
+					onChange={handleAutomaticAcceptance}
+				/>
+				</MDBox>
+			</MDBox>
 			{/* <DataTable
 				table={{
 					columns: [
