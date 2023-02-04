@@ -160,6 +160,8 @@ const PagePhones = ({company}) => {
 					Are you sure to delete ?
 					</div>
 				</Modal>
+				{
+					companyPhones?.length < 2 ?
 				<button
 					onClick={()=>setCreate(true)}
 					className=" px-4 py-2.5 bg-blueLight text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blueDark hover:shadow-lg focus:bg-blueDark focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out flex mb-4 bg-blue-400"
@@ -167,6 +169,8 @@ const PagePhones = ({company}) => {
 					<IoMdAdd className="mr-2 font-bold text-white" />
 					Add Phone
 				</button>
+				: null
+				}
 				{
 					companyPhones?.length
 						?

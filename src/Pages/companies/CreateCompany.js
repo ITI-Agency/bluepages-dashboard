@@ -706,6 +706,8 @@ function CreateCompany() {
 												</Form.Item>
 											))}
 											<Form.Item>
+												{
+													fields.length < 2 ?
 												<Button
 													type="dashed"
 													onClick={() => add()}
@@ -715,6 +717,8 @@ function CreateCompany() {
 												>
 													أضف أرقام هواتف أخري
 												</Button>
+												: null
+												}
 												{/* <Button
                 type="dashed"
                 onClick={() => {
