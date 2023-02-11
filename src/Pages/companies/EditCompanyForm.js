@@ -64,6 +64,8 @@ const EditCompanyForm = ({ company, id }) => {
 	const navigate = useNavigate();
 	const [bannerFile, setBannerFile] = useState([]);
 	const [logoFile, setLogoFile] = useState([]);
+	const [recordFile, setRecordFile] = useState([]);
+
 	const [images, setImages] = useState([]);
 	const { setLoading } = useLoading();
 	const [dataLoaded, setDataLoaded] = useState(false);
@@ -76,12 +78,14 @@ const EditCompanyForm = ({ company, id }) => {
 	const [descriptionar, setDescriptionar] = useState(company?.description_ar);
 	const [descriptionen, setDescriptionen] = useState(company?.description_en);
 	const [imageDeleted, setImageDeleted] = useState(false);
+	const [submitting, setSubmitting] = useState(false);
+	const [deletingImages, setDeletingImages] = useState(false);
 	const [form] = Form.useForm();
 	const [imagesForm] = Form.useForm();
 	const location = useLocation();
 	const queryParams = new URLSearchParams(location.search)
-  const routerToMainPage = queryParams.get("referrer")
-  console.log("🚀 ~ file: EditCompanyForm.js:84 ~ EditCompanyForm ~ routerToMainPage", routerToMainPage)
+	const routerToMainPage = queryParams.get("referrer")
+	console.log("🚀 ~ file: EditCompanyForm.js:84 ~ EditCompanyForm ~ routerToMainPage", routerToMainPage)
 
 	const onReset = () => {
 		form.resetFields();
@@ -89,7 +93,7 @@ const EditCompanyForm = ({ company, id }) => {
 	useEffect(() => {
 		getFieldsData();
 		if (company?.banner) {
-			
+
 			setBannerFile([{
 				uid: '-1',
 				url: company?.banner,
@@ -99,6 +103,12 @@ const EditCompanyForm = ({ company, id }) => {
 			setLogoFile([{
 				uid: '-1',
 				url: company?.logo,
+			}])
+		}
+		if (company?.record) {
+			setRecordFile([{
+				uid: '-1',
+				url: company?.record,
 			}])
 		}
 	}, []);
@@ -146,7 +156,7 @@ const EditCompanyForm = ({ company, id }) => {
 			setCategories(categoriesData);
 			setSubscriptionPlanPackages(subscriptionPlanPackagesData);
 			setDataLoaded(true);
-			
+
 			return;
 		}
 	};
@@ -155,6 +165,17 @@ const EditCompanyForm = ({ company, id }) => {
 		const imgWindow = window.open(src);
 
 		if (imgWindow) {
+			const image = new Image();
+			image.src = src;
+			imgWindow.document.write(image.outerHTML);
+		} else {
+			window.location.href = src;
+		}
+	};
+	const onPreviewRecord = async (file) => {
+		const src = file.url || (await getSrcFromFile(file));
+		const imgWindow = window && window.open(src);
+		if (window && document && imgWindow) {
 			const image = new Image();
 			image.src = src;
 			imgWindow.document.write(image.outerHTML);
@@ -192,7 +213,7 @@ const EditCompanyForm = ({ company, id }) => {
 		formData.append("description_en", descriptionen);
 		formData.append("description_ar", descriptionar);
 
-		console.log('logo',logoFile)
+		console.log('logo', logoFile)
 		console.log('logo', bannerFile)
 		if (logoFile?.length && !logoFile[0]?.url) {
 			formData.append("logoFile", logoFile[0].originFileObj);
@@ -200,6 +221,12 @@ const EditCompanyForm = ({ company, id }) => {
 		if (bannerFile?.length && !bannerFile[0]?.url) {
 			formData.append("bannerFile", bannerFile[0].originFileObj);
 		}
+		if (recordFile?.length && !recordFile[0]?.url) {
+			formData.append("recordFile", recordFile[0].originFileObj);
+		}
+		setSubmitting(true);
+
+		setLoading(true);
 		// company Images upload
 		if (images?.fileList && images?.fileList?.length) {
 			let formDataImages = new FormData();
@@ -208,22 +235,24 @@ const EditCompanyForm = ({ company, id }) => {
 				);
 			});
 			return CompaniesServices.addCompanyImages(company.id, formDataImages);
-		} 
+		}
 
-		setLoading(true);
 		return CompaniesServices.updateCompany(formData, company.id);
 	}, {
 		onError: (error) => {
 			console.log({ error });
 			toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
 			setLoading(false);
+			setSubmitting(false);
 
 		},
 		onSuccess: () => {
 			// Boom baby!
 			toast.success('لقد تم تعديل الصفحه بنجاح');
 			setLoading(false);
-			navigate(`${routerToMainPage}`);
+			setSubmitting(false);
+			// navigate(`${routerToMainPage}`);
+			window.location.reload(false);
 		},
 	});
 	const addImages = useMutation(() => {
@@ -250,22 +279,25 @@ const EditCompanyForm = ({ company, id }) => {
 			// Router.push('/login')
 		},
 	});
-	const removeImages = useMutation((imageId) => {
-		console.log({ imageId });
+	const removeImages = useMutation((imageIds) => {
 		// data.categories = [data.categories]
-		const payload = [imageId];
 		const data = {
 			data: {
-				imageIds: payload
+				imageIds
 			}
 		};
+		setDeletingImages(true);
 		return CompaniesServices.removeCompanyImages(company.id, data);
 	}, {
 		onError: (error) => {
 			toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+			setDeletingImages(true);
+
 		},
 		onSuccess: () => {
 			toast.success('لقد تم الحذف بنجاح');
+			setDeletingImages(true);
+
 			// setImageDeleted(!imageDeleted);
 			window.location.reload(false);
 			// Boom baby!
@@ -427,7 +459,7 @@ const EditCompanyForm = ({ company, id }) => {
 				<Form.Item style={{ marginBottom: 0 }} >
 
 
-					<Form.Item label='الأنشطه' style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories"  className="ltr:mr-4 rtl:ml-4 " rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
+					<Form.Item label='الأنشطه' style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" className="ltr:mr-4 rtl:ml-4 " rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
 						<Select
 							showSearch
 							optionFilterProp="children"
@@ -444,33 +476,33 @@ const EditCompanyForm = ({ company, id }) => {
 						/>
 					</Form.Item>
 					<Form.Item label="الدرجه" name="degree" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="الدرجه" />
-							</Form.Item>
+						<Input placeholder="الدرجه" />
+					</Form.Item>
 				</Form.Item>
 				<Form.Item   >
-							<Form.Item label="رقم السجل" name="commercial_reg" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="رقم السجل" />
-							</Form.Item>
+					<Form.Item label="رقم السجل" name="commercial_reg" className=" ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						<Input placeholder="رقم السجل" />
+					</Form.Item>
 
-							<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder="رابط الخريطه" />
-							</Form.Item>
-							<Form.Item label="موثق" name="verified"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label="رابط الخريطه" name="location_link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+						<Input placeholder="رابط الخريطه" />
+					</Form.Item>
+					<Form.Item label="موثق" name="verified" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Switch defaultChecked={verified} className={`${verified ? "bg-blue-500" : "bg-gray-200"} shadow-lg `} onChange={() => setVerified(!verified)} />
 					</Form.Item>
-							{/* <Form.Item name="post_code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					{/* <Form.Item name="post_code" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 							<Input placeholder="الرمز البريدي" />
 						</Form.Item> */}
-						</Form.Item>
+				</Form.Item>
 				<Form.Item style={{ marginBottom: 0 }} >
-					<Form.Item label='الوصف باللغه العربيه'  className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+					<Form.Item label='الوصف باللغه العربيه' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
 							{/* <TextArea defaultValue={company?.description_ar} placeholder='الوصف باللغه العربيه' rows={4} /> */}
 							<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
 
 						</Form.Item>
 					</Form.Item>
-					<Form.Item label='الوصف باللغه الإنجليزيه' className=""  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+					<Form.Item label='الوصف باللغه الإنجليزيه' className="" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
 							{/* <TextArea defaultValue={company?.description_en} placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
 							<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
@@ -494,46 +526,76 @@ const EditCompanyForm = ({ company, id }) => {
 
 					
 					</Form.Item> */}
-					<Form.Item label="اللوجو" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
+					<Form.Item label="اللوجو" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="banner">
 						<ImgCrop grid aspect={1} rotate>
-						<Upload onChange={({ fileList: newFileList }) => { setLogoFile(newFileList); }}
-							// beforeUpload={() => false}
-							fileList={logoFile}
+							<Upload onChange={({ fileList: newFileList }) => { setLogoFile(newFileList); }}
+								// beforeUpload={() => false}
+								fileList={logoFile}
 								listType="picture-card"
 								onPreview={onPreviewLogo}
 
 							>
-							{logoFile.length < 1 &&
-								<div className='block' >
+								{logoFile.length < 1 &&
+									<div className='block' >
 
-									<PlusOutlined />
-									<div style={{ marginTop: 8 }}>Upload</div>
-								</div>
-							}
+										<PlusOutlined />
+										<div style={{ marginTop: 8 }}>Upload</div>
+									</div>
+								}
 
-						</Upload>
+							</Upload>
 						</ImgCrop>
 					</Form.Item>
-					<Form.Item label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
+					<Form.Item label="بنر الشركه" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="logo">
 						<ImgCrop grid aspect={4.47} rotate>
-						<Upload
-										// beforeUpload={() => false}
-										onChange={({ fileList }) => {
-											setBannerFile(fileList);
-										}}
-										fileList={bannerFile}
-										listType="picture-card"
-										onPreview={onPreview}
+							<Upload
+								// beforeUpload={() => false}
+								onChange={({ fileList }) => {
+									setBannerFile(fileList);
+								}}
+								fileList={bannerFile}
+								listType="picture-card"
+								onPreview={onPreview}
 
-									>
-										{bannerFile.length < 1 &&
-											<div className='block' >
-												<PlusOutlined />
-												<div style={{ marginTop: 8 }}>Upload</div>
-											</div>
-										}
-									</Upload>
-								</ImgCrop>
+							>
+								{bannerFile.length < 1 &&
+									<div className='block' >
+										<PlusOutlined />
+										<div style={{ marginTop: 8 }}>Upload</div>
+									</div>
+								}
+							</Upload>
+						</ImgCrop>
+						{/* </ImgCrop> */}
+						{/* {bannerFile?.length ? <img alt="" src={bannerFile[0]?.thumbUrl} className="rounded-full aspect-square object-contain	p-2 w-[7.5rem] h-[7.5rem] inline-block" /> : ""} */}
+						{/* {
+							company?.banner &&
+							<img
+								width={200}
+								height={30}
+								src={company?.banner}
+								alt=""
+							/>
+						} */}
+					</Form.Item>
+					<Form.Item label="صوره السجل التجاري" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} valuePropName="record">
+							<Upload
+								// beforeUpload={() => false}
+								onChange={({ fileList }) => {
+									setRecordFile(fileList);
+								}}
+								fileList={recordFile}
+								listType="picture-card"
+								onPreview={onPreview}
+
+							>
+								{recordFile.length < 1 &&
+									<div className='block' >
+										<PlusOutlined />
+										<div style={{ marginTop: 8 }}>Upload</div>
+									</div>
+								}
+							</Upload>
 						{/* </ImgCrop> */}
 						{/* {bannerFile?.length ? <img alt="" src={bannerFile[0]?.thumbUrl} className="rounded-full aspect-square object-contain	p-2 w-[7.5rem] h-[7.5rem] inline-block" /> : ""} */}
 						{/* {
@@ -598,7 +660,7 @@ const EditCompanyForm = ({ company, id }) => {
 					</Form.Item>
 
 				</Form.Item>
-	
+
 				<div className="divider">
 					<h1 className="mb-1 text-lg font-bold text-center text-[#0f6fbd]">
 						وسائل التواصل
@@ -609,7 +671,7 @@ const EditCompanyForm = ({ company, id }) => {
 					<Form.Item label="فيسبوك" className="ltr:mr-4 rtl:ml-4 " name="facebook" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="فيسبوك" />
 					</Form.Item>
-					<Form.Item label="تويتر"  className="ltr:mr-4 rtl:ml-4 " name="twitter" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+					<Form.Item label="تويتر" className="ltr:mr-4 rtl:ml-4 " name="twitter" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 						<Input placeholder="تويتر" />
 					</Form.Item>
 					<Form.Item label="انستجرام" name="instagram" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
@@ -626,7 +688,7 @@ const EditCompanyForm = ({ company, id }) => {
 
 				</Form.Item>
 				<Form.Item   >
-					<Form.Item  label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+					<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
 						<Input placeholder='رقم الهاتف الرئيسي' />
 					</Form.Item>
 					<Form.Item label="الرقم الموحد" className="ltr:mr-4 rtl:ml-4 " name="hotline" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
@@ -649,7 +711,7 @@ const EditCompanyForm = ({ company, id }) => {
 
 
 				<Form.Item {...tailLayout}>
-					<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
+					<Button loading={submitting} type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
 						submit
 					</Button>
 					<Button htmlType="button" onClick={onReset} className='mx-2 rtl:pt-2 '>
@@ -660,10 +722,14 @@ const EditCompanyForm = ({ company, id }) => {
 			</Form>
 			<div className="my-4 divider ">
 				<h1 className="text-2xl font-bold text-center text-blueLight">
-					Edit Company Images
+					تعديل صور الشركه
 				</h1>
 				<div className="w-full h-[1px] bg-gray-400"></div>
 			</div>
+			<div className="flex justify-end my-4">
+				<Button onClick={() => company.images.length ? removeImages.mutate(company.images.map(img => img.id)) : toast.error('لا يوجد صور للشركه')} loading={deletingImages} danger >حذف جميع صور الشركه</Button>
+			</div>
+
 			{/* <Form {...formImagesLayout} form={imagesForm} name="form-images" onFinish={addImages.mutate} >
 				<Form.Item label="إضافه صور الشركه" valuePropName="images" style={{ distplay: "inline-block", marginBottom: 0 }}>
 					<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
@@ -683,12 +749,12 @@ const EditCompanyForm = ({ company, id }) => {
 			<section className="overflow-hidden text-gray-700 ">
 				<div className="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
 					<div className="flex flex-wrap -m-1 md:-m-2">
-						{company.images.sort((a,b)=>a.id-b.id).map((img, i) => (
+						{company.images.sort((a, b) => a.id - b.id).map((img, i) => (
 							<div key={i} className="flex flex-wrap w-1/3">
 								<div className="flex flex-col w-full p-1 mx-4 md:p-2">
 									<img width={150} height={150} alt="gallery" className="block object-cover object-center w-full h-full rounded-lg "
 										src={img.image}></img>
-									<div onClick={() => removeImages.mutate(img.id)} className="mt-2 text-center text-white bg-red-500 cursor-pointer hover:bg-red-400 btn"> <p className="text-center">حذف</p></div>
+									<div onClick={() => removeImages.mutate([img.id])} className="mt-2 text-center text-white bg-red-500 rounded-lg cursor-pointer hover:bg-red-400 btn"> <p className="text-center">حذف</p></div>
 
 
 								</div>

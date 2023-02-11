@@ -95,7 +95,7 @@ function CompanyDetails() {
               <Grid item xs={12} md={6} xl={4} sx={{ display: "flex" }}>
                 <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
                 <ProfileInfoCard
-                  title="Company details:"
+                  title="تفاصيل الشركه :"
                   description={company.description_en}
                   info={{
                     hotline: company.hotline,
@@ -134,6 +134,23 @@ function CompanyDetails() {
                   action={{ route: "edit-info", tooltip: "Edit Company Info" }}
                   shadow={false}
                 />
+                <Divider orientation="vertical" sx={{ mx: 0 }} />
+              </Grid>
+              <Grid item xs={12} md={6} xl={4} sx={{ width:'100%'}}>
+                {/* <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} /> */}
+                <h1 className="w-full mt-2 text-lg font-medium text-gray-800">معلومات إضافيه</h1>
+                {company.record ?  
+                <div className="w-full mt-2 text-lg font-medium text-gray-800">
+                <p>رقم السجل : {company.commercial_reg}</p>
+                <p>صوره السجل :</p>
+                <a href={company.record} target="_blank">
+                <img className="w-36" alt="" src={company.record}></img>
+
+                </a>
+              </div>
+                : null}
+                  
+
                 <Divider orientation="vertical" sx={{ mx: 0 }} />
               </Grid>
               {/* <Grid item xs={12} xl={4}>

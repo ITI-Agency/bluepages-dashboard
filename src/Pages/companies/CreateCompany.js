@@ -794,6 +794,13 @@ function CreateCompany() {
 												</Form.Item>
 												<Form.Item
 													{...restField}
+													name={[name, 'phone_number']}
+												// rules={[{ required: true, message: "رقم الهاتف" }]}
+												>
+													<Input placeholder="رقم الجوال" />
+												</Form.Item>
+												<Form.Item
+													{...restField}
 													name={[name, 'link']}
 												// rules={[{ required: true, message: "الرابط" }]}
 												>

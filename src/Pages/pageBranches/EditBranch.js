@@ -67,6 +67,7 @@ const EditBranch = ({ company, setCreate, setEdit, id }) => {
 		description_ar: singleBranch.description_ar || "",
 		description_en: singleBranch.description_en || "",
 		phone: singleBranch.phone || "",
+		phone_number: singleBranch.phone_number || "",
 		link: singleBranch.link || "",
 
 	};
@@ -108,11 +109,14 @@ const EditBranch = ({ company, setCreate, setEdit, id }) => {
 									</Form.Item>
 								</Form.Item>
 								<Form.Item style={{ marginBottom: 0 }} >
-									<Form.Item label="الرابط" name="link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+									<Form.Item label="الرابط" name="link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 										<Input placeholder="الرابط" />
 									</Form.Item>
-									<Form.Item label="رقم الهاتف" className="" name="phone" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+									<Form.Item label="رقم الهاتف" className="ltr:mr-2 rtl:ml-2" name="phone" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 										<Input placeholder="رقم الهاتف" />
+									</Form.Item>
+									<Form.Item label="رقم الجوال" className="" name="phone_number" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+										<Input placeholder="رقم الجوال" />
 									</Form.Item>
 								</Form.Item>
 								<Form.Item >

@@ -82,11 +82,14 @@ const AddBranch = ({ company, setCreate, setEdit }) => {
 						</Form.Item>
 					</Form.Item>
 					<Form.Item style={{ marginBottom: 0 }} >
-						<Form.Item label="الرابط" name="link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+						<Form.Item label="الرابط" name="link" className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 							<Input placeholder="الرابط" />
 						</Form.Item>
-						<Form.Item label="رقم الهاتف" className="" name="phone" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+						<Form.Item label="رقم الهاتف"  className="ltr:mr-4 rtl:ml-4" name="phone" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 							<Input placeholder="رقم الهاتف" />
+						</Form.Item>
+						<Form.Item label="رقم الجوال" className="ltr:mr-4 rtl:ml-4"  name="phone_number" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+							<Input placeholder="رقم الجوال" />
 						</Form.Item>
 					</Form.Item>
 					<Form.Item >
