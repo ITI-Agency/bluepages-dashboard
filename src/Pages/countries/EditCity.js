@@ -139,6 +139,7 @@ function EditCity() {
 	const initialValues = {
 		name_ar: city.name_ar || "",
 		name_en: city.name_en || "",
+		city_code: city.city_code || "",
 	};
 
 	return (
@@ -164,13 +165,15 @@ function EditCity() {
 						<Form.Item style={{ width: 'calc(50% - 8px)', display: 'inline-block', }}>
 							<img className="relative top-10 " src={city.image} alt={city.name_en} style={{ width: "6rem", height: "6rem" }} />
 						</Form.Item>
-						<Form.Item label="Name ar" name="name_ar" rules={[{ required: true, message: 'برجاء إدخال الإسم' }]}>
+						<Form.Item label="الاسم بالعربيه" name="name_ar" rules={[{ required: true, message: 'برجاء إدخال الإسم' }]}>
 							<Input />
 						</Form.Item>
-						<Form.Item label="Name en" name="name_en" rules={[{ required: true, message: 'برجاء إدخال الإسم' }]}>
+						<Form.Item label="الإسم بالانجليزيه" name="name_en" rules={[{ required: true, message: 'برجاء إدخال الإسم' }]}>
 							<Input />
 						</Form.Item>
-
+						<Form.Item label="كود المدينه" name="city_code" rules={[{ required: true, message: 'برجاء  إضافه كود المدينه' }]}>
+<Input />
+</Form.Item>
 						<Form.Item className="mt-8" >
 							<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
 								submit

@@ -64,6 +64,10 @@ function CityForm({ onSubmit }) {
 
 						<Input />
 					</Item>
+					<Item label="كود المدينه" name="city_code" rules={[{ required: true, message: 'برجاء  إضافه كود المدينه' }]}>
+
+						<Input />
+					</Item>
 
 					<Item
 						wrapperCol={{

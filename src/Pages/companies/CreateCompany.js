@@ -651,7 +651,17 @@ function CreateCompany() {
 							<Form.Item label="سناب شات" className="ltr:mr-4 rtl:ml-4 " name="snapchat" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Input placeholder="سناب شات" />
 							</Form.Item>
-
+							<Form.Item label="لينكد ان"  name="linkedin" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="لينكد ان" />
+							</Form.Item>
+						</Form.Item>
+						<Form.Item className='mt-4 mb-0'  >
+							<Form.Item label="يوتيوب" name="youtube" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="يوتيوب" />
+							</Form.Item>
+							<Form.Item label="تيك توك" className="ltr:mr-4 rtl:ml-4 " name="tiktok" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="تيك توك" />
+							</Form.Item>
 						</Form.Item>
 						<Form.Item   >
 							<Form.Item  label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">

@@ -351,6 +351,9 @@ const EditCompanyForm = ({ company, id }) => {
 		facebook: company.facebook || "",
 		twitter: company.twitter || "",
 		whatsapp: company.whatsapp || "",
+		youtube: company.youtube || "",
+		linkedin: company.linkedin || "",
+		tiktok: company.tiktok || "",
 		snapchat: company.snapchat || "",
 		instagram: company.instagram || "",
 		// longitude: company.longitude || "",
@@ -679,14 +682,24 @@ const EditCompanyForm = ({ company, id }) => {
 					</Form.Item>
 				</Form.Item>
 				<Form.Item className='mt-4 mb-0'  >
-					<Form.Item label="واتساب" name="whatsapp" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="واتساب" />
-					</Form.Item>
-					<Form.Item label="سناب شات" className="ltr:mr-4 rtl:ml-4 " name="snapchat" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-						<Input placeholder="سناب شات" />
-					</Form.Item>
-
-				</Form.Item>
+							<Form.Item label="واتساب" name="whatsapp" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="واتساب" />
+							</Form.Item>
+							<Form.Item label="سناب شات" className="ltr:mr-4 rtl:ml-4 " name="snapchat" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="سناب شات" />
+							</Form.Item>
+							<Form.Item label="لينكد ان"  name="linkedin" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="لينكد ان" />
+							</Form.Item>
+						</Form.Item>
+						<Form.Item className='mt-4 mb-0'  >
+							<Form.Item label="يوتيوب" name="youtube" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="يوتيوب" />
+							</Form.Item>
+							<Form.Item label="تيك توك" className="ltr:mr-4 rtl:ml-4 " name="tiktok" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="تيك توك" />
+							</Form.Item>
+						</Form.Item>
 				<Form.Item   >
 					<Form.Item label='رقم الهاتف الرئيسي' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
 						<Input placeholder='رقم الهاتف الرئيسي' />
