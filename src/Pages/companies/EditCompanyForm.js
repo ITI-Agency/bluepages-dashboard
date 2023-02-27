@@ -24,7 +24,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ImgCrop from "antd-img-crop";
-
+const { formats, modules } = Util;
 const layout = {
 	labelCol: { span: 2 },
 	wrapperCol: { span: 20 },
@@ -501,14 +501,14 @@ const EditCompanyForm = ({ company, id }) => {
 					<Form.Item label='الوصف باللغه العربيه' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
 							{/* <TextArea defaultValue={company?.description_ar} placeholder='الوصف باللغه العربيه' rows={4} /> */}
-							<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
+							<ReactQuill  formats={formats} modules={modules} rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
 
 						</Form.Item>
 					</Form.Item>
 					<Form.Item label='الوصف باللغه الإنجليزيه' className="" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 						<Form.Item l>
 							{/* <TextArea defaultValue={company?.description_en} placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
-							<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
+							<ReactQuill  formats={formats} modules={modules} rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
 
 						</Form.Item>
 					</Form.Item>

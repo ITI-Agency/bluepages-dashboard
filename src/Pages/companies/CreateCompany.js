@@ -36,6 +36,7 @@ import { useSearchParams } from 'react-router-dom'
 import 'react-quill/dist/quill.snow.css';
 import { abs } from "stylis";
 const plans = Util.plans;
+const { formats, modules } = Util;
 const layout = {
 	labelCol: { span: 2 },
 	wrapperCol: { span: 20 },
@@ -441,7 +442,7 @@ function CreateCompany() {
 						<Form.Item style={{ marginBottom: 0 }} >
 							<Form.Item label='الوصف باللغه العربيه' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 								<Form.Item >
-									<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
+									<ReactQuill formats={formats} modules={modules} rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
 
 									{/* <TextArea placeholder='الوصف باللغه العربيه' rows={4} /> */}
 								</Form.Item>
@@ -449,7 +450,7 @@ function CreateCompany() {
 							<Form.Item label='الوصف باللغه الإنجليزيه' className="" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 								<Form.Item >
 									{/* <TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
-									<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
+									<ReactQuill formats={formats} modules={modules}  rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
 								</Form.Item>
 							</Form.Item>
 

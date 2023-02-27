@@ -47,8 +47,32 @@ const plans = [
 		name_ar: "برونز - مربع النشاط",
 	},
 ];
+ const modules ={toolbar: [
+	['bold', 'italic', 'underline', 'strike', 'blockquote'],
+	[
+			{ 'list': 'ordered' },
+			{ 'list': 'bullet' },
+			{ 'indent': '-1' },
+			{ 'indent': '+1' },
+	],
+	['link'],
+	['clean'],
+	[{ 'color': [] }, { 'background': [] }],
+	[{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }],
+	[{ 'header': [] }],
+]}
+
+ 	const formats=[
+	'header', 'font', 'size', 'color',
+	'bold', 'italic', 'underline', 'strike', 'blockquote',
+	'list', 'bullet', 'indent',
+	'link', 'image', 'video',
+	'align',
+]
 export default {
 	prepareQueryFilters,
-	plans
+	plans,
+	formats,
+	modules
 
 };
