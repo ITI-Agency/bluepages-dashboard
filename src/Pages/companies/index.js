@@ -18,7 +18,7 @@ import CitiesServices from "Services/CitiesServices";
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Form, Select, Table, Input, Space, Tag,Switch } from "antd";
 import pLimit from 'p-limit';
-
+import { CheckCircleTwoTone ,CloseCircleTwoTone} from '@ant-design/icons';
 const { Option } = Select;
 
 import DataTable from "examples/Tables/DataTable";
@@ -768,6 +768,7 @@ function Companies() {
 		// 	],
 		// 	onFilter: (value, record) => record.verified === value,
 		// },
+		
 		{
 			title: "Verified",
 			key: 'verified',
@@ -822,47 +823,74 @@ function Companies() {
 			],
 			// onFilter: (value, record) => record.status === value,
 		},
-		{
-			title: "created_at",
-			key: 'created_at',
-			render: (_, record) => <Moment fromNow>{record.createdAt}</Moment>,
-			sorter: (a, b) => moment(a.createdAt).unix() - moment(b.createdAt).unix(),
-
-		},
-
-		{
-			title: "control",
-			key: 'action',
-			width: "20%",
-			fixed: "right",
-			render: (_, record) => (
-				<>
-					<MDBox
-						display="flex"
-						alignItems="center"
-						mt={{ xs: 2, sm: 0 }}
-						ml={{ xs: -1.5, sm: 0 }}
-					>
-						<Link to={`/companies/${record.id}`}>
-							<MDButton style={{ padding: 0 }} className="px-0" variant="text" color="info">
-								<Icon>preview</Icon>&nbsp;show
-							</MDButton>
-						</Link>
-						<Link to={`/companies/${record.id}/edit-info?referrer=${location.pathname}`}>
-							<MDButton style={{ padding: 0 }} className="px-0" variant="text" color="dark">
-								<Icon>edit</Icon>&nbsp;edit
-							</MDButton>
-						</Link>
-						<MDBox mr={1}>
-							<MDButton style={{ padding: 0 }} className="px-0" onClick={() => handleOpen(record)} variant="text" color="error">
-								<Icon>delete</Icon>&nbsp;delete
-							</MDButton>
-						</MDBox>
-					</MDBox>
-				</>
-			),
-		},
+	
 	];
+	location.pathname === "/companies-requests" && columns.push({
+		title: "SMS",
+		key: 'sms-verified',
+		render: (_, record) => (
+			<>
+				{
+					record?.is_sms_request ==="true" ? (
+						<CheckCircleTwoTone twoToneColor="#52c41a" />
+
+					) : (
+						<CloseCircleTwoTone  twoToneColor="#FF0000"/>
+					)
+				}
+			</>
+		),
+		filters: [
+			{
+				text: 'Data Verification',
+				value: "true"
+			},
+			{
+				text: 'Not Data Verification',
+				value: null
+			},
+		],
+		onFilter: (value, record) => record.is_sms_request === value,
+	})
+	columns.push(	...[{
+		title: "created_at",
+		key: 'created_at',
+		render: (_, record) => <Moment fromNow>{record.createdAt}</Moment>,
+		sorter: (a, b) => moment(a.createdAt).unix() - moment(b.createdAt).unix(),
+
+	},
+	{
+		title: "control",
+		key: 'action',
+		width: "20%",
+		// fixed: "right",
+		render: (_, record) => (
+			<>
+				<MDBox
+					display="flex"
+					alignItems="center"
+					mt={{ xs: 2, sm: 0 }}
+					ml={{ xs: -1.5, sm: 0 }}
+				>
+					<Link to={`/companies/${record.id}`}>
+						<MDButton style={{ padding: 0 }} className="px-0" variant="text" color="info">
+							<Icon>preview</Icon>&nbsp;show
+						</MDButton>
+					</Link>
+					<Link to={`/companies/${record.id}/edit-info?referrer=${location.pathname}`}>
+						<MDButton style={{ padding: 0 }} className="px-0" variant="text" color="dark">
+							<Icon>edit</Icon>&nbsp;edit
+						</MDButton>
+					</Link>
+					<MDBox mr={1}>
+						<MDButton style={{ padding: 0 }} className="px-0" onClick={() => handleOpen(record)} variant="text" color="error">
+							<Icon>delete</Icon>&nbsp;delete
+						</MDButton>
+					</MDBox>
+				</MDBox>
+			</>
+		),
+	}])
 	const handleChange = async (pagination, filters, sorter) => {
 		const filtersArray = [{ country: "true" }, { city: "true" }, { limit: pagination.pageSize }, { page: pagination.current },{requests: location.pathname ==='/companies-requests' ? 'true' : 'false'},{user:'true'}];
 		const categoryInTableFilter = tableFilter.find(it => it.hasOwnProperty('categories[]'));
@@ -1015,6 +1043,7 @@ function Companies() {
 			<Table
 				onChange={handleChange}
 				columns={columns}
+				scroll={{ x: 400 }}
 				dataSource={companies.items}
 				pagination={{ position: ['bottom', 'right'], defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30', '50', '100'], total: companies?.meta?.totalItems }}
 				rowKey={(record) => record.id}
