@@ -826,16 +826,16 @@ function Companies() {
 	
 	];
 	location.pathname === "/companies-requests" && columns.push({
-		title: "SMS",
-		key: 'sms-verified',
+		title: "Type",
+		key: 'type-verified',
 		render: (_, record) => (
 			<>
 				{
-					record?.is_sms_request ==="true" ? (
-						<CheckCircleTwoTone twoToneColor="#52c41a" />
-
+					record?.is_sms_request ==="REQ" ? (
+						<p>طلب توثيق</p>
 					) : (
-						<CloseCircleTwoTone  twoToneColor="#FF0000"/>
+						<p>إعلان</p>
+
 					)
 				}
 			</>

@@ -171,9 +171,9 @@ function EditCity() {
 						<Form.Item label="الإسم بالانجليزيه" name="name_en" rules={[{ required: true, message: 'برجاء إدخال الإسم' }]}>
 							<Input />
 						</Form.Item>
-						<Form.Item label="كود المدينه" name="city_code" rules={[{ required: true, message: 'برجاء  إضافه كود المدينه' }]}>
+						{/* <Form.Item label="كود المدينه" name="city_code" rules={[{ required: true, message: 'برجاء  إضافه كود المدينه' }]}>
 <Input />
-</Form.Item>
+</Form.Item> */}
 						<Form.Item className="mt-8" >
 							<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
 								submit
