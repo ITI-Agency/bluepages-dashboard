@@ -338,7 +338,7 @@ function Companies() {
 					const val = uniqueData.findIndex((obj => obj.name_ar == company.name_ar));
 					if (val === -1) {
 						company.categories = [company.categories];
-						uniqueData.push(company);
+						uniqueData.push({...company,standard_phone:company.standard_phone.toString()});
 					} else {
 						uniqueData[val].categories.push(company.categories);
 					}
