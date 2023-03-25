@@ -48,6 +48,7 @@ function Pages() {
 	const navigate = useNavigate();
 	const [open, setOpen] = useState({ state: false });
 	const [edit, setEdit] = useState({ state: false });
+	const [deleting,setDeleting] = useState(false);
 	const [decision, setDecision] = useState();
 	const [isExporting, setIsExporting] = useState(false);
 	const [automaticAcceptance, setAutomaticAcceptance] = useState(false);
@@ -115,22 +116,27 @@ function Pages() {
 		setIsExporting(false);
 	};
 	const getAllDirectoryRequests = async () => {
-		setLoading(true);
+		// setLoading(true);
+		setDeleting(true)
 		try {
 			const response = await DirectoryRequestService.getAllDirectoryRequests();
 			const settings = await SettingsServices.getSettings();
 			if (response && response.status == 200 && settings && settings.status == 200) {
-				setLoading(false);
+				// setLoading(false);
+			setDeleting(false)
+
 				setData(response.data);
 				setDirectories(response.data);
 				setSettings(settings.data);
 			} else {
 				toast.error("sorry something went wrong while getting directories!");
-				setLoading(false);
+			setDeleting(false)
+				// setLoading(false);
 			}
 		} catch (error) {
 			toast.error("sorry something went wrong while getting directories!");
-			setLoading(false);
+			setDeleting(false)
+			// setLoading(false);
 		}
 	};
 
@@ -174,6 +180,7 @@ function Pages() {
 
 
 	const handleDelete = async (pageId) => {
+		setDeleting(true)
 		console.log({ pageId });
 		try {
 			const res = await DirectoryRequestService.removeDirectory(pageId);
@@ -181,16 +188,22 @@ function Pages() {
 				handleClose();
 				toast.success("this page was removed successfully!");
 				setLoading(false);
+		setDeleting(false)
+
 				getAllDirectoryRequests();
 			} else {
 				handleClose();
 				toast.error("sorry something went wrong while removing page!");
 				setLoading(false);
+		setDeleting(false)
+
 			}
 		} catch (error) {
 			handleClose();
 			toast.error("sorry something went wrong while removing page!");
 			setLoading(false);
+		setDeleting(false)
+
 		}
 	};
 	// const handleStatusChange = async (e, item) => {
@@ -492,9 +505,10 @@ function Pages() {
 					</MDTypography>
 					<MDBox display="flex" alignItems="center" mt={{ xs: 2, sm: 0 }} ml={{ xs: -1.5, sm: 0 }}>
 						<MDBox mr={1}>
-							<MDButton onClick={() => handleDelete(open.id)} variant="text" color="error">
+							{/* <MDButton onClick={() => handleDelete(open.id)} variant="text" color="error">
 								<Icon>delete</Icon>&nbsp;delete
-							</MDButton>
+							</MDButton> */}
+							<Button danger loading={deleting} onClick={() => handleDelete(open.id)} variant="text" color="red">delete</Button>
 						</MDBox>
 						<MDButton onClick={handleClose} variant="text" color="dark">
 							cancel

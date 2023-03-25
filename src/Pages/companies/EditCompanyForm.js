@@ -15,6 +15,7 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import SubscriptionPlanPackagesServices from "Services/SubscriptionPlanPackagesServices";
 import { toast } from "react-toastify";
+
 import Util from "../../Utils";
 import CitiesServices from 'Services/CitiesServices';
 const plans = Util.plans;
@@ -83,6 +84,8 @@ const EditCompanyForm = ({ company, id }) => {
 	const [form] = Form.useForm();
 	const [imagesForm] = Form.useForm();
 	const location = useLocation();
+	const [searchParams, setSearchParams] = useSearchParams()
+
 	const queryParams = new URLSearchParams(location.search)
 	const routerToMainPage = queryParams.get("referrer")
 	console.log("🚀 ~ file: EditCompanyForm.js:84 ~ EditCompanyForm ~ routerToMainPage", routerToMainPage)
@@ -324,7 +327,6 @@ const EditCompanyForm = ({ company, id }) => {
 	if (!dataLoaded || !countries || !categories || !users || !cities || !subscriptionPlanPackages) return <div className="p-8 m-40 mx-auto mt-8 bg-white rounded-md shadow-md md:w-9/12">
 		<Skeleton active />
 	</div>;
-	console.log({ subscriptionPlanPackages });
 	const initialValues = {
 		name_ar: company.name_ar || "",
 		name_en: company.name_en || "",
@@ -359,7 +361,6 @@ const EditCompanyForm = ({ company, id }) => {
 		// longitude: company.longitude || "",
 		// latitude: company.latitude || "",
 		location_link: company.location_link || "",
-
 	};
 	return (
 		<div>
@@ -726,6 +727,9 @@ const EditCompanyForm = ({ company, id }) => {
 				<Form.Item {...tailLayout}>
 					<Button loading={submitting} type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
 						submit
+					</Button>
+					<Button type="warning"  onClick={()=>navigate(`/companies/create?referrer=${searchParams.get('referrer')}&companyId=${company.id}`)} className='mx-2 text-white bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-450 hover:text-white rtl:pt-2' >
+								نسخ - copy
 					</Button>
 					<Button htmlType="button" onClick={onReset} className='mx-2 rtl:pt-2 '>
 						reset

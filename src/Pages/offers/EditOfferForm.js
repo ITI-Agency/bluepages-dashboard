@@ -344,6 +344,10 @@ const EditOfferForm = ({ offer, id, }) => {
 		sale_amount: offer?.sale_amount ? Number(offer?.sale_amount) : 0,
 		location_link: offer?.location_link || "",
 		code: offer?.code || "",
+		website: offer?.website || "",
+		whatsapp: offer?.whatsapp || "",
+		standard_phone: offer?.standard_phone || "",
+		mobile_number: offer?.mobile_number || "",
 		// price: offer?.price || "",
 	};
 	return (
@@ -423,7 +427,7 @@ const EditOfferForm = ({ offer, id, }) => {
 								allowClear
 							/>
 						</Form.Item> */}
-						<Form.Item label="الأنشطه" style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
+						<Form.Item label="الأنشطه" style={{ display: 'inline-block', width: 'calc(67% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]} className="ltr:mr-4 rtl:ml-4 ">
 							<Select
 								showSearch
 								optionFilterProp="children"
@@ -439,7 +443,21 @@ const EditOfferForm = ({ offer, id, }) => {
 								options={categories.map((cat) => ({ label: cat[`name_ar`], value: cat.id }))}
 							/>
 						</Form.Item>
+						<Form.Item label='الموقع الإلكتروني' name="website"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
+									<Input placeholder='الموقع الإلكتروني' />
+								</Form.Item>
 					</Form.Item>
+					<Form.Item style={{ marginBottom: 0 }} >
+								<Form.Item label="واتساب" name="whatsapp" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+									<Input placeholder="واتساب" />
+								</Form.Item>
+								<Form.Item  label='رقم الهاتف ' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+								<Input placeholder='رقم الهاتف ' />
+							</Form.Item>
+							<Form.Item label="رقم الجوال"  name="mobile_number" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="رقم الجوال" />
+							</Form.Item>
+							</Form.Item>
 					<Form.Item style={{ marginBottom: 0 }} >
 						{/* <Form.Item className="ltr:mr-4 rtl:ml-4 " label="السعر" name="price" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
 							<Input type="number" placeholder="السعر" />
@@ -559,6 +577,9 @@ const EditOfferForm = ({ offer, id, }) => {
 						<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
 							submit
 						</Button>
+						<Button type="warning"  onClick={()=>navigate(`/offers/create?referrer=${searchParams.get('referrer')}&offerId=${offer.id}`)} className='mx-2 text-white bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-450 hover:text-white rtl:pt-2' >
+								نسخ - copy
+					</Button>
 						<Button htmlType="button" onClick={onReset} className='mx-2 rtl:pt-2 '>
 							reset
 						</Button>

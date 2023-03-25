@@ -83,7 +83,7 @@ function CreateCompany() {
 	const [descriptionar, setDescriptionar] = useState("");
 	const [descriptionen, setDescriptionen] = useState("");
 	const [searchParams, setSearchParams] = useSearchParams()
-
+	const [company,setCompany] = useState(false)
 	const [verified, setVerified] = useState(false);
 	const [stay, setStay] = useState(false);
 	const postCompany = async (companyData) => {
@@ -98,7 +98,26 @@ function CreateCompany() {
 			console.log("there is an error:>", res);
 		}
 	};
+	useEffect(()=>{
+		if(!searchParams.get('companyId')) setCompany({})
+		const getCompany = async (id) => {
+			try{
+				const { status: companyStatus, data: companyData } = await CompaniesServices.getCompanyDetails(id);
+				const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(companyData.countryId);
+				if (citiesStatus == 200) {
+					setCities(citiesData);
+				}
+				if (companyStatus == 200) {
+					setCompany(companyData)
+				}
+		toast.success('تم النسخ بنجاح')
 
+			}catch(err){console.log(err)}
+			
+		}
+		getCompany(searchParams.get('companyId'));
+		
+	},[searchParams.get('companyId')])
 	useEffect(() => {
 		getFieldsData();
 	}, []);
@@ -302,14 +321,48 @@ function CreateCompany() {
 		setCities(() => filteredCities);
 	};
 
-	if (!dataLoaded) return <LoadingDataLoader />;
-
+	if (!dataLoaded || !company) return <LoadingDataLoader />;
+	const initialValues = {
+		name_ar: company.name_ar || "",
+		name_en: company.name_en || "",
+		email: company.email || "",
+		website: company.website || "",
+		countryId: company?.countryId || null,
+		userId: company?.userId,
+		subscriptionPlanId: company?.subscriptionPlanId || null,
+		subscriptionPlanPackageId: company?.subscriptionPlanPackageId || null,
+		cityId: company?.cityId || null,
+		standard_phone: company.standard_phone || "",
+		categories: company?.categories?.map(it => it.id) || [],
+		// description_ar: company.description_ar || "",
+		// description_en: company.description_en || "",
+		district_ar: company.district_ar || "",
+		district_en: company.district_en || "",
+		street_ar: company.street_ar || "",
+		street_en: company.street_en || "",
+		building_no: company.building_no || "",
+		post_code: company.post_code || "",
+		hotline: company.hotline || "",
+		commercial_reg: company.commercial_reg || "",
+		degree: company.degree || "",
+		facebook: company.facebook || "",
+		twitter: company.twitter || "",
+		whatsapp: company.whatsapp || "",
+		youtube: company.youtube || "",
+		linkedin: company.linkedin || "",
+		tiktok: company.tiktok || "",
+		snapchat: company.snapchat || "",
+		instagram: company.instagram || "",
+		// longitude: company.longitude || "",
+		// latitude: company.latitude || "",
+		location_link: company.location_link || "",
+	};
 	return (
 		<DashboardLayout>
 			<h1>إنشاء صفحه</h1>
 			<Container sx={{ mb: 4 }}>
 				<Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
-					<Form layout='vertical' {...layout} form={form} name="control-hooks" onFinish={mutation.mutate} >
+					<Form layout='vertical' {...layout} form={form} name="control-hooks" onFinish={mutation.mutate} initialValues={initialValues}>
 						<Form.Item style={{ marginBottom: 0 }} >
 							<Form.Item label='إسم المستخدم' name="userId" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} rules={[{ required: true, message: 'برجاء إختيار إسم المستخدم' }]}>
 								<Select
@@ -835,6 +888,9 @@ function CreateCompany() {
 							</Button>
 							<Button type="success" onClick={submitAndStay} className='mx-2 text-white bg-green-500 rtl:pt-2' loading={stay}>
 								submit and stay
+							</Button>
+							<Button type="warning"  onClick={()=>toast.success('تم النسخ بنجاح')} className='mx-2 text-white bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-450 hover:text-white rtl:pt-2' >
+								نسخ - copy
 							</Button>
 							<Button htmlType="button" onClick={onReset} className='mx-2 rtl:pt-2 '>
 								reset

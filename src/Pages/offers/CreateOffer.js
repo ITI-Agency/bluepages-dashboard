@@ -60,7 +60,26 @@ function CreateOffer() {
 	const [descriptionen, setDescriptionen] = useState("");
 	const [endDate,setEndDate] = useState(null);
 	const [searchParams, setSearchParams] = useSearchParams()
+	const [offer,setOffer] = useState(false)
+	useEffect(()=>{
+		console.log("this is the offer:>",searchParams.get('offerId'))
+		if(!searchParams.get('offerId')) setOffer({})
+		const getOffer = async (id) => {
+			try{
+				const offer = await OffersServices.getOfferDetails(id);
+				console.log("🚀 ~ file: CreateOffer.js:70 ~ getOffer ~ offerStatus:", offer);
+				const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(offer.countryId);
+				if (citiesStatus == 200) {
+					setCities(citiesData);
+				}
+				setOffer(offer);
+		toast.success('تم النسخ بنجاح')
 
+			}catch(err){console.log(err)}
+		}
+		getOffer(searchParams.get('offerId'));
+		
+	},[searchParams.get('offerId')])
 	const postOffer = async (offerData) => {
 		setLoading(true);
 		const res = await OffersServices.createOffer(offerData);
@@ -203,14 +222,37 @@ function CreateOffer() {
 			return;
 		}
 	};
-	if (!dataLoaded) return <LoadingDataLoader />;
+	if (!dataLoaded || !offer) return <LoadingDataLoader />;
+	const initialValues = {
+		name_ar: offer.name_ar || "",
+		name_en: offer.name_en || "",
+		// description_ar: offer.description_ar || "",
+		// description_en: offer.description_en || "",
+		address_ar: offer.address_ar || "",
+		address_en: offer.address_en || "",
+		companyId: offer?.companyId || null,
+		countryId: offer?.countryId || null,
+		cityId: offer?.cityId || null,
+		userId: offer?.userId,
+		categories: offer?.categories?.map(it => it.id) || [],
+		on_sale: offer?.on_sale,
+		sale_type: offer?.sale_type,
+		sale_amount: offer?.sale_amount ? Number(offer?.sale_amount) : 0,
+		location_link: offer?.location_link || "",
+		code: offer?.code || "",
+		website: offer?.website || "",
+		whatsapp: offer?.whatsapp || "",
+		standard_phone: offer?.standard_phone || "",
+		mobile_number: offer?.mobile_number || "",
+		// price: offer?.price || "",
+	};
 	return (
 		<DashboardLayout>
 			<h1>إنشاء عرض</h1>
 			<Container sx={{ mb: 4 }}>
 				<Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
 					<div className="mt-4">
-						<Form layout="vertical" {...layout} form={form} name="control-hooks" onFinish={mutation.mutate} >
+						<Form initialValues={initialValues} layout="vertical" {...layout} form={form} name="control-hooks" onFinish={mutation.mutate} >
 							<Form.Item style={{ marginBottom: 0 }} >
 								<Form.Item label="الإسم بالعربيه" name="name_ar" rules={[{ required: true, message: 'الإسم باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 									<Input placeholder='الإسم باللغه العربيه' />
@@ -278,7 +320,7 @@ function CreateOffer() {
 										allowClear
 									/>
 								</Form.Item> */}
-								<Form.Item label="الأنشطه" style={{ display: 'inline-block', width: 'calc(66% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]}>
+								<Form.Item label="الأنشطه" style={{ display: 'inline-block', width: 'calc(67% - 8px)' }} name="categories" rules={[{ required: true, message: 'برجاء إختيار الأنشطه' }]} className="ltr:mr-4 rtl:ml-4 ">
 									<Select
 										showSearch
 										optionFilterProp="children"
@@ -294,6 +336,20 @@ function CreateOffer() {
 										options={categories.map((cat) => ({ label: cat[`name_ar`], value: cat.id }))}
 									/>
 								</Form.Item>
+								<Form.Item label='الموقع الإلكتروني' name="website"  style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
+									<Input placeholder='الموقع الإلكتروني' />
+								</Form.Item>
+							</Form.Item>
+							<Form.Item style={{ marginBottom: 0 }} >
+								<Form.Item label="واتساب" name="whatsapp" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+									<Input placeholder="واتساب" />
+								</Form.Item>
+								<Form.Item  label='رقم الهاتف ' className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} name="standard_phone">
+								<Input placeholder='رقم الهاتف ' />
+							</Form.Item>
+							<Form.Item label="رقم الجوال"  name="mobile_number" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder="رقم الجوال" />
+							</Form.Item>
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >
 								{/* <Form.Item className="ltr:mr-4 rtl:ml-4 " label="السعر" name="price" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }} >
@@ -403,6 +459,9 @@ function CreateOffer() {
 								<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
 									submit
 								</Button>
+								<Button type="warning"  onClick={()=>toast.success('تم النسخ بنجاح')} className='mx-2 text-white bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-450 hover:text-white rtl:pt-2' >
+								نسخ - copy
+							</Button>
 								<Button htmlType="button" onClick={onReset} className='mx-2 rtl:pt-2 '>
 									reset
 								</Button>

@@ -70,6 +70,7 @@ function Companies() {
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 	const [tableFilter, setTableFilter] = useState([]);
 	const [isExporting, setIsExporting] = useState(false);
+	const [deleting,setDeleting] = useState(false);
 	const searchInput = useRef(null);
 	const location = useLocation();
 
@@ -174,24 +175,29 @@ function Companies() {
 		getCategories();
 	}, [location.pathname]);
 	const getAllCompanies = async () => {
-		setLoading(true);
+		// setLoading(true);
+		setDeleting(true)
+
 		try {
 			const response = await CompaniesServices.getAllCompaniesPaginate([{ country: "true" }, { city: "true" }, { limit: 10 }, { page: 1 },{requests: location.pathname ==='/companies-requests' ? 'true' : 'false'},{user:'true'}]);
 			const { status: countriesStatus, data: countriesData } = await CountriesServices.getAllCountries();
 			const { status: citiesStatus, data: citiesData } = await CitiesServices.getAllCities();
 			if (response && response.status == 200 && countriesStatus == 200 && citiesStatus == 200) {
-				setLoading(false);
+			setDeleting(false)
+				// setLoading(false);
 				setData(response.data);
 				setCompanies(response.data);
 				setCountries(countriesData);
 				setCities(citiesData);
 			} else {
 				toast.error("sorry something went wrong while getting companies!");
-				setLoading(false);
+			setDeleting(false)
+				// setLoading(false);
 			}
 		} catch (error) {
 			toast.error("sorry something went wrong while getting companies!");
-			setLoading(false);
+			setDeleting(false)
+			// setLoading(false);
 		}
 	};
 	const handleOpen = (item) => {
@@ -201,23 +207,23 @@ function Companies() {
 		setOpen({ state: false });
 	};
 	const handleDelete = async (companyId) => {
-		setLoading(true);
+		// setLoading(true);
 		try {
 			const res = await CompaniesServices.deleteCompany(companyId);
 			if (res.status == 200) {
 				handleClose();
 				toast.success("company has removed successfully!");
-				setLoading(false);
+				// setLoading(false);
 				getAllCompanies();
 			} else {
 				handleClose();
 				toast.error("sorry something went wrong while removing company!");
-				setLoading(false);
+				// setLoading(false);
 			}
 		} catch (error) {
 			handleClose();
 			toast.error("sorry something went wrong while removing company!");
-			setLoading(false);
+			// setLoading(false);
 		}
 	};
 	const handleStatusChange = async (e, item) => {
@@ -461,8 +467,8 @@ function Companies() {
 		}
 	};
 	const handleDeleteData = async (value) => {
-		console.log(value.planId);
-		setLoading(true);
+		// console.log(value.planId);
+		// setLoading(true);
 		try {
 			const response = await CompaniesServices.deleteByPlan(value.planId,value.cityId);
 			if (response && response.status == 200) {
@@ -1089,9 +1095,10 @@ function Companies() {
 					</MDTypography>
 					<MDBox display="flex" alignItems="center" mt={{ xs: 2, sm: 0 }} ml={{ xs: -1.5, sm: 0 }}>
 						<MDBox mr={1}>
-							<MDButton onClick={() => handleDelete(open.item?.id)} variant="text" color="error">
+							{/* <MDButton onClick={() => handleDelete(open.item?.id)} variant="text" color="error">
 								<Icon>delete</Icon>&nbsp;delete
-							</MDButton>
+							</MDButton> */}
+							<Button danger loading={deleting} onClick={() => handleDelete(open.item?.id)}  variant="text" color="red">delete</Button>
 						</MDBox>
 						<MDButton onClick={handleClose} variant="text" color="dark">
 							cancel
