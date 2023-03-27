@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import { Paper, Container } from "@mui/material";
 import ReactQuill from 'react-quill';
 import { useSearchParams } from 'react-router-dom'
+import Util from "../../Utils";
 
 import 'react-quill/dist/quill.snow.css';
 const discount = {
@@ -41,6 +42,8 @@ const getSrcFromFile = (file) => {
 		reader.onload = () => resolve(reader.result);
 	});
 };
+const { formats, modules } = Util;
+
 function CreateOffer() {
 	const { setLoading } = useLoading();
 	const [logoFile, setLogoFile] = useState([]);
@@ -402,12 +405,11 @@ function CreateOffer() {
 							<Form.Item style={{ marginBottom: 0 }} >
 								<Form.Item label="الوصف بالعربيه"  className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 									{/* <TextArea placeholder='الوصف باللغه العربيه' rows={4} /> */}
-									<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
-
+									<ReactQuill formats={formats} modules={modules}  rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
 								</Form.Item>
 								<Form.Item label="الوصف بالإنجليزيه" className=""  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 									{/* <TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
-									<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
+									<ReactQuill formats={formats} modules={modules} rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
 								</Form.Item>
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >

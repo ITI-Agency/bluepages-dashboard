@@ -12,9 +12,11 @@ import { PlusOutlined } from "@ant-design/icons";
 import PagesServices from "Services/PagesServices";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import Util from "../../Utils";
+const { formats, modules } = Util;
 
 const layout = {
-	labelCol: { span: 2 },
+	labelCol: { span: 4 },
 	wrapperCol: { span: 20 },
 };
 
@@ -24,6 +26,7 @@ function EditCountry() {
 	const { id } = useParams();
 	const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('إكتب المحتوي هنا');
+  const [contentEn, setContentEn] = useState('إكتب المحتوي هنا');
 
 	useEffect(() => {
 		getPage();
@@ -47,6 +50,7 @@ function EditCountry() {
 				setLoading(false);
 				setPage(() => response.data);
 				setContent(response?.data?.content)
+				setContentEn(response?.data?.content_en)
 			} else {
 				toast.error("sorry something went wrong while getting packages!");
 				setLoading(false);
@@ -61,7 +65,7 @@ function EditCountry() {
 	const mutation = useMutation(data => {
 		console.log("submitted data", data);
 		// 	const fd = new FormData();
-			return PagesServices.updatePage({...data,content:content},page.id);
+			return PagesServices.updatePage({...data,content:content,content_en:contentEn},page.id);
 		}, {
 			onError: (error) => {
 				console.log({ error });
@@ -82,7 +86,6 @@ function EditCountry() {
 		title_en: page.title_en || "",
 		title_ar: page.title_ar || "",
 		slug: page.slug || "",
-
 		// views: settings.views || "",
 	};
 
@@ -104,9 +107,11 @@ function EditCountry() {
 								</Form.Item>
 							</Form.Item>
 
-							<Form.Item style={{ marginBottom: 0 }} >
-								<ReactQuill rows={5} theme="snow" value={content} onChange={setContent} />
-								
+							<Form.Item  label="المحتوي باللغه العربيه" style={{ marginBottom: 20 }} >
+								<ReactQuill formats={formats} modules={modules}  rows={5} theme="snow" value={content} onChange={setContent} />
+							</Form.Item>
+							<Form.Item label="المحتوي باللغه الإنجليزيه" style={{ marginBottom: 0 }} >
+								<ReactQuill formats={formats} modules={modules}  rows={5} theme="snow" value={contentEn} onChange={setContentEn} />
 							</Form.Item>
 				
 

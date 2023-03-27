@@ -32,6 +32,7 @@ import localeData from 'dayjs/plugin/localeData'
 import weekday from 'dayjs/plugin/weekday'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import weekYear from 'dayjs/plugin/weekYear'
+import Util from "../../Utils";
 
 dayjs.extend(customParseFormat)
 dayjs.extend(advancedFormat)
@@ -73,6 +74,7 @@ const getSrcFromFile = (file) => {
 		reader.onload = () => resolve(reader.result);
 	});
 };
+const { formats, modules } = Util;
 const EditOfferForm = ({ offer, id, }) => {
 	const queryClient = useQueryClient();
 	const [dataLoaded, setDataLoaded] = useState(false);
@@ -521,12 +523,12 @@ const EditOfferForm = ({ offer, id, }) => {
 					<Form.Item style={{ marginBottom: 0 }} >
 						<Form.Item label="الوصف بالعربيه"  className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 							{/* <TextArea placeholder='الوصف باللغه العربيه' rows={4} /> */}
-							<ReactQuill rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
+							<ReactQuill formats={formats} modules={modules}  rows={5} theme="snow" value={descriptionar} onChange={setDescriptionar} />
 
 						</Form.Item>
 						<Form.Item label="الوصف بالإنجليزيه" className=""  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 							{/* <TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} /> */}
-							<ReactQuill rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
+							<ReactQuill formats={formats} modules={modules}  rows={5} theme="snow" value={descriptionen} onChange={setDescriptionen} />
 
 						</Form.Item>
 					</Form.Item>

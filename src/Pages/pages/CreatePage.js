@@ -12,8 +12,11 @@ import PagesServices from "Services/PagesServices";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { toast } from "react-toastify";
+import Util from "../../Utils";
+const { formats, modules } = Util;
+
 const layout = {
-	labelCol: { span: 2 },
+	labelCol: { span: 4 },
 	wrapperCol: { span: 20 },
 };
 function CreatePage() {
@@ -21,6 +24,7 @@ function CreatePage() {
 	const { setLoading } = useLoading();
 	const [page, setPage] = useState({});
   const [content, setContent] = useState('إكتب المحتوي هنا');
+  const [contentEn, setContentEn] = useState('إكتب المحتوي هنا');
 
 	const handleFormSubmit = async () => {
 		setLoading(true);
@@ -41,7 +45,7 @@ function CreatePage() {
 
 	const mutation = useMutation(data => {
 		console.log({ PageData: data });
-			return PagesServices.createPage({...data,content:content});
+			return PagesServices.createPage({...data,content:content,content_en:contentEn});
 		}, {
 			onError: (error) => {
 				console.log({ error });
@@ -71,9 +75,11 @@ function CreatePage() {
 								</Form.Item>
 							</Form.Item>
 
-							<Form.Item style={{ marginBottom: 0 }} >
-								<ReactQuill rows={5} theme="snow" value={content} onChange={setContent} />
-								
+							<Form.Item label="المحتوي باللغه العربيه" style={{ marginBottom: 20 }} >
+								<ReactQuill formats={formats} modules={modules} rows={5} theme="snow" value={content} onChange={setContent} />
+							</Form.Item>
+							<Form.Item label="المحتوي باللغه الإنجليزيه" style={{ marginBottom: 0 }} >
+								<ReactQuill formats={formats} modules={modules} rows={5} theme="snow" value={contentEn} onChange={setContentEn} />
 							</Form.Item>
 				
 							<Form.Item className="mt-8" >
