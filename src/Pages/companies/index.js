@@ -344,7 +344,7 @@ function Companies() {
 					const val = uniqueData.findIndex((obj => obj.name_ar == company.name_ar));
 					if (val === -1) {
 						company.categories = [company.categories];
-						uniqueData.push({...company,standard_phone:company.standard_phone.toString()});
+						uniqueData.push({...company,standard_phone:company.standard_phone?.toString()});
 					} else {
 						uniqueData[val].categories.push(company.categories);
 					}
@@ -372,6 +372,7 @@ function Companies() {
 		const filterForExport = tableFilter.filter(filter => Object.keys(filter)[0] != 'page' && Object.keys(filter)[0] != 'limit' && Object.keys(filter)[0] !== 'requests');
 		// add requests exports 
 		filterForExport.push({requests: location.pathname ==='/companies-requests' ? 'true' : 'false'})
+		filterForExport.city="true"
 		console.log("filter for export", filterForExport);
 		console.log({ filterForExport });
 		const response = await CompaniesServices.getAllCompanies(filterForExport);
@@ -379,6 +380,7 @@ function Companies() {
 		if (response && response.status == 200) {
 			const comp = response?.data?.map((c) => {
 				c.categories.length ? (c.categories = c.categories?.map((cat) => cat.name_ar).join(",")) : "";
+				c.cityName=c.city.name_ar
 				return c;
 			});
 			const columns = [
@@ -386,6 +388,7 @@ function Companies() {
 					label: "name_en",
 					value: "name_en",
 				},
+				{ label: "cityName", value: "cityName" },
 				{
 					label: "name_ar",
 					value: "name_ar",
@@ -395,8 +398,10 @@ function Companies() {
 					value: "email",
 				},
 				{ label: "standard_phone", value: "standard_phone" },
+				{ label: "hotline", value: "hotline" },
 				{ label: "website", value: "website" },
 				{ label: "categoryNames", value: "categories" },
+				{ label: "agent_name", value: "agent_name" },
 			];
 			const settings = {
 				fileName: "bluePages Companies",
