@@ -277,7 +277,7 @@ const EditCompanyForm = ({ company, id }) => {
         images.fileList.forEach((el) => {
           formDataImages.append("images[]", el.originFileObj);
         });
-        return CompaniesServices.addCompanyImages(company.id, formDataImages);
+         CompaniesServices.addCompanyImages(company.id, formDataImages);
       }
 
       return CompaniesServices.updateCompany(formData, company.id);
