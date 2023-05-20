@@ -277,7 +277,7 @@ const EditCompanyForm = ({ company, id }) => {
         images.fileList.forEach((el) => {
           formDataImages.append("images[]", el.originFileObj);
         });
-         CompaniesServices.addCompanyImages(company.id, formDataImages);
+         return Promise.allSettled([CompaniesServices.addCompanyImages(company.id, formDataImages),CompaniesServices.updateCompany(formData, company.id)])
       }
 
       return CompaniesServices.updateCompany(formData, company.id);
