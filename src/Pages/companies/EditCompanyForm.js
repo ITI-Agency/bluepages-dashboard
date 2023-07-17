@@ -82,6 +82,7 @@ const EditCompanyForm = ({ company, id }) => {
   const [subscriptionPlanPackages, setSubscriptionPlanPackages] =
     useState(null);
   const [verified, setVerified] = useState(company?.verified);
+  console.log("🚀 ~ file: EditCompanyForm.js:85 ~ EditCompanyForm ~ verified:", company?.verified)
   const [descriptionar, setDescriptionar] = useState(company?.description_ar);
   const [descriptionen, setDescriptionen] = useState(company?.description_en);
   const [imageDeleted, setImageDeleted] = useState(false);
@@ -245,13 +246,19 @@ const EditCompanyForm = ({ company, id }) => {
       // data.categories = [data.categories]
       let formData = new FormData();
       // upload categories
+      console.log("🚀 ~ file: EditCompanyForm.js:252 ~ data.categories.forEach ~ data:", data.verified)
       data.categories.forEach((cat) => {
         formData.append("categories[]", cat);
       });
 
       delete data.categories;
       for (const [key, value] of Object.entries(data)) {
-        formData.append(key, value);
+        if (key === 'verified') {
+          formData.append(key, value ? "true" : "false");
+        } else{
+          formData.append(key,  value && value !=
+            "undefined" ? value : "");
+        }
       }
       // upload images
       formData.append("description_en", descriptionen);
@@ -418,6 +425,7 @@ const EditCompanyForm = ({ company, id }) => {
     location_link: company.location_link || "",
     agent_name: company.agent_name || "",
     agent_job: company.agent_job || "",
+    verified: company.verified || false,  
   };
   return (
     <div>
