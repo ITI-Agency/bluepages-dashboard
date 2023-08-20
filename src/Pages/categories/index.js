@@ -68,6 +68,10 @@ function Categories() {
     setIsExporting(true);
       const columns = [
         {
+          label: "id",
+          value: "id",
+        },
+        {
           label: "name_en",
           value: "name_en",
         },
@@ -576,9 +580,7 @@ function Categories() {
             loading={isExporting}
             onClick={handleExport}
           >
-            {/* <div className="flex items-center text-[16px] font-semibold"> */}
             <Icon>edit</Icon>Export Excel
-            {/* </div> */}
           </Button>
           <MDButton variant="gradient" component="label" color="success">
             <Icon>edit</Icon>Import Excel

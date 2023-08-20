@@ -32,8 +32,8 @@ HTTP.interceptors.request.use(
 		config.headers["Authorization"] = `Bearer ${AUTH_JWT}`;
 		return {
 			...config,
-			onUploadProgress: config.onUploadProgress || onUploadProgress,
-			onDownloadProgress: config.onDownloadProgress || onDownloadProgress,
+			// onUploadProgress: config.onUploadProgress || onUploadProgress,
+			// onDownloadProgress: config.onDownloadProgress || onDownloadProgress,
 		};
 	},
 	(error) => {

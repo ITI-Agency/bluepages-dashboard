@@ -150,7 +150,7 @@ const routes = [
     name: "Categories",
     key: "categories",
     icon: <Icon fontSize="small">category</Icon>,
-    route: "/categories",
+    route: "/cats",
     component: (
       <RequireAuth>
         <Categories />
