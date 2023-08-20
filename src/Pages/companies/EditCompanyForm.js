@@ -276,7 +276,6 @@ const EditCompanyForm = ({ company, id }) => {
         formData.append("recordFile", recordFile[0].originFileObj);
       }
       setSubmitting(true);
-
       setLoading(true);
       // company Images upload
       if (images?.fileList && images?.fileList?.length) {
