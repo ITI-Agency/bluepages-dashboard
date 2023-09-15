@@ -258,6 +258,7 @@ function CreateCompany() {
 		if (bannerFile?.length) {
 			formData.append("bannerFile", bannerFile[0].originFileObj);
 		}
+
 		// upload images
 		if (images?.fileList && images?.fileList?.length) {
 			images.fileList.forEach(el => {

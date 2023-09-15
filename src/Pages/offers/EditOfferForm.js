@@ -486,7 +486,7 @@ const EditOfferForm = ({ offer, id, }) => {
 						<div className="w-full h-[1px] bg-gray-500"></div>
 					</div>
 					<Form.Item className='mt-4 mb-0' >
-						<Form.Item label="صوره الغلاف " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
+						<Form.Item label="الشعار " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
 							{/* <ImgCrop rotate> */}
 							<Upload onChange={({ fileList }) => { setLogoFile(fileList); }}
 								listType="picture-card"

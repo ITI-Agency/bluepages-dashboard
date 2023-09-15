@@ -376,7 +376,7 @@ function CreateOffer() {
 								</Form.Item>
 							</Form.Item>
 							<Form.Item className='mt-4 mb-0' >
-								<Form.Item label="صوره الغلاف " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
+								<Form.Item label="الشعار " style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="banner">
 									<Upload onChange={({ fileList: newFileList }) => {
 										console.log({ image: newFileList[0] });
 										setLogoFile(newFileList);
