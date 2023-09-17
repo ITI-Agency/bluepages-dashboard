@@ -389,15 +389,24 @@ function CreateOffer() {
 									</Upload>
 
 								</Form.Item>
-								<Form.Item label="صور العرض" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="images" >
-									<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
-										beforeUpload={() => false} action="/upload.do" listType="picture-card">
+								<Form.Item className="offer-images" label="صور العرض" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="images" >
+									<Upload multiple={true} onChange={({ fileList }) => { console.log('liiiiiiiiiiiiist',fileList) ; setImages({ fileList }); }}
+										beforeUpload={() => false} action="/upload.do" listType="picture-card" onPreview={() => {}}>
 										<div className='block' >
 											<PlusOutlined />
 											<div style={{ marginTop: 8 }}>Upload</div>
 										</div>
 									</Upload>
 								</Form.Item>
+								{images?.fileList?.map((file, index) => (
+								<div
+									key={file.uid}
+									className={`image-container ${index === 0 ? 'highlight' : ''} flex flex-col  justify-center items-end`}
+								>
+									<img src={URL.createObjectURL(file.originFileObj)} alt={file.name} className={`uploaded-image ${index<2 ? 'first2' : ''}`} />
+									<p className="text-blue-600 font-bold text-center  my-2">{index+1}</p>
+								</div>
+							))}
 							</Form.Item>
 							<Form.Item style={{ marginBottom: 0 }} >
 

@@ -18,3 +18,44 @@
 label { 
     font-size:16px !important;
  }
+
+
+
+
+
+ .image-container {
+    display: inline-block;
+    position: relative;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .uploaded-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+  }
+  .first2 {
+    border-color: orange;
+    border: 5px solid orange;
+    border-radius: 2px;
+  }
+  /* .highlight {
+    border: 1px solid blue; 
+  } */
+  
+  .custom-upload-button {
+    display: inline-block;
+    border: 2px dashed #ccc;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  /* .custom-upload-button:hover {
+    border-color: #1890ff; 
+  } */
+
+.offer-images .ant-upload-list-picture-card .ant-upload-list-picture-card-container {
+    display: none;
+}

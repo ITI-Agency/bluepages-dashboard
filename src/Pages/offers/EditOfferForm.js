@@ -89,6 +89,7 @@ const EditOfferForm = ({ offer, id, }) => {
 	const [logoFile, setLogoFile] = useState([]);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [endDate,setEndDate] = useState(offer?.endAt);
+  const [deletingImages, setDeletingImages] = useState(false);
 
 
 	const navigate = useNavigate();
@@ -233,23 +234,25 @@ const EditOfferForm = ({ offer, id, }) => {
 			// Router.push('/login')
 		},
 	});
-	const removeImages = useMutation((imageId) => {
+	const removeImages = useMutation((imageIds) => {
 		// data.categories = [data.categories]
-		const payload = [imageId];
 		const data = {
 			data: {
-				imageIds: payload
+				imageIds
 			}
 		};
+		setDeletingImages(true);
 		return OffersServices.removeOfferImage(offer.id, data);
 
 	}, {
 		onError: (error) => {
 			toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+			setDeletingImages(true);
 		},
 		onSuccess: () => {
 			// Boom baby!
 			toast.success('لقد تم إضافه الصور بنجاح  ');
+			setDeletingImages(true);
 			window.location.reload(false);
 			// handleGoBack();
 			// Router.push('/login')
@@ -509,7 +512,7 @@ const EditOfferForm = ({ offer, id, }) => {
 						</Form.Item>
 
 					</Form.Item>
-					<Form.Item className='mt-4 mb-4' >
+					<Form.Item className='mt-4 mb-4 offer-images' >
 						<Form.Item label="إضافه صور جديده" valuePropName="images" style={{ distplay: "inline-block", marginBottom: 0 }}>
 							<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
 								beforeUpload={() => false} action="/upload.do" listType="picture-card">
@@ -520,6 +523,15 @@ const EditOfferForm = ({ offer, id, }) => {
 							</Upload>
 						</Form.Item>
 					</Form.Item>
+					{images?.fileList?.map((file, index) => (
+								<div
+									key={file.uid}
+									className={`image-container ${index === 0 ? 'highlight' : ''} flex flex-col  justify-center items-end`}
+								>
+									<img src={URL.createObjectURL(file.originFileObj)} alt={file.name} className={`uploaded-image ${index<2 ? 'first2' : ''}`} />
+									<p className="text-blue-600 font-bold text-center  my-2">{index+1}</p>
+								</div>
+							))}
 					<Form.Item style={{ marginBottom: 0 }} >
 						<Form.Item label="الوصف بالعربيه"  className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 							{/* <TextArea placeholder='الوصف باللغه العربيه' rows={4} /> */}
@@ -595,6 +607,18 @@ const EditOfferForm = ({ offer, id, }) => {
 				</h1>
 				<div className="w-full h-[1px] bg-gray-400"></div>
 			</div>
+			<div className="flex justify-end my-4">
+        <Button
+          onClick={() =>
+            offer.images.length
+              ? removeImages.mutate(offer.images.map((img) => img.id))
+              : toast.error("لا يوجد صور للشركه")
+          }
+          loading={deletingImages}
+          danger
+        >
+حذف جميع صور العرض        </Button>
+      </div>
 			{/* <Form {...formImagesLayout} form={imagesForm} name="form-images" onFinish={addImages.mutate} >
 				<Form.Item label="إضافه صور العرض" valuePropName="images" style={{ distplay: "inline-block", marginBottom: 0 }}>
 					<Upload multiple={true} onChange={({ fileList }) => { setImages({ fileList }); }}
@@ -619,7 +643,7 @@ const EditOfferForm = ({ offer, id, }) => {
 								<div className="flex flex-col w-full p-1 mx-4 md:p-2">
 									<img width={150} height={150} alt="gallery" className="block object-cover object-center w-full h-full rounded-lg "
 										src={img.image}></img>
-									<div onClick={() => removeImages.mutate(img.id)} className="mt-2 text-center text-white bg-red-500 cursor-pointer hover:bg-red-400 btn"> <p className="text-center">حذف</p></div>
+									<div onClick={() => removeImages.mutate([img.id])} className="mt-2 text-center text-white bg-red-500 cursor-pointer hover:bg-red-400 btn"> <p className="text-center">حذف</p></div>
 								</div>
 							</div>
 						))}
