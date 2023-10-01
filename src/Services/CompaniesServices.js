@@ -65,6 +65,10 @@ const deleteByPlan = async (planId,cityId) => {
 	const response = await http.delete(`/companies/${planId}/${cityId}/delete-by-plan`);
   return response;
 };
+const deleteById = async (payload) => {
+	const response = await http.delete(`/companies/multiple/remove-companies-between-two-ids`,{data: payload});
+  return response;
+};
 
 const getCompanyImages = async (companyId) => {
   return await http.get(`/companies/${companyId}/get-images`);
@@ -187,5 +191,6 @@ export default {
   updateCompanyCategory,
 	removeCompanyCategory,
 	deleteMultipleCompany,
-	deleteByPlan
+	deleteByPlan,
+  deleteById
 };

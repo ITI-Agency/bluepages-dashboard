@@ -16,7 +16,7 @@ import Paper from "@mui/material/Paper";
 import CountriesServices from "Services/CountriesServices";
 import CitiesServices from "Services/CitiesServices";
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Form, Select, Table, Input, Space, Tag,Switch } from "antd";
+import { Button, Form, Select, Table, Input, Space, Tag,Switch, InputNumber } from "antd";
 import pLimit from 'p-limit';
 import { CheckCircleTwoTone ,CloseCircleTwoTone} from '@ant-design/icons';
 const { Option } = Select;
@@ -65,6 +65,7 @@ function Companies() {
 	const [countries, setCountries] = useState([]);
 	const [openSelectModal, setOpenSelectModal] = useState(false);
 	const [openDeleteModal, setOpenDeleteModal] = useState(false);
+	const [openDeleteIdModal, setOpenDeleteIdModal] = useState(false);
 	const [searchText, setSearchText] = useState('');
 	const [searchedColumn, setSearchedColumn] = useState('');
 	const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -491,6 +492,25 @@ function Companies() {
 			getAllCompanies();
 		}
 	};
+	const handleDeleteByIdData = async (value) => {
+	console.log("🚀 ~ file: index.js:496 ~ handleDeleteByIdData ~ value:", value)
+		try {
+			const response = await CompaniesServices.deleteById(value);
+			if (response && response.status == 200) {
+				toast.success("تم الحذف بنجاح");
+				setOpenDeleteIdModal(false);
+				getAllCompanies();
+			} else {
+				toast.error("حدث خطأ ما");
+				setOpenDeleteIdModal(false);
+				getAllCompanies();
+			}
+		} catch (error) {
+			toast.error("حدث خطأ ما");
+			setOpenDeleteIdModal(false);
+			getAllCompanies();
+		}
+	};
 	const handleDeleteSelected = async () => {
 		setLoading(true);
 		try {
@@ -598,6 +618,53 @@ function Companies() {
 												</Option>
 											))}
 										</Select>
+									</Form.Item>
+							</Grid>
+
+							<Grid item xs={12} sm={6}>
+								<MDBox
+									display="flex"
+									alignItems="center"
+									mt={{ xs: 2, sm: 0 }}
+									ml={{ xs: -1.5, sm: 0 }}
+								>
+									<MDBox mr={1} className="no-ant-item-margin">
+										<Form.Item>
+											<Button type="primary" htmlType="submit">
+												Confirm
+											</Button>
+										</Form.Item>
+									</MDBox>
+									<MDButton onClick={() => setOpenDeleteModal(false)} variant="text" color="dark">
+										cancel
+									</MDButton>
+								</MDBox>
+							</Grid>
+						</Grid>
+						{/* </MDBox> */}
+					</Form>
+				</Paper>
+			</DashboardLayout>
+		);
+	if (openDeleteIdModal)
+		return (
+			<DashboardLayout>
+				<Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
+					<Form layout="vertical" {...layout} name="control-hooks" onFinish={handleDeleteByIdData}>
+						{/* <MDBox sx={style}> */}
+						<Grid container spacing={5}>
+							<Grid item xs={12} sm={6}>
+								<Form.Item label='الرقم لبدايه الحذف ' name="small_id" style={{ display: 'inline-block', width: 'calc(100% - 8px)' }} rules={[{ required: true, message: 'الرقم لبدايه الحذف ' }]}>
+									<InputNumber 
+										allowClear
+									/>
+								</Form.Item>
+							</Grid>
+							<Grid item xs={12} sm={6}>
+									<Form.Item name="large_id" label="الرقم لنهايه الحذف " rules={[{ required: true }]}>
+									<InputNumber 
+										allowClear
+									/>
 									</Form.Item>
 							</Grid>
 
@@ -1032,11 +1099,17 @@ function Companies() {
 						/>
 					</MDBox>
 				</MDBox>
+				<MDBox ml={2}>
+				<MDButton ml={2} onClick={() => setOpenDeleteIdModal(true)} variant="gradient" component="label" color="error">
+						<Icon>delete</Icon>By ID
+					</MDButton>
+				</MDBox>
 				{
 					location.pathname ==='/companies-requests' ? '' : 
 					<MDBox ml={2}>
+
 					<MDButton ml={2} onClick={() => setOpenDeleteModal(true)} variant="gradient" component="label" color="error">
-						<Icon>delete</Icon>Delete By Plan
+						<Icon>delete</Icon>By Plan
 						{/* <input
 							hidden
 							accept=".xlsx, .xls, .csv"
