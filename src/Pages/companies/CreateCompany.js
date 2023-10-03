@@ -679,6 +679,11 @@ function CreateCompany() {
 							</Form.Item>
 
 						</Form.Item>
+						<Form.Item className='mb-0'  >
+							<Form.Item label='الكلمات الدلاليه' className="ltr:mr-4 rtl:ml-4 " name="keywords" style={{ display: 'inline-block', width: 'calc(100%)' }}>
+								<Input placeholder='الكلمات الدلاليه' />
+							</Form.Item>
+						</Form.Item>
 		
 
 						<div className="divider">
