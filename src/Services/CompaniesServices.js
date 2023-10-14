@@ -39,6 +39,11 @@ const getAllCompaniesPaginate = async (filters = []) => {
 	const response = await http.get(`/companies/getAll/paginate${queries}`);
   return response;
 };
+const getSortedCompanies = async (filters = []) => {
+  const queries = Utils.prepareQueryFilters(filters);
+	const response = await http.get(`/companies/${queries}`);
+  return response;
+};
 
 const createCompany = async (company) => {
   const response = await http.post(`/companies`, company);
@@ -168,6 +173,7 @@ export default {
   getCompanyDetails,
 	getAllCompanies,
 	getAllCompaniesPaginate,
+	getSortedCompanies,
   createCompany,
   createMultipleCompany,
   updateCompany,

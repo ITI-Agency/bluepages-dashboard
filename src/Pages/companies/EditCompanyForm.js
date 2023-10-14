@@ -1,4 +1,4 @@
-import { Button, Form, Select, Switch } from "antd";
+import { Button, Form, InputNumber, Select, Switch } from "antd";
 import React, { createRef, useEffect, useState } from "react";
 import { Input, Skeleton, Space, Tabs, Upload } from "antd";
 import TextArea from "antd/lib/input/TextArea";
@@ -426,6 +426,7 @@ const EditCompanyForm = ({ company, id }) => {
     agent_job: company.agent_job || "",
     verified: company.verified || false,  
     keywords: company.keywords || "",
+    sorting: company.sorting || null,
   };
   return (
     <div>
@@ -692,6 +693,14 @@ const EditCompanyForm = ({ company, id }) => {
             style={{ display: "inline-block" }}
           >
             <Input placeholder="الوظيفه" />
+          </Form.Item>
+          <Form.Item
+            label="الترتيب"
+            name="sorting"
+            className="w-[100%] md:w-[calc(22%-8px)]"
+            style={{ display: "inline-block" }}
+          >
+            <InputNumber type="" placeholder="الترتيب" />
           </Form.Item>
         </Form.Item>
         <Form.Item style={{ marginBottom: 0 }}>
