@@ -117,6 +117,9 @@ const createPhone = async (companyId, phone) => {
 const updatePhone = async (phoneId, phone) => {
   return await http.put(`/phone/${phoneId}`, { phone });
 };
+const updateCompaniesSorting = async (sorting) => {
+  return await http.post(`/companies/update-sorting`, sorting);
+};
 const removePhone = async (phoneId) => {
   return await http.delete(`/phone/${phoneId}`);
 };
@@ -198,5 +201,6 @@ export default {
 	removeCompanyCategory,
 	deleteMultipleCompany,
 	deleteByPlan,
-  deleteById
+  deleteById,
+  updateCompaniesSorting
 };

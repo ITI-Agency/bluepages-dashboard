@@ -72,7 +72,6 @@ function Companies() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [sortedCompanies, setSortedCompanies] = useState([]);
   const [open, setOpen] = useState({ state: false });
   const [loading, setLoading] = useState(false);
   const [importedData, setImportedData] = useState([]);
@@ -215,17 +214,12 @@ function Companies() {
         await CountriesServices.getAllCountries();
       const { status: citiesStatus, data: citiesData } =
         await CitiesServices.getAllCities();
-      const { status: sortedCompaniesStatus, data: sortedCompaniesData } =
-        await CompaniesServices.getSortedCompanies([
-					{ sorting: "true" },
-				]);
 
       if (
         response &&
         response.status == 200 &&
         countriesStatus == 200 &&
-        citiesStatus == 200 &&  
-				sortedCompaniesStatus == 200
+        citiesStatus == 200  
       ) {
         setDeleting(false);
         // setLoading(false);
@@ -233,7 +227,6 @@ function Companies() {
         setCompanies(response.data);
         setCountries(countriesData);
         setCities(citiesData);
-				setSortedCompanies(sortedCompaniesData);
       } else {
         toast.error("sorry something went wrong while getting companies!");
         setDeleting(false);
@@ -284,6 +277,31 @@ function Companies() {
       const res = await CompaniesServices.updateCompany(formData, id);
       if (res.status == 200) {
         toast.success("your status has updated successfully!");
+        setLoading(false);
+      } else {
+        toast.error("sorry something went wrong while updating status!");
+        setLoading(false);
+        getAllCompanies();
+      }
+    } catch (error) {
+      toast.error("sorry something went wrong while updating status!");
+      setLoading(false);
+      getAllCompanies();
+    }
+  };
+  const handleSortableChange = async (e, item) => {
+    const { id, sortable } = item;
+    const dd = companies?.items?.map((i) => {
+      if (i.id == item.id) i.sortable = sortable;
+      return i;
+    });
+    setCompanies({ items: dd, meta: companies.meta });
+    try {
+      let formData = new FormData();
+      formData.append("sortable", sortable);
+      const res = await CompaniesServices.updateCompany(formData, id);
+      if (res.status == 200) {
+        toast.success("company sortable  updated successfully!");
         setLoading(false);
       } else {
         toast.error("sorry something went wrong while updating status!");
@@ -1034,6 +1052,33 @@ function Companies() {
       ],
       // onFilter: (value, record) => record.status === value,
     },
+    {
+      title: "Sortable",
+      key: "sortable",
+      render: (_, record) => (
+        <>
+          <Switch
+            className={`${record.sortable ? "bg-green-500" : "bg-gray-200"}`}
+            checked={record.sortable}
+            onChange={(e) => {
+              record.sortable = !record.sortable;
+              handleSortableChange(e, record);
+            }}
+          />
+        </>
+      ),
+      filters: [
+        {
+          text: "Sortable",
+          value: true,
+        },
+        {
+          text: "Not Sortable",
+          value: false,
+        },
+      ],
+      // onFilter: (value, record) => record.status === value,
+    },
   ];
   location.pathname === "/companies-requests" &&
     columns.push({
@@ -1330,26 +1375,7 @@ function Companies() {
               onChange={handleCategoryChange}
             />
           </MDBox>
-          <MDBox ml={2}>
-            <Select
-              style={{ width: 300, borderRadius: 30 }}
-              size="large"
-              showSearch
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              options={sortedCompanies?.map((co) => ({
-                label: `${co.sorting} - ${co.name_ar}`,
-                value: co.id,
-              }))}
-              placeholder="Sorting"
-              allowClear
-              onChange={handleCategoryChange}
-            />
-          </MDBox>
+
         </MDBox>
       
       </MDBox>

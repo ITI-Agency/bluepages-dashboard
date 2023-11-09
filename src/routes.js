@@ -48,6 +48,7 @@ import About from "Pages/pages/About";
 import PrivacyPolicy from "Pages/pages/PrivacyPolicy";
 import Contact from "Pages/pages/Contact";
 import Testimonials from "Pages/testimonials";
+import CompaniesSorting from "Pages/companiesSorting";
 import Settings from "Pages/settings";
 import Pages from 'Pages/pages'
 import Directories from 'Pages/directories'
@@ -107,6 +108,18 @@ const routes = [
       </RequireAuth>
     ),
     // child:
+  },
+  {
+    type: "collapse",
+    name: "Companies Sorting",
+    key: "categories",
+    icon: <Icon fontSize="small">sorting</Icon>,
+    route: "/companies-sorting",
+    component: (
+      <RequireAuth>
+        <CompaniesSorting />
+      </RequireAuth>
+    ),
   },
   {
     type: "collapse",

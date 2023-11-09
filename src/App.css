@@ -59,3 +59,16 @@ label {
 .offer-images .ant-upload-list-picture-card .ant-upload-list-picture-card-container {
     display: none;
 }
+
+.row-dragging {
+  background: #fafafa;
+  border: 1px solid #ccc;
+}
+
+.row-dragging td {
+  padding: 16px;
+}
+
+.row-dragging .drag-visible {
+  visibility: visible;
+}
