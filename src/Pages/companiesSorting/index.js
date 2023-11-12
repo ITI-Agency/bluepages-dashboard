@@ -28,6 +28,11 @@ const columns = [
     render: () => <DragHandle />,
   },
   {
+    title: 'Index',
+    dataIndex: 'index',
+    className: 'drag-visible',
+  },
+  {
     title: 'ID',
     dataIndex: 'id',
     className: 'drag-visible',
@@ -184,7 +189,7 @@ function CompaniesSorting() {
         el => !!el,
       );
       console.log('Sorted items: ', newData);
-      setDataSource(newData)
+      setDataSource(newData.map((item, index) => ({...item, index})))
     }
   };
 
