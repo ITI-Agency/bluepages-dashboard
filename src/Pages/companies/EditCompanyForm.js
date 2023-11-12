@@ -426,7 +426,7 @@ const EditCompanyForm = ({ company, id }) => {
     agent_job: company.agent_job || "",
     verified: company.verified || false,  
     keywords: company.keywords || "",
-    sorting: company.sorting || null,
+    // sorting: company.sorting || null,
   };
   return (
     <div>
@@ -694,14 +694,14 @@ const EditCompanyForm = ({ company, id }) => {
           >
             <Input placeholder="الوظيفه" />
           </Form.Item>
-          <Form.Item
+          {/* <Form.Item
             label="الترتيب"
             name="sorting"
             className="w-[100%] md:w-[calc(22%-8px)]"
             style={{ display: "inline-block" }}
           >
             <InputNumber type="" placeholder="الترتيب" />
-          </Form.Item>
+          </Form.Item> */}
         </Form.Item>
         <Form.Item style={{ marginBottom: 0 }}>
           <Form.Item
