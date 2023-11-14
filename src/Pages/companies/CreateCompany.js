@@ -662,13 +662,13 @@ function CreateCompany() {
 							<Form.Item label='المنطقه باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="district_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Input placeholder='المنطقه باللغه الإنجليزيه' />
 							</Form.Item>
-							<Form.Item label='الشارع باللغه العربيه' name="street_ar" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder='الشارع باللغه العربيه' />
+							<Form.Item label='العنوان باللغه العربيه' name="street_ar" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder='العنوان باللغه العربيه' />
 							</Form.Item>
 						</Form.Item>
 						<Form.Item className='mb-0'  >
-							<Form.Item label='الشارع باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="street_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
-								<Input placeholder='الشارع باللغه الإنجليزيه' />
+							<Form.Item label='العنوان باللغه الإنجليزيه' className="ltr:mr-4 rtl:ml-4 " name="street_en" style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
+								<Input placeholder='العنوان باللغه الإنجليزيه' />
 							</Form.Item>
 							<Form.Item label="رقم المبني" name="building_no" className="ltr:mr-4 rtl:ml-4 " style={{ display: 'inline-block', width: 'calc(33% - 8px)' }}>
 								<Input placeholder="رقم المبني" />

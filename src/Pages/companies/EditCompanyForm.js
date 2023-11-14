@@ -902,21 +902,21 @@ const EditCompanyForm = ({ company, id }) => {
             <Input placeholder="المنطقه باللغه الإنجليزيه" />
           </Form.Item>
           <Form.Item
-            label="الشارع باللغه العربيه"
+            label="العنوان باللغه العربيه"
             name="street_ar"
             style={{ display: "inline-block", width: "calc(33% - 8px)" }}
           >
-            <Input placeholder="الشارع باللغه العربيه" />
+            <Input placeholder="العنوان باللغه العربيه" />
           </Form.Item>
         </Form.Item>
         <Form.Item className="mb-0">
           <Form.Item
-            label="الشارع باللغه الإنجليزيه"
+            label="العنوان باللغه الإنجليزيه"
             className="ltr:mr-4 rtl:ml-4 "
             name="street_en"
             style={{ display: "inline-block", width: "calc(33% - 8px)" }}
           >
-            <Input placeholder="الشارع باللغه الإنجليزيه" />
+            <Input placeholder="العنوان باللغه الإنجليزيه" />
           </Form.Item>
           <Form.Item
             label="رقم المبني"

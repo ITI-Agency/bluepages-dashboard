@@ -277,17 +277,17 @@ function CompanyFormAntd({ onSubmit, users, cities, countries, categories, onCou
             </Item>
             <Item
               name="street_ar"
-              rules={[{ required: true, message: "الشارع باللغه العربيه مطلوب" }]}
+              rules={[{ required: true, message: "العنوان باللغه العربيه مطلوب" }]}
             >
-              <Input placeholder="الشارع باللغه العربيه" />
+              <Input placeholder="العنوان باللغه العربيه" />
             </Item>
           </Item>
           <Item>
             <Item
               name="street_en"
-              rules={[{ required: true, message: "الشارع باللغه الإنجليزيه مطلوب" }]}
+              rules={[{ required: true, message: "العنوان باللغه الإنجليزيه مطلوب" }]}
             >
-              <Input placeholder="الشارع باللغه الإنجليزيه" />
+              <Input placeholder="العنوان باللغه الإنجليزيه" />
             </Item>
             <Item
               name="building_no"

@@ -85,7 +85,7 @@ const extractCompanies = (companies) =>{
       name: company.name_ar,
       city: company?.city?.name_ar,
       plan: company?.plan?.name_ar,
-      index: index,
+      index: index+1,
     }
   })
 }
@@ -189,7 +189,7 @@ function CompaniesSorting() {
         el => !!el,
       );
       console.log('Sorted items: ', newData);
-      setDataSource(newData.map((item, index) => ({...item, index})))
+      setDataSource(newData.map((item, index) => ({...item, index: index+1})))
     }
   };
 
