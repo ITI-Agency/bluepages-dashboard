@@ -12,10 +12,10 @@ function useAuth() {
   }, []);
 
   const handleAuthorization = () => {
-    if (sessionStorage.getItem("AUTH_JWT") && location.pathname == "/sign-in") {
+    if (localStorage.getItem("AUTH_JWT") && location.pathname == "/sign-in") {
       setAuthed(true);
       navigate("dashboard");
-    } else if (!sessionStorage.getItem("AUTH_JWT")) {
+    } else if (!localStorage.getItem("AUTH_JWT")) {
       setAuthed(false);
       navigate("/sign-in");
     } else {

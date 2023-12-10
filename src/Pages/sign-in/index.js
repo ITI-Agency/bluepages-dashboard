@@ -58,7 +58,7 @@ function Basic() {
     const response = await UserServices.login(user);
     if (response.status == 201) {
       login().then(() => {
-        sessionStorage.setItem("AUTH_JWT", response.data.token);
+        localStorage.setItem("AUTH_JWT", response.data.token);
         navigateTo("/dashboard");
         setLoading(false);
       });
@@ -137,7 +137,12 @@ function Basic() {
               </MDTypography>
             </MDBox> */}
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" onClick={handleLogin} fullWidth>
+              <MDButton
+                variant="gradient"
+                color="info"
+                onClick={handleLogin}
+                fullWidth
+              >
                 sign in
               </MDButton>
             </MDBox>
