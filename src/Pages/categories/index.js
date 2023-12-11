@@ -43,6 +43,8 @@ const layout = {
 };
 function Categories() {
   const [loading, setLoading] = useState(false);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
@@ -66,42 +68,62 @@ function Categories() {
   };
   const handleExport = async () => {
     setIsExporting(true);
-      const columns = [
-        {
-          label: "id",
-          value: "id",
-        },
-        {
-          label: "name_en",
-          value: "name_en",
-        },
-        {
-          label: "name_ar",
-          value: "name_ar",
-        },
-        { label: "status", value: "status" },
-        {
-          label: "views",
-          value: "views",
-        },
-        { label: "created_at", value: "created_at" },
-        { label: "is_offer", value: "is_offer" },
-      ];
-      const settings = {
-        fileName: "bluePages Categories",
-      };
-      const data = [
-        {
-          sheet: "Categories",
-          columns,
-          content: categories,
-        },
-      ];
-      xlsx(data, settings, (sheet) => {
-        console.log("Download complete:", sheet);
+    const columns = [
+      {
+        label: "id",
+        value: "id",
+      },
+      {
+        label: "name_en",
+        value: "name_en",
+      },
+      {
+        label: "name_ar",
+        value: "name_ar",
+      },
+      { label: "status", value: "status" },
+      {
+        label: "views",
+        value: "views",
+      },
+      { label: "created_at", value: "created_at" },
+      { label: "is_offer", value: "is_offer" },
+    ];
+    const settings = {
+      fileName: "bluePages Categories",
+    };
+    const data = [
+      {
+        sheet: "Categories",
+        columns,
+        content: categories,
+      },
+    ];
+    xlsx(data, settings, (sheet) => {
+      console.log("Download complete:", sheet);
+    });
+    setIsExporting(false);
+  };
+  const handleDeleteSelected = async () => {
+    setLoading(true);
+    try {
+      const response = await CategoriesServices.deleteMultipleCategory({
+        data: { ids: selectedRowKeys },
       });
-      setIsExporting(false);
-
+      if (response && response.status == 200) {
+        toast.success("success to delete data");
+        setLoading(false);
+        getAllCategories();
+      } else {
+        toast.error("something went wrong!");
+        setLoading(false);
+        getAllCategories();
+      }
+    } catch (error) {
+      toast.error("something went wrong!");
+      setLoading(false);
+      getAllCategories();
+    }
   };
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -593,8 +615,35 @@ function Categories() {
             />
           </MDButton>
         </MDBox>
+        <MDBox ml={2} mr={2} display="flex">
+          <MDButton
+            onClick={handleDeleteSelected}
+            variant="gradient"
+            component="label"
+            color="warning"
+          >
+            <Icon>delete</Icon>Selected
+            {/* <input
+								hidden
+								accept=".xlsx, .xls, .csv"
+								name="excelFile"
+								type="file"
+								onChange={handleImportFile}
+							/> */}
+          </MDButton>
+        </MDBox>
       </MDBox>
-      <Table columns={columns} dataSource={categories} />
+      <Table
+        columns={columns}
+        dataSource={categories}
+        rowKey={(record) => record.id}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedRowKeys(selectedRowKeys);
+          },
+        }}
+      />
       <Modal
         open={open.state}
         onClose={handleClose}
