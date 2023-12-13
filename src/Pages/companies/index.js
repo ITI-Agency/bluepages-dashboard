@@ -219,7 +219,7 @@ function Companies() {
         response &&
         response.status == 200 &&
         countriesStatus == 200 &&
-        citiesStatus == 200  
+        citiesStatus == 200
       ) {
         setDeleting(false);
         // setLoading(false);
@@ -445,17 +445,21 @@ function Companies() {
     filterForExport.push({
       requests: location.pathname === "/companies-requests" ? "true" : "false",
     });
+
     filterForExport.city = "true";
+    filterForExport.country = "true";
+    filterForExport.user = "true";
     console.log("filter for export", filterForExport);
     console.log({ filterForExport });
     const response = await CompaniesServices.getAllCompanies(filterForExport);
+    console.log("🚀 ~ file: index.js:453 ~ handleExport ~ response:", response);
     console.log({ companies: response?.data });
     if (response && response.status == 200) {
       const comp = response?.data?.map((c) => {
         c.categories.length
-          ? (c.categories = c.categories?.map((cat) => cat.name_ar).join(","))
+          ? (c.categories = c.categories?.map((cat) => cat?.name_ar).join(","))
           : "";
-        c.cityName = c.city.name_ar;
+        c.cityName = c.city?.name_ar;
         return c;
       });
       const columns = [
@@ -1323,38 +1327,38 @@ function Companies() {
 							/> */}
             </MDButton>
           </MDBox>
-					<MDBox >
-          <MDButton
-            onClick={() => setOpenDeleteIdModal(true)}
-            variant="gradient"
-            component="label"
-            color="error"
-          >
-            <Icon>delete</Icon>By ID
-          </MDButton>
-        </MDBox>
-        {location.pathname === "/companies-requests" ? (
-          ""
-        ) : (
-          <MDBox ml={2}>
+          <MDBox>
             <MDButton
-              ml={2}
-              onClick={() => setOpenDeleteModal(true)}
+              onClick={() => setOpenDeleteIdModal(true)}
               variant="gradient"
               component="label"
               color="error"
             >
-              <Icon>delete</Icon>By Plan
-              {/* <input
+              <Icon>delete</Icon>By ID
+            </MDButton>
+          </MDBox>
+          {location.pathname === "/companies-requests" ? (
+            ""
+          ) : (
+            <MDBox ml={2}>
+              <MDButton
+                ml={2}
+                onClick={() => setOpenDeleteModal(true)}
+                variant="gradient"
+                component="label"
+                color="error"
+              >
+                <Icon>delete</Icon>By Plan
+                {/* <input
 							hidden
 							accept=".xlsx, .xls, .csv"
 							name="excelFile"
 							type="file"
 							onChange={handleImportFile}
 						/> */}
-            </MDButton>
-          </MDBox>
-        )}
+              </MDButton>
+            </MDBox>
+          )}
           <MDBox ml={2}>
             <Select
               style={{ width: 200, borderRadius: 30 }}
@@ -1375,9 +1379,7 @@ function Companies() {
               onChange={handleCategoryChange}
             />
           </MDBox>
-
         </MDBox>
-      
       </MDBox>
       <Table
         onChange={handleChange}
