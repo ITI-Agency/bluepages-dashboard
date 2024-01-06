@@ -23,6 +23,10 @@ const createCategory = async (category) => {
   const response = await http.post(`/categories`, category);
   return response;
 };
+const mergeCategories = async (data) => {
+  const response = await http.post(`/categories/merge`, data);
+  return response;
+};
 const createMultipleCategory = async (categories) => {
   const dataArr = {
     data: categories, // as array
@@ -54,4 +58,5 @@ export default {
   createMultipleCategory,
   getAllCategoriesMapped,
   deleteMultipleCategory,
+  mergeCategories,
 };

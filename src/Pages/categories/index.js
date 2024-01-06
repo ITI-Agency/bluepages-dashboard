@@ -54,6 +54,9 @@ function Categories() {
   const [searchedColumn, setSearchedColumn] = useState("");
   const [openSelectModal, setOpenSelectModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [opencategoriesMergeModal, setOpencategoriesMergeModal] =
+    useState(false);
+  const [merging, setMerging] = useState(false);
 
   const searchInput = useRef(null);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -307,6 +310,33 @@ function Categories() {
       reader.readAsArrayBuffer(e.target.files[0]);
     }
   };
+  const handleMergeCategories = async (value) => {
+    console.log(
+      "🚀 ~ file: index.js:313 ~ handleMergeCategories ~ value:",
+      value
+    );
+    // setLoading(true);
+    setMerging(true);
+    try {
+      const response = await CategoriesServices.mergeCategories(value);
+      if (response && response.status == 201) {
+        toast.success("تم الدمج بنجاح");
+        setOpencategoriesMergeModal(false);
+        getAllCategories();
+        setMerging(false);
+      } else {
+        toast.error("حدث خطأ ما");
+        setOpencategoriesMergeModal(false);
+        getAllCategories();
+        setMerging(false);
+      }
+    } catch (error) {
+      toast.error("حدث خطأ ما");
+      setOpencategoriesMergeModal(false);
+      getAllCategories();
+      setMerging(false);
+    }
+  };
 
   useEffect(() => {
     if (importedData.length) {
@@ -384,6 +414,98 @@ function Categories() {
                     <div className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-400 hover:text-white">
                       إلغاء
                     </div>
+                  </MDButton>
+                </MDBox>
+              </Grid>
+            </Grid>
+            {/* </MDBox> */}
+          </Form>
+        </Paper>
+      </DashboardLayout>
+    );
+  if (opencategoriesMergeModal)
+    return (
+      <DashboardLayout>
+        <Paper
+          variant="outlined"
+          sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}
+        >
+          <Form
+            layout="vertical"
+            {...layout}
+            name="control-hooks"
+            onFinish={handleMergeCategories}
+          >
+            {/* <MDBox sx={style}> */}
+            <Grid container spacing={5}>
+              <Grid item xs={12} sm={6}>
+                <Form.Item
+                  label="الأنشطه التي ستدمج"
+                  name="from"
+                  style={{ display: "inline-block", width: "calc(100% - 8px)" }}
+                  rules={[
+                    { required: true, message: "النشاطات التي سيتم دمجها" },
+                  ]}
+                >
+                  <Select
+                    placeholder="النشاطات التي سيتم دمجها"
+                    showSearch
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    // mode="multiple"
+                    allowClear
+                    options={categories.map((cat) => ({
+                      label: cat[`name_ar`],
+                      value: cat.id,
+                    }))}
+                  />
+                </Form.Item>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Form.Item
+                  name="to"
+                  label="النشاط المدمج به"
+                  rules={[{ required: true }]}
+                >
+                  <Select placeholder="النشاط المدمج به" allowClear>
+                    {categories?.map((cat) => (
+                      <Option key={cat.id} value={cat.id}>
+                        {cat[`name_ar`]}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <MDBox
+                  display="flex"
+                  alignItems="center"
+                  mt={{ xs: 2, sm: 0 }}
+                  ml={{ xs: -1.5, sm: 0 }}
+                >
+                  <MDBox mr={1} className="no-ant-item-margin">
+                    <Form.Item>
+                      <Button
+                        loading={merging}
+                        disabled={merging}
+                        type="primary"
+                        htmlType="submit"
+                      >
+                        Confirm
+                      </Button>
+                    </Form.Item>
+                  </MDBox>
+                  <MDButton
+                    onClick={() => setOpencategoriesMergeModal(false)}
+                    variant="text"
+                    color="dark"
+                  >
+                    cancel
                   </MDButton>
                 </MDBox>
               </Grid>
@@ -630,6 +752,24 @@ function Categories() {
 								type="file"
 								onChange={handleImportFile}
 							/> */}
+          </MDButton>
+        </MDBox>
+        <MDBox ml={2}>
+          <MDButton
+            ml={2}
+            onClick={() => setOpencategoriesMergeModal(true)}
+            variant="gradient"
+            component="label"
+            color="error"
+          >
+            <Icon>edit</Icon>Merge Categories
+            {/* <input
+							hidden
+							accept=".xlsx, .xls, .csv"
+							name="excelFile"
+							type="file"
+							onChange={handleImportFile}
+						/> */}
           </MDButton>
         </MDBox>
       </MDBox>
