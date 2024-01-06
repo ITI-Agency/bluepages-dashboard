@@ -448,7 +448,7 @@ function Categories() {
                   ]}
                 >
                   <Select
-                    placeholder="النشاطات التي سيتم دمجها"
+                    placeholder="النشاطات التي  ستحذف"
                     showSearch
                     optionFilterProp="children"
                     filterOption={(input, option) =>
@@ -456,7 +456,7 @@ function Categories() {
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
-                    // mode="multiple"
+                    mode="multiple"
                     allowClear
                     options={categories.map((cat) => ({
                       label: cat[`name_ar`],
@@ -468,10 +468,10 @@ function Categories() {
               <Grid item xs={12} sm={6}>
                 <Form.Item
                   name="to"
-                  label="النشاط المدمج به"
+                  label="النشاط  الجديد"
                   rules={[{ required: true }]}
                 >
-                  <Select placeholder="النشاط المدمج به" allowClear>
+                  <Select placeholder="النشاط الجديد " allowClear>
                     {categories?.map((cat) => (
                       <Option key={cat.id} value={cat.id}>
                         {cat[`name_ar`]}
