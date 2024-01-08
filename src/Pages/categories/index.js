@@ -471,13 +471,21 @@ function Categories() {
                   label="النشاط  الجديد"
                   rules={[{ required: true }]}
                 >
-                  <Select placeholder="النشاط الجديد " allowClear>
-                    {categories?.map((cat) => (
-                      <Option key={cat.id} value={cat.id}>
-                        {cat[`name_ar`]}
-                      </Option>
-                    ))}
-                  </Select>
+                  <Select
+                    placeholder="النشاطات الجديد  "
+                    showSearch
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    allowClear
+                    options={categories.map((cat) => ({
+                      label: cat[`name_ar`],
+                      value: cat.id,
+                    }))}
+                  />
                 </Form.Item>
               </Grid>
 
@@ -568,6 +576,16 @@ function Categories() {
         <p className="text-sm font-medium text-gray-900 ">{record.views}</p>
       ),
       sorter: (a, b) => a.views - b.views,
+    },
+    {
+      title: "Companies Count",
+      key: "companiesCount",
+      render: (_, record) => (
+        <p className="text-sm font-medium text-gray-900 ">
+          {record.companiesCount}
+        </p>
+      ),
+      sorter: (a, b) => a.companiesCount - b.companiesCount,
     },
     {
       title: "Active",
