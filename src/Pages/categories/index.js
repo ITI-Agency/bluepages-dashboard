@@ -801,6 +801,11 @@ function Categories() {
             setSelectedRowKeys(selectedRowKeys);
           },
         }}
+        pagination={{
+          pageSize: 100, // Set the default page size to 100
+          showSizeChanger: true, // Display the page size changer
+          pageSizeOptions: ["50", "100", "200"], // Specify the available page size options
+        }}
       />
       <Modal
         open={open.state}

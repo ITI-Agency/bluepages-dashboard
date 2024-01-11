@@ -36,34 +36,34 @@ import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
 import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 import SettingsServices from "Services/SettingsServices";
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState } from "react";
+import { useEffect } from "react";
 
 function Dashboard() {
-	const [loading, setLoading] = useState(false);
-	const [statistics, setStatistics] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [statistics, setStatistics] = useState([]);
   const { sales, tasks } = reportsLineChartData;
-	useEffect(() => {
-		getAllStatistics();
-	}, []);
+  useEffect(() => {
+    getAllStatistics();
+  }, []);
 
-	const getAllStatistics = async () => {
-		setLoading(true);
-		try {
-			const response = await SettingsServices.getStatistics();
-			if (response && response.status == 200) {
-				setLoading(false);
-				setStatistics(response.data);
-			} else {
-				toast.error("sorry something went wrong while getting statistics!");
-				setLoading(false);
-			}
-		} catch (error) {
-			toast.error("sorry something went wrong while getting statistics!");
-			setLoading(false);
-		}
-	};
-	if (loading) return <LoadingDataLoader />;
+  const getAllStatistics = async () => {
+    setLoading(true);
+    try {
+      const response = await SettingsServices.getStatistics();
+      if (response && response.status == 200) {
+        setLoading(false);
+        setStatistics(response.data);
+      } else {
+        toast.error("sorry something went wrong while getting statistics!");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("sorry something went wrong while getting statistics!");
+      setLoading(false);
+    }
+  };
+  if (loading) return <LoadingDataLoader />;
 
   return (
     <DashboardLayout>
@@ -73,12 +73,12 @@ function Dashboard() {
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="dark"
-								icon="leaderboard"
+                icon="leaderboard"
                 title="Users"
-								count={`${statistics?.usersCount || 100}`}
+                count={`${statistics?.usersCount || 100}`}
                 percentage={{
                   color: "success",
-									amount: statistics?.usersCount || 100,
+                  amount: statistics?.usersCount || 100,
                   label: "than lask year",
                 }}
               />
@@ -89,10 +89,10 @@ function Dashboard() {
               <ComplexStatisticsCard
                 icon="menu_book"
                 title="Companies"
-								count={`${statistics?.companiesCount || 100}`}
+                count={`${statistics?.companiesCount || 100}`}
                 percentage={{
                   color: "success",
-									amount: statistics?.companiesCount || 100,
+                  amount: statistics?.companiesCount || 100,
                   label: "than last year",
                 }}
               />
@@ -104,10 +104,10 @@ function Dashboard() {
                 color="success"
                 icon="store"
                 title="Offers"
-								count={`${statistics?.offersCount || 100}`}
+                count={`${statistics?.offersCount || 100}`}
                 percentage={{
                   color: "success",
-									amount: statistics?.offersCount || 100,
+                  amount: statistics?.offersCount || 100,
                   label: "than yesterday",
                 }}
               />
@@ -119,27 +119,27 @@ function Dashboard() {
                 color="primary"
                 icon="newspaper"
                 title="Directories"
-								count={`${statistics?.directoriesCount || 100}`}
+                count={`${statistics?.directoriesCount || 100}`}
                 percentage={{
                   color: "success",
-									amount: statistics?.directoriesCount || 100,
+                  amount: statistics?.directoriesCount || 100,
                   label: "Just updated",
                 }}
               />
             </MDBox>
           </Grid>
         </Grid>
-				<Grid container mt={4.5} spacing={3}>
+        <Grid container mt={4.5} spacing={3}>
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
               <ComplexStatisticsCard
                 color="warning"
-								icon="flag"
+                icon="flag"
                 title="Countries"
-								count={`${statistics?.countriesCount || 100}`}
+                count={`${statistics?.countriesCount || 100}`}
                 percentage={{
                   color: "success",
-									amount: statistics?.countriesCount || 100,
+                  amount: statistics?.countriesCount || 100,
                   label: "than lask year",
                 }}
               />
@@ -147,14 +147,14 @@ function Dashboard() {
           </Grid>
           <Grid item xs={12} md={6} lg={3}>
             <MDBox mb={1.5}>
-							<ComplexStatisticsCard
-								color="secondary"
+              <ComplexStatisticsCard
+                color="secondary"
                 icon="location_city"
                 title="Cities"
-								count={`${statistics?.citiesCount || 100}`}
+                count={`${statistics?.citiesCount || 100}`}
                 percentage={{
                   color: "success",
-									amount: statistics?.citiesCount || 100,
+                  amount: statistics?.citiesCount || 100,
                   label: "than last year",
                 }}
               />
@@ -165,11 +165,11 @@ function Dashboard() {
               <ComplexStatisticsCard
                 color="error"
                 icon="add_shopping_cart"
-                title="Plans"
-								count={`${statistics?.subscriptionPlansCount || 100}`}
+                title="Active Categories"
+                count={`${statistics?.activecategoriesCount || 100}`}
                 percentage={{
                   color: "success",
-									amount: statistics?.subscriptionPlansCount || 100,
+                  amount: statistics?.activecategoriesCount || 100,
                   label: "than yesterday",
                 }}
               />
@@ -181,10 +181,10 @@ function Dashboard() {
                 color="info"
                 icon="request_page"
                 title="Directory Requests"
-								count={`${statistics?.requestDirectoriesCount || 100}`}
+                count={`${statistics?.requestDirectoriesCount || 100}`}
                 percentage={{
                   color: "success",
-									amount: statistics?.requestDirectoriesCount || 100,
+                  amount: statistics?.requestDirectoriesCount || 100,
                   label: "Just updated",
                 }}
               />
