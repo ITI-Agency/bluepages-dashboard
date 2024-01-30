@@ -55,10 +55,12 @@ function Dashboard() {
         setLoading(false);
         setStatistics(response.data);
       } else {
+        localStorage.removeItem("AUTH_JWT");
         toast.error("sorry something went wrong while getting statistics!");
         setLoading(false);
       }
     } catch (error) {
+      localStorage.removeItem("AUTH_JWT");
       toast.error("sorry something went wrong while getting statistics!");
       setLoading(false);
     }

@@ -498,6 +498,7 @@ function Companies() {
       setIsExporting(false);
     } else {
       setIsExporting(false);
+      localStorage.removeItem("AUTH_JWT");
       toast.error("sorry something went wrong while getting companies!");
     }
   };

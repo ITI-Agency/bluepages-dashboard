@@ -223,10 +223,12 @@ function Categories() {
         setData(response.data);
         setCategories(response.data);
       } else {
+        localStorage.removeItem("AUTH_JWT");
         toast.error("sorry something went wrong while getting categories!");
         setLoading(false);
       }
     } catch (error) {
+      localStorage.removeItem("AUTH_JWT");
       toast.error("sorry something went wrong while getting categories!");
       setLoading(false);
     }
