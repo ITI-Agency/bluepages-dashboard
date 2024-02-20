@@ -218,17 +218,20 @@ function Categories() {
     setLoading(true);
     try {
       const response = await CategoriesServices.getAllCategories();
+      console.log("🚀 ~ getAllCategories ~ response:", response);
       if (response && response.status == 200) {
         setLoading(false);
         setData(response.data);
         setCategories(response.data);
       } else {
         localStorage.removeItem("AUTH_JWT");
+        window.location.reload();
         toast.error("sorry something went wrong while getting categories!");
         setLoading(false);
       }
     } catch (error) {
       localStorage.removeItem("AUTH_JWT");
+      window.location.reload();
       toast.error("sorry something went wrong while getting categories!");
       setLoading(false);
     }
@@ -327,6 +330,7 @@ function Categories() {
         getAllCategories();
         setMerging(false);
       } else {
+        localStorage.removeItem("AUTH_JWT");
         toast.error("حدث خطأ ما");
         setOpencategoriesMergeModal(false);
         getAllCategories();
@@ -334,6 +338,7 @@ function Categories() {
       }
     } catch (error) {
       toast.error("حدث خطأ ما");
+      localStorage.removeItem("AUTH_JWT");
       setOpencategoriesMergeModal(false);
       getAllCategories();
       setMerging(false);

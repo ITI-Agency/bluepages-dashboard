@@ -233,6 +233,8 @@ function Companies() {
         // setLoading(false);
       }
     } catch (error) {
+      localStorage.removeItem("AUTH_JWT");
+      window.location.reload();
       toast.error("sorry something went wrong while getting companies!");
       setDeleting(false);
       // setLoading(false);
