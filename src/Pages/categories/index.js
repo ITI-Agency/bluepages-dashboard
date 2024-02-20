@@ -330,15 +330,23 @@ function Categories() {
         getAllCategories();
         setMerging(false);
       } else {
-        localStorage.removeItem("AUTH_JWT");
+        if (response?.status == 401) {
+          console.log("🚀 ~ handleMergeCategories ~ response:", response);
+          localStorage.removeItem("AUTH_JWT");
+          window.location.reload();
+        }
         toast.error("حدث خطأ ما");
         setOpencategoriesMergeModal(false);
         getAllCategories();
         setMerging(false);
       }
     } catch (error) {
+      console.log("🚀 ~ handleMergeCategories ~ error:", error);
       toast.error("حدث خطأ ما");
-      localStorage.removeItem("AUTH_JWT");
+      if (error.status === 401) {
+        localStorage.removeItem("AUTH_JWT");
+        window.location.reload();
+      }
       setOpencategoriesMergeModal(false);
       getAllCategories();
       setMerging(false);
