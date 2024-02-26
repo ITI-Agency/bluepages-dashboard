@@ -23,7 +23,7 @@ const getAllOffersPaginate = async (filters = []) => {
   return response;
 };
 const getOfferDetails = async (offerId) => {
-  const AUTH_JWT = sessionStorageItem("AUTH_JWT");
+  const AUTH_JWT = localStorage.getItem("AUTH_JWT");
   const data = await fetch(
     `${process.env.REACT_APP_API_BASE_URL}offers/${offerId}`,
     {
