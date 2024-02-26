@@ -28,7 +28,7 @@ const onUploadProgress = (progressEvent) => {
 
 HTTP.interceptors.request.use(
   (config) => {
-    const AUTH_JWT = localStorage.getItem("AUTH_JWT");
+    const AUTH_JWT = sessionStorageItem("AUTH_JWT");
     config.headers["Authorization"] = `Bearer ${AUTH_JWT}`;
     return {
       ...config,

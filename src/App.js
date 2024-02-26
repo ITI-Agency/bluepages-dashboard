@@ -196,9 +196,9 @@ export default function App() {
   // }, []);
   const location = useLocation();
   const handleAuthorization = () => {
-    if (localStorage.getItem("AUTH_JWT") && location.pathname == "/sign-in") {
+    if (sessionStorageItem("AUTH_JWT") && location.pathname == "/sign-in") {
       login().then(() => navigateTo("dashboard"));
-    } else if (!localStorage.getItem("AUTH_JWT")) {
+    } else if (!sessionStorageItem("AUTH_JWT")) {
       logout().then(() => navigateTo("/sign-in"));
     } else {
       login();

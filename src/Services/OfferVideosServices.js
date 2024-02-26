@@ -3,7 +3,7 @@ import Utils from "../Utils";
 
 const getAllVideos = async (filters = []) => {
   const queries = Utils.prepareQueryFilters(filters);
-  const AUTH_JWT = localStorage.getItem("AUTH_JWT");
+  const AUTH_JWT = sessionStorageItem("AUTH_JWT");
 
   const data = await fetch(
     `${process.env.REACT_APP_API_BASE_URL}offerVideos${queries}`,
@@ -19,7 +19,7 @@ const getAllVideos = async (filters = []) => {
 };
 
 const getVideoDetails = async (VideoId) => {
-  const AUTH_JWT = localStorage.getItem("AUTH_JWT");
+  const AUTH_JWT = sessionStorageItem("AUTH_JWT");
   const data = await fetch(
     `${process.env.REACT_APP_API_BASE_URL}offerVideos/${VideoId}`,
     {
