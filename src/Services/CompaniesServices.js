@@ -23,7 +23,7 @@ const getAllCompanies = async (filters = []) => {
   return response;
 };
 const getAllCompaniesPaginate = async (filters = []) => {
-	console.log({ filters })
+  console.log({ filters });
   // [
   //   { userId: 1 },
   //   { cityId: 1 },
@@ -36,12 +36,12 @@ const getAllCompaniesPaginate = async (filters = []) => {
   // ];
   //prepare filters to be queries
   const queries = Utils.prepareQueryFilters(filters);
-	const response = await http.get(`/companies/getAll/paginate${queries}`);
+  const response = await http.get(`/companies/getAll/paginate${queries}`);
   return response;
 };
 const getSortedCompanies = async (filters = []) => {
   const queries = Utils.prepareQueryFilters(filters);
-	const response = await http.get(`/companies/${queries}`);
+  const response = await http.get(`/companies/${queries}`);
   return response;
 };
 
@@ -63,15 +63,20 @@ const deleteMultipleCompany = async (ids) => {
   //   data: companies, // as array
   //   //here you can add category id and/or country & city id
   // };
-	const response = await http.delete(`/companies/delete/multiple`, ids);
+  const response = await http.delete(`/companies/delete/multiple`, ids);
   return response;
 };
-const deleteByPlan = async (planId,cityId) => {
-	const response = await http.delete(`/companies/${planId}/${cityId}/delete-by-plan`);
+const deleteByPlan = async (planId, cityId) => {
+  const response = await http.delete(
+    `/companies/${planId}/${cityId}/delete-by-plan`
+  );
   return response;
 };
 const deleteById = async (payload) => {
-	const response = await http.delete(`/companies/multiple/remove-companies-between-two-ids`,{data: payload});
+  const response = await http.delete(
+    `/companies/multiple/remove-companies-between-two-ids`,
+    { data: payload }
+  );
   return response;
 };
 
@@ -83,11 +88,11 @@ const addCompanyImages = async (companyId, images) => {
   return await http.put(`/companies/${companyId}/add-images`, images);
 };
 
-const removeCompanyImages = async (companyId,payload) => {
-  return await http.delete(`/companies/${companyId}/remove-images`,payload);
+const removeCompanyImages = async (companyId, payload) => {
+  return await http.delete(`/companies/${companyId}/remove-images`, payload);
 };
 
-const updateCompany = async (company,id) => {
+const updateCompany = async (company, id) => {
   const response = await http.put(`/companies/${id}`, company);
   return response;
 };
@@ -119,6 +124,9 @@ const updatePhone = async (phoneId, phone) => {
 };
 const updateCompaniesSorting = async (sorting) => {
   return await http.post(`/companies/update-sorting`, sorting);
+};
+const updateCompanyImagesSorting = async (sorting) => {
+  return await http.post(`/companies/update-image-sorting`, sorting);
 };
 const removePhone = async (phoneId) => {
   return await http.delete(`/phone/${phoneId}`);
@@ -166,7 +174,9 @@ const createCompanyCategory = async (companyId, company_category) => {
   });
 };
 const updateCompanyCategory = async (categoryId, company_category) => {
-  return await http.put(`/company_category/${categoryId}`, { company_category });
+  return await http.put(`/company_category/${categoryId}`, {
+    company_category,
+  });
 };
 const removeCompanyCategory = async (categoryId) => {
   return await http.delete(`/company_category/${categoryId}`);
@@ -174,9 +184,9 @@ const removeCompanyCategory = async (categoryId) => {
 
 export default {
   getCompanyDetails,
-	getAllCompanies,
-	getAllCompaniesPaginate,
-	getSortedCompanies,
+  getAllCompanies,
+  getAllCompaniesPaginate,
+  getSortedCompanies,
   createCompany,
   createMultipleCompany,
   updateCompany,
@@ -198,9 +208,10 @@ export default {
   getCompanyCategoryDetails,
   createCompanyCategory,
   updateCompanyCategory,
-	removeCompanyCategory,
-	deleteMultipleCompany,
-	deleteByPlan,
+  removeCompanyCategory,
+  deleteMultipleCompany,
+  deleteByPlan,
   deleteById,
-  updateCompaniesSorting
+  updateCompaniesSorting,
+  updateCompanyImagesSorting,
 };

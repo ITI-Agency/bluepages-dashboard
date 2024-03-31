@@ -1,6 +1,9 @@
 import { Button, Form, InputNumber, Select, Switch } from "antd";
+import { MenuOutlined } from "@ant-design/icons";
+import MDBox from "components/MDBox";
+import { Icon } from "@mui/material";
 import React, { createRef, useEffect, useState } from "react";
-import { Input, Skeleton, Space, Tabs, Upload } from "antd";
+import { Input, Skeleton, Space, Tabs, Upload, Table } from "antd";
 import TextArea from "antd/lib/input/TextArea";
 import {
   QueryClient,
@@ -30,6 +33,13 @@ import { UploadOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImgCrop from "antd-img-crop";
+import {
+  SortableContainer,
+  SortableElement,
+  SortableHandle,
+} from "react-sortable-hoc";
+import { arrayMoveImmutable } from "array-move";
+import DownloadImagesButton from "./DownloadImagesButton";
 const { formats, modules } = Util;
 const layout = {
   labelCol: { span: 2 },
@@ -65,13 +75,19 @@ const getSrcFromFile = (file) => {
     reader.onload = () => resolve(reader.result);
   });
 };
+const DragHandle = SortableHandle(() => (
+  <MenuOutlined style={{ cursor: "grab", color: "#999" }} />
+));
+
+const SortableItem = SortableElement((props) => <tr {...props} />);
+const SortableBody = SortableContainer((props) => <tbody {...props} />);
 const EditCompanyForm = ({ company, id }) => {
   console.log({ company });
   const navigate = useNavigate();
   const [bannerFile, setBannerFile] = useState([]);
   const [logoFile, setLogoFile] = useState([]);
   const [recordFile, setRecordFile] = useState([]);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [images, setImages] = useState([]);
   const { setLoading } = useLoading();
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -79,10 +95,14 @@ const EditCompanyForm = ({ company, id }) => {
   const [cities, setCities] = useState([]);
   const [categories, setCategories] = useState([]);
   const [users, setUsers] = useState(null);
+  const [dataSource, setDataSource] = useState([]);
   const [subscriptionPlanPackages, setSubscriptionPlanPackages] =
     useState(null);
   const [verified, setVerified] = useState(company?.verified);
-  console.log("🚀 ~ file: EditCompanyForm.js:85 ~ EditCompanyForm ~ verified:", company?.verified)
+  console.log(
+    "🚀 ~ file: EditCompanyForm.js:85 ~ EditCompanyForm ~ verified:",
+    company?.verified
+  );
   const [descriptionar, setDescriptionar] = useState(company?.description_ar);
   const [descriptionen, setDescriptionen] = useState(company?.description_en);
   const [imageDeleted, setImageDeleted] = useState(false);
@@ -92,7 +112,25 @@ const EditCompanyForm = ({ company, id }) => {
   const [imagesForm] = Form.useForm();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const handleSubmitSorting = async () => {
+    setIsSubmitting(true);
+    try {
+      const { status, data } =
+        await CompaniesServices.updateCompanyImagesSorting({
+          updates: dataSource.map((el) => ({ id: el.id, sorting: el.index })),
+        });
+      if (status === 200 || status === 201) {
+        toast.success("Companies Sorted Successfully");
+        setIsSubmitting(false);
+      } else {
+        toast.error("sorry something went wrong while sorting companies!");
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      toast.error("sorry something went wrong while sorting companies!");
+      setIsSubmitting(false);
+    }
+  };
   const queryParams = new URLSearchParams(location.search);
   const routerToMainPage = queryParams.get("referrer");
   console.log(
@@ -166,6 +204,27 @@ const EditCompanyForm = ({ company, id }) => {
     } = await SubscriptionPlanPackagesServices.getAllSubscriptionPlanPackages([
       { planId: company.subscriptionPlanId },
     ]);
+    const extractImages = (company) => {
+      // First, sort the images based on the `sorting` property, then by `id` as a fallback
+      const sortedImages = company.images.sort((a, b) => {
+        // If both images have a sorting value, sort by it
+        if (a.sorting !== undefined && b.sorting !== undefined) {
+          return a.sorting - b.sorting;
+        }
+        // If one image lacks a sorting value, sort by id
+        return a.id - b.id;
+      });
+
+      // Then, map the sorted images to the desired structure
+      return sortedImages.map((img, index) => {
+        return {
+          key: img.id,
+          id: img.id,
+          image: img.image,
+          index: index + 1, // This index is just a sequential number and not related to sorting
+        };
+      });
+    };
 
     console.log("this is data:>", {
       // citiesData,
@@ -181,6 +240,7 @@ const EditCompanyForm = ({ company, id }) => {
       categoriesStatus == 200 &&
       subscriptionPlanPackageStatus == 200
     ) {
+      setDataSource(extractImages(company));
       setCountries(countriesData);
       setCities(citiesData);
       setUsers(usersData);
@@ -246,18 +306,20 @@ const EditCompanyForm = ({ company, id }) => {
       // data.categories = [data.categories]
       let formData = new FormData();
       // upload categories
-      console.log("🚀 ~ file: EditCompanyForm.js:252 ~ data.categories.forEach ~ data:", data.verified)
+      console.log(
+        "🚀 ~ file: EditCompanyForm.js:252 ~ data.categories.forEach ~ data:",
+        data.verified
+      );
       data.categories.forEach((cat) => {
         formData.append("categories[]", cat);
       });
 
       delete data.categories;
       for (const [key, value] of Object.entries(data)) {
-        if (key === 'verified') {
+        if (key === "verified") {
           formData.append(key, value ? "true" : "false");
-        } else{
-          formData.append(key,  value && value !=
-            "undefined" ? value : "");
+        } else {
+          formData.append(key, value && value != "undefined" ? value : "");
         }
       }
       // upload images
@@ -283,7 +345,10 @@ const EditCompanyForm = ({ company, id }) => {
         images.fileList.forEach((el) => {
           formDataImages.append("images[]", el.originFileObj);
         });
-         return Promise.allSettled([CompaniesServices.addCompanyImages(company.id, formDataImages),CompaniesServices.updateCompany(formData, company.id)])
+        return Promise.allSettled([
+          CompaniesServices.addCompanyImages(company.id, formDataImages),
+          CompaniesServices.updateCompany(formData, company.id),
+        ]);
       }
 
       return CompaniesServices.updateCompany(formData, company.id);
@@ -361,7 +426,49 @@ const EditCompanyForm = ({ company, id }) => {
       },
     }
   );
-
+  const columns = [
+    {
+      title: "Sort",
+      dataIndex: "sort",
+      width: 30,
+      className: "drag-visible",
+      render: () => <DragHandle />,
+    },
+    {
+      title: "Index",
+      dataIndex: "index",
+      className: "drag-visible",
+    },
+    {
+      title: "ID",
+      dataIndex: "id",
+      className: "drag-visible",
+    },
+    {
+      title: "Image",
+      dataIndex: "image",
+      className: "drag-visible",
+      render: (text, record) => (
+        <img src={record.image} className="h-20 w-28" />
+      ),
+    },
+    {
+      title: "ID",
+      dataIndex: "id",
+      className: "drag-visible",
+      render: (text, record) => {
+        return (
+          <div
+            onClick={() => removeImages.mutate([record.id])}
+            className="mt-2 text-center text-white bg-red-500 rounded-lg cursor-pointer hover:bg-red-400 btn"
+          >
+            {" "}
+            <p className="text-center">حذف</p>
+          </div>
+        );
+      },
+    },
+  ];
   const onPreview = async (file) => {
     const src = file.url || (await getSrcFromFile(file));
     const imgWindow = window.open(src);
@@ -424,9 +531,39 @@ const EditCompanyForm = ({ company, id }) => {
     location_link: company.location_link || "",
     agent_name: company.agent_name || "",
     agent_job: company.agent_job || "",
-    verified: company.verified || false,  
+    verified: company.verified || false,
     keywords: company.keywords || "",
     // sorting: company.sorting || null,
+  };
+
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    if (oldIndex !== newIndex) {
+      const newData = arrayMoveImmutable(
+        [].concat(dataSource),
+        oldIndex,
+        newIndex
+      ).filter((el) => !!el);
+      console.log("Sorted items: ", newData);
+      setDataSource(
+        newData.map((item, index) => ({ ...item, index: index + 1 }))
+      );
+    }
+  };
+  const DraggableContainer = (props) => (
+    <SortableBody
+      useDragHandle
+      disableAutoscroll
+      helperClass="row-dragging"
+      onSortEnd={onSortEnd}
+      {...props}
+    />
+  );
+  const DraggableBodyRow = ({ className, style, ...restProps }) => {
+    // function findIndex base on Table rowKey props and should always be a right array index
+    const index = dataSource.findIndex(
+      (x) => x.index === restProps["data-row-key"]
+    );
+    return <SortableItem index={index} {...restProps} />;
   };
   return (
     <div>
@@ -934,11 +1071,16 @@ const EditCompanyForm = ({ company, id }) => {
           >
             <Input placeholder="الرمز البريدي" />
           </Form.Item>
-           						<Form.Item className='mb-0'  >
-							<Form.Item label='الكلمات الدلاليه' className="ltr:mr-4 rtl:ml-4 " name="keywords" style={{ display: 'inline-block', width: 'calc(100%)' }}>
-								<Input placeholder='الكلمات الدلاليه' />
-							</Form.Item>
-              </Form.Item>
+          <Form.Item className="mb-0">
+            <Form.Item
+              label="الكلمات الدلاليه"
+              className="ltr:mr-4 rtl:ml-4 "
+              name="keywords"
+              style={{ display: "inline-block", width: "calc(100%)" }}
+            >
+              <Input placeholder="الكلمات الدلاليه" />
+            </Form.Item>
+          </Form.Item>
         </Form.Item>
 
         <div className="divider">
@@ -1082,17 +1224,31 @@ const EditCompanyForm = ({ company, id }) => {
         <div className="w-full h-[1px] bg-gray-400"></div>
       </div>
       <div className="flex justify-end my-4">
-        <Button
-          onClick={() =>
-            company.images.length
-              ? removeImages.mutate(company.images.map((img) => img.id))
-              : toast.error("لا يوجد صور للشركه")
-          }
-          loading={deletingImages}
-          danger
-        >
-          حذف جميع صور الشركه
-        </Button>
+        <MDBox className="flex my-2 flex-end">
+          <Button
+            className={`mx-2 h-full text-white hover:text-white rounded-lg bg-blue-700 hover:bg-blue-600  flex items-center text-[14px] font-semibold ${
+              isSubmitting ? "bg-blue-400 text-white" : "bg-blue-700 text-white"
+            }`}
+            loading={isSubmitting}
+            onClick={handleSubmitSorting}
+          >
+            {/* <div className="flex items-center text-[16px] font-semibold"> */}
+            <Icon>edit</Icon>حفظ الترتيب
+            {/* </div> */}
+          </Button>
+          <Button
+            onClick={() =>
+              company.images.length
+                ? removeImages.mutate(company.images.map((img) => img.id))
+                : toast.error("لا يوجد صور للشركه")
+            }
+            loading={deletingImages}
+            danger
+          >
+            حذف جميع صور الشركه
+          </Button>
+          {/* <DownloadImagesButton images={company.images} /> */}
+        </MDBox>
       </div>
 
       {/* <Form {...formImagesLayout} form={imagesForm} name="form-images" onFinish={addImages.mutate} >
@@ -1111,7 +1267,21 @@ const EditCompanyForm = ({ company, id }) => {
 					</Button>
 				</Form.Item>
 			</Form> */}
-      <section className="overflow-hidden text-gray-700 ">
+      <section className="p-8 my-16 border-red-600 border-solid">
+        <Table
+          pagination={false}
+          dataSource={dataSource}
+          columns={columns}
+          rowKey="index"
+          components={{
+            body: {
+              wrapper: DraggableContainer,
+              row: DraggableBodyRow,
+            },
+          }}
+        />
+      </section>
+      {/* <section className="overflow-hidden text-gray-700 ">
         <div className="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
           <div className="flex flex-wrap -m-1 md:-m-2">
             {company.images
@@ -1138,7 +1308,7 @@ const EditCompanyForm = ({ company, id }) => {
               ))}
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 };
