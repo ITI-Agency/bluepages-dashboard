@@ -22,6 +22,7 @@ import useLoading from "Hooks/useLoading";
 import * as xls from "xlsx";
 import xlsx from "json-as-xlsx";
 import CategoriesServices from "Services/CategoriesServices";
+import CitiesServices from "Services/CitiesServices";
 import { toast } from "react-toastify";
 // import * as xls from "xlsx";
 // import xlsx from "json-as-xlsx";
@@ -47,6 +48,8 @@ function Categories() {
 
   const [data, setData] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [cityFilter , setCityFilter] = useState(null);
   const navigate = useNavigate();
   const [importedData, setImportedData] = useState([]);
   const [open, setOpen] = useState({ state: false });
@@ -218,11 +221,15 @@ function Categories() {
     setLoading(true);
     try {
       const response = await CategoriesServices.getAllCategories();
+      const { status: citiesStatus, data: citiesData } =
+      await CitiesServices.getAllCities();
       console.log("🚀 ~ getAllCategories ~ response:", response);
-      if (response && response.status == 200) {
+      if (response && response.status == 200 &&
+        citiesStatus == 200) {
         setLoading(false);
         setData(response.data);
         setCategories(response.data);
+        setCities(citiesData);
       } else {
         localStorage.removeItem("AUTH_JWT");
         window.location.reload();
@@ -597,7 +604,7 @@ function Categories() {
       key: "companiesCount",
       render: (_, record) => (
         <p className="text-sm font-medium text-gray-900 ">
-          {record.companiesCount}
+          {cityFilter ? record.cityCount[`${cityFilter}`] :record.companiesCount}
         </p>
       ),
       sorter: (a, b) => a.companiesCount - b.companiesCount,
@@ -804,6 +811,24 @@ function Categories() {
 							onChange={handleImportFile}
 						/> */}
           </MDButton>
+        </MDBox>
+        <MDBox ml={2}>
+        <Select
+              style={{ width: 200, borderRadius: 30 }}
+              size="large"
+              showSearch
+              optionFilterProp="children"
+              options={[
+                { label: "الكل", value: null },
+                ...cities?.map((ci) => ({
+                  label: ci.name_ar,
+                  value: ci.id,
+                }))
+              ]}
+              placeholder="المدينه"
+              allowClear
+              onChange={setCityFilter}
+            />
         </MDBox>
       </MDBox>
       <Table

@@ -70,6 +70,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import useAuth from "Hooks/useAuth";
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import Branches from "Pages/branches";
+import Logout from "Pages/logout";
 
 const routes = [
   {
@@ -321,14 +322,14 @@ const routes = [
   //   ),
   // },
 
-  // {
-  //   type: "collapse",
-  //   name: "Sign In",
-  //   key: "sign-in",
-  //   icon: <Icon fontSize="small">login</Icon>,
-  //   route: "/sign-in",
-  //   component: <SignIn />,
-  // },
+  {
+    type: "collapse",
+    name: "Logout",
+    key: "logout",
+    icon: <Icon fontSize="small">logout</Icon>,
+    route: "/logout",
+    component: <Logout />,
+  },
 ];
 
 export default routes;

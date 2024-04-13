@@ -27,7 +27,7 @@ const AddBranch = ({ company, setCreate, setEdit }) => {
 
 
 	const mutation = useMutation(data => {
-			console.log(data)
+		  console.log("🚀 ~ mutation ~ company:", company)
 			data.companyId=company.id;
 			data.userId=company.userId;
 
@@ -35,7 +35,11 @@ const AddBranch = ({ company, setCreate, setEdit }) => {
 		}, {
 			onError: (error) => {
 				console.log({ error });
-				toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+				if(!company.userId){
+					toast.error('لابد من اختيار مستخدم للصفحه');
+				}else {
+					toast.error('لقد حدث خطأ ما برجاء التأكد من بياناتك');
+				}
 			},
 			onSuccess: () => {
 				// Boom baby!
@@ -74,10 +78,10 @@ const AddBranch = ({ company, setCreate, setEdit }) => {
 						</Form.Item>
 					</Form.Item>
 					<Form.Item style={{ marginBottom: 0 }} >
-						<Form.Item label="الوصف بالعربيه" name="description_ar" rules={[{ required: true, message: 'الوصف باللغه العربيه مطلوب' }]} className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+						<Form.Item label="الوصف بالعربيه" name="description_ar"  className="ltr:mr-4 rtl:ml-4" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 							<TextArea placeholder='الوصف باللغه العربيه' rows={4} />
 						</Form.Item>
-						<Form.Item label="الوصف بالإنجليزيه" className="" name="description_en" rules={[{ required: true, message: 'الوصف باللغه الإنجليزيه مطلوب' }]} style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+						<Form.Item label="الوصف بالإنجليزيه" className="" name="description_en"  style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
 							<TextArea placeholder='الوصف باللغه الإنجليزيه' rows={4} />
 						</Form.Item>
 					</Form.Item>

@@ -13,6 +13,8 @@ import {
 } from "react-router-dom";
 import { Icon } from "@mui/material";
 import Modal from "@mui/material/Modal";
+import { Modal as AntModal } from 'antd';
+
 import MDButton from "components/MDButton";
 // import Switch from "@mui/material/Switch";
 import MDAvatar from "components/MDAvatar";
@@ -462,6 +464,8 @@ function Companies() {
           ? (c.categories = c.categories?.map((cat) => cat?.name_ar).join(","))
           : "";
         c.cityName = c.city?.name_ar;
+        c.planName = c.plan?.name_ar || "";
+        c.userName = c.user?.name || "";
         return c;
       });
       const columns = [
@@ -470,6 +474,8 @@ function Companies() {
           value: "name_en",
         },
         { label: "cityName", value: "cityName" },
+        { label: "planName", value: "planName" },
+        { label: "userName", value: "userName" },
         {
           label: "name_ar",
           value: "name_ar",
@@ -483,6 +489,7 @@ function Companies() {
         { label: "website", value: "website" },
         { label: "categoryNames", value: "categories" },
         { label: "agent_name", value: "agent_name" },
+        { label: "createdAt", value: "createdAt" },
       ];
       const settings = {
         fileName: "bluePages Companies",
@@ -1222,7 +1229,18 @@ function Companies() {
 
     // getData(offset, limit, params);
   };
-
+  const showConfirm = () => {
+    AntModal.confirm({
+      title: 'Confirm Export',
+      content: 'Are you sure you want to export this data? This action cannot be undone.',
+      onOk() {
+        handleExport();
+      },
+      onCancel() {
+        console.log('Export cancelled');
+      },
+    });
+  };
   const handleCategoryChange = async (value) => {
     const filtersArray = [
       { country: "true" },
@@ -1290,12 +1308,11 @@ function Companies() {
               isExporting ? "bg-blue-400 text-white" : "bg-blue-700 text-white"
             }`}
             loading={isExporting}
-            onClick={handleExport}
+            onClick={showConfirm} // Updated here
           >
-            {/* <div className="flex items-center text-[16px] font-semibold"> */}
             <Icon>edit</Icon>Export
-            {/* </div> */}
           </Button>
+
           {/* </MDBox> */}
           {location.pathname === "/companies-requests" ? (
             ""
@@ -1393,7 +1410,7 @@ function Companies() {
           position: ["bottom", "right"],
           defaultPageSize: 10,
           showSizeChanger: true,
-          pageSizeOptions: ["10", "20", "30", "50", "100"],
+          pageSizeOptions: ["10", "20", "30", "50", "100", "500"],
           total: companies?.meta?.totalItems,
         }}
         rowKey={(record) => record.id}
