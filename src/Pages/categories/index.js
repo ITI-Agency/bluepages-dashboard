@@ -604,10 +604,23 @@ function Categories() {
       key: "companiesCount",
       render: (_, record) => (
         <p className="text-sm font-medium text-gray-900 ">
-          {cityFilter ? record.cityCount[`${cityFilter}`] :record.companiesCount}
+          {cityFilter && record.cityCount && record.cityCount[cityFilter] !== undefined
+            ? record.cityCount[cityFilter]
+            : record.companiesCount}
         </p>
       ),
-      sorter: (a, b) => a.companiesCount - b.companiesCount,
+      // sorter: (a, b) => a.companiesCount - b.companiesCount,
+      sorter: (a, b) => {
+        if (cityFilter) {
+          // Ensure values exist, or default to 0 if null or undefined
+          const countA = a.cityCount && a.cityCount[cityFilter] ? a.cityCount[cityFilter] : 0;
+          const countB = b.cityCount && b.cityCount[cityFilter] ? b.cityCount[cityFilter] : 0;
+          return countA - countB;
+        } else {
+          return a.companiesCount - b.companiesCount;
+        }
+      },
+      
     },
     {
       title: "Active",
