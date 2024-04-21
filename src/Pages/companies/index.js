@@ -85,11 +85,14 @@ function Companies() {
   const [openDeleteIdModal, setOpenDeleteIdModal] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
+  const [searchUserNameText, setUserNameSearchText] = useState("");
+  const [searchedUserNameColumn, setSearchedUserNameColumn] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [tableFilter, setTableFilter] = useState([]);
   const [isExporting, setIsExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const searchInput = useRef(null);
+  const searchUserNameInput = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -100,11 +103,21 @@ function Companies() {
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
-
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
   };
+  const handleUserNameSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setUserNameSearchText(selectedKeys[0]);
+    setSearchedUserNameColumn(dataIndex);
+  };
+  const handleUserNameReset = (clearFilters) => {
+    clearFilters();
+    setUserNameSearchText("");
+  };
+
+
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -190,6 +203,95 @@ function Companies() {
         text
       ),
   });
+  const getuserNameColumnSearchProps = (dataIndex) =>{ 
+    console.log("🚀 ~ getuserNameColumnSearchProps ~ dataIndex:", dataIndex)
+    
+    return ({
+
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+      close,
+    }) => (
+      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+        <Input
+          ref={searchUserNameInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleUserNameSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleUserNameSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleUserNameReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({ closeDropdown: false });
+              setUserNameSearchText(selectedKeys[0]);
+              setSearchedUserNameColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    // onFilter: (value, record) =>
+    // 	record[dataIndex]
+    // 		.toString()
+    // 		.toLowerCase()
+    // 		.includes((value).toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchUserNameInput.current?.select(), 100);
+      }
+    },
+    // render: (text) =>
+    // searchedUserNameColumn === dataIndex ? (
+    //     <Highlighter
+    //       highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+    //       searchWords={[searchUserNameText]}
+    //       autoEscape
+    //       textToHighlight={text ? text.toString() : ""}
+    //     />
+    //   ) : (
+    //     text
+    //   ),
+  })
+};
 
   useEffect(() => {
     getAllCompanies();
@@ -893,19 +995,32 @@ function Companies() {
       ...getColumnSearchProps("name_ar"),
     },
     {
-      title: "user",
+      title: "User",
+      key: "userName",
       render: (text, record) => (
-        <MDBox lineHeight={1}>
+        record.user ? (  // Check if there is a user associated with the record
+          <MDBox lineHeight={1}>
+            <MDTypography
+              display="block"
+              variant="button"
+              fontWeight="medium"
+              color="info"
+            >
+              {record.user.name}  
+            </MDTypography>
+          </MDBox>
+        ) : (
           <MDTypography
             display="block"
-            variant="button"
+            variant="caption"
             fontWeight="medium"
-            color="info"
+            color="text"
           >
-            {record?.user?.name}
+            No user
           </MDTypography>
-        </MDBox>
+        )
       ),
+      ...getuserNameColumnSearchProps("user.name"),
     },
     // {
     // 	title: "Country",
