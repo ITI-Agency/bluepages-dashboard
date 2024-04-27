@@ -66,9 +66,12 @@ const deleteMultipleCompany = async (ids) => {
   const response = await http.delete(`/companies/delete/multiple`, ids);
   return response;
 };
-const deleteByPlan = async (planId, cityId) => {
-  const response = await http.delete(
-    `/companies/${planId}/${cityId}/delete-by-plan`
+const deleteByPlan = async (planId, cityId,categories) => {
+  console.log("🚀 ~ deleteByPlan ~ categories:", categories)
+  const response = await http.post(
+    `/companies/${planId}/${cityId}/delete-by-plan`,{
+      categories
+    }
   );
   return response;
 };

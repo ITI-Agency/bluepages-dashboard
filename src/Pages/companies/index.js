@@ -13,7 +13,7 @@ import {
 } from "react-router-dom";
 import { Icon } from "@mui/material";
 import Modal from "@mui/material/Modal";
-import { Modal as AntModal } from 'antd';
+import { Modal as AntModal } from "antd";
 
 import MDButton from "components/MDButton";
 // import Switch from "@mui/material/Switch";
@@ -117,8 +117,6 @@ function Companies() {
     setUserNameSearchText("");
   };
 
-
-
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -203,95 +201,98 @@ function Companies() {
         text
       ),
   });
-  const getuserNameColumnSearchProps = (dataIndex) =>{ 
-    console.log("🚀 ~ getuserNameColumnSearchProps ~ dataIndex:", dataIndex)
-    
-    return ({
+  const getuserNameColumnSearchProps = (dataIndex) => {
+    console.log("🚀 ~ getuserNameColumnSearchProps ~ dataIndex:", dataIndex);
 
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }) => (
-      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-        <Input
-          ref={searchUserNameInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleUserNameSearch(selectedKeys, confirm, dataIndex)}
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleUserNameSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleUserNameReset(clearFilters)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({ closeDropdown: false });
-              setUserNameSearchText(selectedKeys[0]);
-              setSearchedUserNameColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-    // onFilter: (value, record) =>
-    // 	record[dataIndex]
-    // 		.toString()
-    // 		.toLowerCase()
-    // 		.includes((value).toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchUserNameInput.current?.select(), 100);
-      }
-    },
-    // render: (text) =>
-    // searchedUserNameColumn === dataIndex ? (
-    //     <Highlighter
-    //       highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
-    //       searchWords={[searchUserNameText]}
-    //       autoEscape
-    //       textToHighlight={text ? text.toString() : ""}
-    //     />
-    //   ) : (
-    //     text
-    //   ),
-  })
-};
+    return {
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+        close,
+      }) => (
+        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+          <Input
+            ref={searchUserNameInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={() =>
+              handleUserNameSearch(selectedKeys, confirm, dataIndex)
+            }
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() =>
+                handleUserNameSearch(selectedKeys, confirm, dataIndex)
+              }
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleUserNameReset(clearFilters)}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({ closeDropdown: false });
+                setUserNameSearchText(selectedKeys[0]);
+                setSearchedUserNameColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close();
+              }}
+            >
+              close
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      ),
+      // onFilter: (value, record) =>
+      // 	record[dataIndex]
+      // 		.toString()
+      // 		.toLowerCase()
+      // 		.includes((value).toLowerCase()),
+      onFilterDropdownOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchUserNameInput.current?.select(), 100);
+        }
+      },
+      // render: (text) =>
+      // searchedUserNameColumn === dataIndex ? (
+      //     <Highlighter
+      //       highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+      //       searchWords={[searchUserNameText]}
+      //       autoEscape
+      //       textToHighlight={text ? text.toString() : ""}
+      //     />
+      //   ) : (
+      //     text
+      //   ),
+    };
+  };
 
   useEffect(() => {
     getAllCompanies();
@@ -663,14 +664,14 @@ function Companies() {
     }
   };
   const handleDeleteData = async (value) => {
-    // console.log(value.planId);
-    // setLoading(true);
+    console.log("🚀 ~ handleDeleteData ~ value:", value);
     try {
       const response = await CompaniesServices.deleteByPlan(
         value.planId,
-        value.cityId
+        value.cityId,
+        value.categories
       );
-      if (response && response.status == 200) {
+      if (response && response.status == 201) {
         toast.success("تم الحذف بنجاح");
         setOpenDeleteModal(false);
         getAllCompanies();
@@ -728,7 +729,48 @@ function Companies() {
       getAllCompanies();
     }
   };
+  const handleCategoryChange = async (value) => {
+    const filtersArray = [
+      { country: "true" },
+      { city: "true" },
+      {
+        requests:
+          location.pathname === "/companies-requests" ? "true" : "false",
+      },
+      { user: "true" },
+    ];
+    const excludeProperties = (o) =>
+      !(
+        o.hasOwnProperty("categories[]") ||
+        o.hasOwnProperty("country") ||
+        o.hasOwnProperty("city") ||
+        o.hasOwnProperty("requests") ||
+        o.hasOwnProperty("user")
+      );
 
+    const tableFilterWithoutCategory = tableFilter.filter(excludeProperties);
+    if (value) {
+      tableFilterWithoutCategory.push({ "categories[]": value });
+    }
+    const filterToSend = [...tableFilterWithoutCategory, ...filtersArray];
+    try {
+      const response = await CompaniesServices.getAllCompaniesPaginate(
+        filterToSend
+      );
+      if (response && response.status == 200) {
+        setTableFilter(filterToSend);
+        setCompanies(response.data);
+        setLoading(false);
+      } else {
+        toast.error("sorry something went wrong while getting companies!");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("sorry something went wrong while getting companies!");
+      setLoading(false);
+    }
+  };
   if (loading) return <LoadingDataLoader />;
   if (openSelectModal)
     return (
@@ -819,6 +861,7 @@ function Companies() {
             {...layout}
             name="control-hooks"
             onFinish={handleDeleteData}
+            defaultValue={{ planId: 1 }}
           >
             {/* <MDBox sx={style}> */}
             <Grid container spacing={5}>
@@ -829,10 +872,15 @@ function Companies() {
                   style={{ display: "inline-block", width: "calc(100% - 8px)" }}
                   rules={[{ required: true, message: "برجاء إختيار الخطه " }]}
                 >
-                  <Select placeholder="برجاء إختيار الخطه " allowClear>
-                    {plans?.map((p) => (
+                  <Select
+                    placeholder="برجاء إختيار الخطه "
+                    allowClear
+                    // defaultValue={1} // Set default value to package_id: 1
+                    // disabled={true} // Disable the select to prevent changes
+                  >
+                    {plans.filter(it=>it.package_id===1).map((p) => (
                       <Option key={p.package_id} value={p.package_id}>
-                        {p[`name_ar`]}
+                        {p.name_ar}
                       </Option>
                     ))}
                   </Select>
@@ -853,7 +901,47 @@ function Companies() {
                   </Select>
                 </Form.Item>
               </Grid>
-
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={6}>
+                  <MDBox
+                    display="flex"
+                    alignItems="center"
+                    mt={{ xs: 2, sm: 0 }}
+                    ml={{ xs: 8, sm: 4 }}
+                  >
+                    <Form.Item
+                      label="إختر الأنشطه"
+                      name="categories"
+                      style={{
+                        display: "inline-block",
+                        width: "calc(100% - 20%)",
+                      }}
+                      rules={[
+                        { required: true, message: "برجاء إختيار الأنشطه " },
+                      ]}
+                    >
+                      <Select
+                        style={{ width: 800, borderRadius: 30 }}
+                        size="large"
+                        showSearch
+                        mode="multiple"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label ?? "")
+                            .toLowerCase()
+                            .includes(input.toLowerCase())
+                        }
+                        options={categories?.map((co) => ({
+                          label: co.name_ar,
+                          value: co.id,
+                        }))}
+                        placeholder="Search By Category"
+                        allowClear
+                      />
+                    </Form.Item>
+                  </MDBox>
+                </Grid>
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <MDBox
                   display="flex"
@@ -997,8 +1085,8 @@ function Companies() {
     {
       title: "User",
       key: "userName",
-      render: (text, record) => (
-        record.user ? (  // Check if there is a user associated with the record
+      render: (text, record) =>
+        record.user ? ( // Check if there is a user associated with the record
           <MDBox lineHeight={1}>
             <MDTypography
               display="block"
@@ -1006,7 +1094,7 @@ function Companies() {
               fontWeight="medium"
               color="info"
             >
-              {record.user.name}  
+              {record.user.name}
             </MDTypography>
           </MDBox>
         ) : (
@@ -1018,8 +1106,7 @@ function Companies() {
           >
             No user
           </MDTypography>
-        )
-      ),
+        ),
       ...getuserNameColumnSearchProps("user.name"),
     },
     // {
@@ -1346,57 +1433,16 @@ function Companies() {
   };
   const showConfirm = () => {
     AntModal.confirm({
-      title: 'Confirm Export',
-      content: 'Are you sure you want to export this data? This action cannot be undone.',
+      title: "Confirm Export",
+      content:
+        "Are you sure you want to export this data? This action cannot be undone.",
       onOk() {
         handleExport();
       },
       onCancel() {
-        console.log('Export cancelled');
+        console.log("Export cancelled");
       },
     });
-  };
-  const handleCategoryChange = async (value) => {
-    const filtersArray = [
-      { country: "true" },
-      { city: "true" },
-      {
-        requests:
-          location.pathname === "/companies-requests" ? "true" : "false",
-      },
-      { user: "true" },
-    ];
-    const excludeProperties = (o) =>
-      !(
-        o.hasOwnProperty("categories[]") ||
-        o.hasOwnProperty("country") ||
-        o.hasOwnProperty("city") ||
-        o.hasOwnProperty("requests") ||
-        o.hasOwnProperty("user")
-      );
-
-    const tableFilterWithoutCategory = tableFilter.filter(excludeProperties);
-    if (value) {
-      tableFilterWithoutCategory.push({ "categories[]": value });
-    }
-    const filterToSend = [...tableFilterWithoutCategory, ...filtersArray];
-    try {
-      const response = await CompaniesServices.getAllCompaniesPaginate(
-        filterToSend
-      );
-      if (response && response.status == 200) {
-        setTableFilter(filterToSend);
-        setCompanies(response.data);
-        setLoading(false);
-      } else {
-        toast.error("sorry something went wrong while getting companies!");
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("sorry something went wrong while getting companies!");
-      setLoading(false);
-    }
   };
 
   const rowSelection = {
@@ -1413,6 +1459,7 @@ function Companies() {
       name: record.name,
     }),
   };
+
   return (
     <DashboardLayout>
       <MDBox marginBottom={2} className="flex justify-between">
