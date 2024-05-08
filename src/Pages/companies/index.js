@@ -539,7 +539,7 @@ function Companies() {
   };
   const handleExport = async () => {
     setIsExporting(true);
-
+    console.log('username to search ',searchUserNameText)
     console.log("filter before export", tableFilter);
 
     const filterForExport = tableFilter.filter(
@@ -556,6 +556,9 @@ function Companies() {
     filterForExport.city = "true";
     filterForExport.country = "true";
     filterForExport.user = "true";
+    // if(searchUserNameText){
+    //   filterForExport.userName = searchUserNameText;
+    // }
     console.log("filter for export", filterForExport);
     console.log({ filterForExport });
     const response = await CompaniesServices.getAllCompanies(filterForExport);
@@ -569,6 +572,7 @@ function Companies() {
         c.cityName = c.city?.name_ar;
         c.planName = c.plan?.name_ar || "";
         c.userName = c.user?.name || "";
+        c.createdAt = moment(c.createdAt).format('MM/DD/YYYY');;
         return c;
       });
       const columns = [
