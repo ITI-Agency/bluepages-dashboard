@@ -353,19 +353,25 @@ function Companies() {
   };
   const handleDelete = async (companyId) => {
     // setLoading(true);
+ 
     try {
       const res = await CompaniesServices.deleteCompany(companyId);
       if (res.status == 200) {
         handleClose();
         toast.success("company has removed successfully!");
         // setLoading(false);
-        getAllCompanies();
+        // getAllCompanies();
+        const newCompaniesItems = companies.items.filter(
+          (c) => c.id !== companyId
+        );
+        setCompanies({ items: newCompaniesItems, meta: companies.meta });
       } else {
         handleClose();
         toast.error("sorry something went wrong while removing company!");
         // setLoading(false);
       }
     } catch (error) {
+      console.log("🚀 ~ handleDelete ~ error:", error)
       handleClose();
       toast.error("sorry something went wrong while removing company!");
       // setLoading(false);
@@ -556,9 +562,9 @@ function Companies() {
     filterForExport.city = "true";
     filterForExport.country = "true";
     filterForExport.user = "true";
-    // if(searchUserNameText){
-    //   filterForExport.userName = searchUserNameText;
-    // }
+    if(searchUserNameText){
+      filterForExport.userName = searchUserNameText;
+    }
     console.log("filter for export", filterForExport);
     console.log({ filterForExport });
     const response = await CompaniesServices.getAllCompanies(filterForExport);
