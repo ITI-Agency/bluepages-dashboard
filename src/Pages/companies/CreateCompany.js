@@ -86,6 +86,16 @@ function CreateCompany() {
 	const [company,setCompany] = useState(false)
 	const [verified, setVerified] = useState(false);
 	const [stay, setStay] = useState(false);
+	const sortFilesByName = (fileList) => {
+    return fileList.sort((a, b) => {
+      // Extract the numeric part from the file names and convert to number
+      const nameA = parseInt(a.name.split('.').shift(), 10);
+      const nameB = parseInt(b.name.split('.').shift(), 10);
+  
+      // Compare the numeric values
+      return nameA - nameB;
+    });
+  };
 	const postCompany = async (companyData) => {
 		setLoading(true);
 		const res = await CompaniesServices.createCompany(companyData);
@@ -261,7 +271,7 @@ function CreateCompany() {
 
 		// upload images
 		if (images?.fileList && images?.fileList?.length) {
-			images.fileList.forEach(el => {
+			sortFilesByName(images.fileList).forEach(el => {
 				formData.append("images[]", el.originFileObj
 				);
 			});

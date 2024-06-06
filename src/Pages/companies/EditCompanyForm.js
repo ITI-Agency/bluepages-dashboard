@@ -1,4 +1,5 @@
 import { Button, Form, InputNumber, Select, Switch } from "antd";
+import './companies.css';
 import { MenuOutlined } from "@ant-design/icons";
 import MDBox from "components/MDBox";
 import { Icon } from "@mui/material";
@@ -40,6 +41,7 @@ import {
 } from "react-sortable-hoc";
 import { arrayMoveImmutable } from "array-move";
 import DownloadImagesButton from "./DownloadImagesButton";
+import useAutoScroll from "Hooks/useScroll";
 const { formats, modules } = Util;
 const layout = {
   labelCol: { span: 2 },
@@ -141,6 +143,7 @@ const EditCompanyForm = ({ company, id }) => {
   const onReset = () => {
     form.resetFields();
   };
+  const scrollRef = useAutoScroll();
   useEffect(() => {
     getFieldsData();
     if (company?.banner) {
@@ -274,6 +277,16 @@ const EditCompanyForm = ({ company, id }) => {
       window.location.href = src;
     }
   };
+  const sortFilesByName = (fileList) => {
+    return fileList.sort((a, b) => {
+      // Extract the numeric part from the file names and convert to number
+      const nameA = parseInt(a.name.split('.').shift(), 10);
+      const nameB = parseInt(b.name.split('.').shift(), 10);
+  
+      // Compare the numeric values
+      return nameA - nameB;
+    });
+  };
   const mutation = useMutation(
     (data) => {
       console.log("🚀 ~ file: EditCompanyForm.js:166 ~ mutation ~ data", data);
@@ -342,7 +355,7 @@ const EditCompanyForm = ({ company, id }) => {
       // company Images upload
       if (images?.fileList && images?.fileList?.length) {
         let formDataImages = new FormData();
-        images.fileList.forEach((el) => {
+        sortFilesByName(images.fileList).forEach((el) => {
           formDataImages.append("images[]", el.originFileObj);
         });
         return Promise.allSettled([
@@ -564,6 +577,13 @@ const EditCompanyForm = ({ company, id }) => {
       (x) => x.index === restProps["data-row-key"]
     );
     return <SortableItem index={index} {...restProps} />;
+  };
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+  const handleDrop = (event) => {
+    event.preventDefault();
+    // Handle the drop logic here
   };
   return (
     <div>
@@ -1267,7 +1287,14 @@ const EditCompanyForm = ({ company, id }) => {
 					</Button>
 				</Form.Item>
 			</Form> */}
-      <section className="p-8 my-16 border-red-600 border-solid">
+           
+
+            <div
+            className="no-select"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      style={{ height: '70vh', overflowY: 'auto' }}
+    >
         <Table
           pagination={false}
           dataSource={dataSource}
@@ -1280,7 +1307,7 @@ const EditCompanyForm = ({ company, id }) => {
             },
           }}
         />
-      </section>
+      </div>
       {/* <section className="overflow-hidden text-gray-700 ">
         <div className="container px-5 py-2 mx-auto lg:pt-12 lg:px-32">
           <div className="flex flex-wrap -m-1 md:-m-2">
