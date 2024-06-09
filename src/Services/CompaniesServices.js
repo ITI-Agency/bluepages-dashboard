@@ -39,6 +39,23 @@ const getAllCompaniesPaginate = async (filters = []) => {
   const response = await http.get(`/companies/getAll/paginate${queries}`);
   return response;
 };
+const getAboutToExpireCompanies = async (filters = []) => {
+  console.log({ filters });
+  // [
+  //   { userId: 1 },
+  //   { cityId: 1 },
+  //   { countryId: 1 },
+  //   { categories[]: 1 },
+  //   {branches: true},
+  //   {user: true},
+  //   {city: true},
+  //   {country: true}
+  // ];
+  //prepare filters to be queries
+  const queries = Utils.prepareQueryFilters(filters);
+  const response = await http.get(`/companies/getAll/paginate${queries}`);
+  return response;
+};
 const getSortedCompanies = async (filters = []) => {
   const queries = Utils.prepareQueryFilters(filters);
   const response = await http.get(`/companies/${queries}`);
@@ -189,6 +206,7 @@ export default {
   getCompanyDetails,
   getAllCompanies,
   getAllCompaniesPaginate,
+  getAboutToExpireCompanies,
   getSortedCompanies,
   createCompany,
   createMultipleCompany,

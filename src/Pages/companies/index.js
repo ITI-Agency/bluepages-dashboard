@@ -2,6 +2,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import { useState, useEffect, useRef } from "react";
 import CompaniesServices from "Services/CompaniesServices";
 import LoadingDataLoader from "components/LoadingDataLoader";
+
 import MDBox from "components/MDBox";
 import Grid from "@mui/material/Grid";
 import MDTypography from "components/MDTypography";
@@ -51,6 +52,8 @@ import Utils from "../../Utils";
 import moment from "moment";
 import Highlighter from "react-highlight-words";
 import CategoriesServices from "Services/CategoriesServices";
+import { Alarm } from "@mui/icons-material";
+import { BsBell } from "react-icons/bs";
 const plans = Utils.plans;
 const style = {
   position: "absolute",
@@ -91,6 +94,8 @@ function Companies() {
   const [tableFilter, setTableFilter] = useState([]);
   const [isExporting, setIsExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [aboutToExpire, setAboutToExpire] = useState(false);
+
   const searchInput = useRef(null);
   const searchUserNameInput = useRef(null);
   const location = useLocation();
@@ -345,6 +350,48 @@ function Companies() {
       // setLoading(false);
     }
   };
+  const GetAboutToExpireCompanies = async () => {
+    setAboutToExpire(true); // Toggle the selected state
+    const filtersArray = [
+      { country: "true" },
+      { city: "true" },
+      {
+        requests:
+          location.pathname === "/companies-requests" ? "true" : "false",
+      },
+      { user: "true" },
+    ];
+    const excludeProperties = (o) =>
+      !(
+        o.hasOwnProperty("categories[]") ||
+        o.hasOwnProperty("about_to_expire") ||
+        o.hasOwnProperty("country") ||
+        o.hasOwnProperty("city") ||
+        o.hasOwnProperty("requests") ||
+        o.hasOwnProperty("user")
+      );
+
+    const tableFilterWithoutCategory = tableFilter.filter(excludeProperties);
+    tableFilterWithoutCategory.push({ about_to_expire: true });
+    const filterToSend = [...tableFilterWithoutCategory, ...filtersArray];
+    try {
+      const response = await CompaniesServices.getAboutToExpireCompanies(
+        filterToSend
+      );
+      if (response && response.status == 200) {
+        setTableFilter(filterToSend);
+        setCompanies(response.data);
+        setLoading(false);
+      } else {
+        toast.error("sorry something went wrong while getting companies!");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("sorry something went wrong while getting companies!");
+      setLoading(false);
+    }
+  };
   const handleOpen = (item) => {
     setOpen({ state: true, item });
   };
@@ -353,7 +400,7 @@ function Companies() {
   };
   const handleDelete = async (companyId) => {
     // setLoading(true);
- 
+
     try {
       const res = await CompaniesServices.deleteCompany(companyId);
       if (res.status == 200) {
@@ -371,7 +418,7 @@ function Companies() {
         // setLoading(false);
       }
     } catch (error) {
-      console.log("🚀 ~ handleDelete ~ error:", error)
+      console.log("🚀 ~ handleDelete ~ error:", error);
       handleClose();
       toast.error("sorry something went wrong while removing company!");
       // setLoading(false);
@@ -545,7 +592,7 @@ function Companies() {
   };
   const handleExport = async () => {
     setIsExporting(true);
-    console.log('username to search ',searchUserNameText)
+    console.log("username to search ", searchUserNameText);
     console.log("filter before export", tableFilter);
 
     const filterForExport = tableFilter.filter(
@@ -562,7 +609,7 @@ function Companies() {
     filterForExport.city = "true";
     filterForExport.country = "true";
     filterForExport.user = "true";
-    if(searchUserNameText){
+    if (searchUserNameText) {
       filterForExport.userName = searchUserNameText;
     }
     console.log("filter for export", filterForExport);
@@ -578,7 +625,7 @@ function Companies() {
         c.cityName = c.city?.name_ar;
         c.planName = c.plan?.name_ar || "";
         c.userName = c.user?.name || "";
-        c.createdAt = moment(c.createdAt).format('MM/DD/YYYY');;
+        c.createdAt = moment(c.createdAt).format("MM/DD/YYYY");
         return c;
       });
       const columns = [
@@ -888,11 +935,13 @@ function Companies() {
                     // defaultValue={1} // Set default value to package_id: 1
                     // disabled={true} // Disable the select to prevent changes
                   >
-                    {plans.filter(it=>it.package_id===1).map((p) => (
-                      <Option key={p.package_id} value={p.package_id}>
-                        {p.name_ar}
-                      </Option>
-                    ))}
+                    {plans
+                      .filter((it) => it.package_id === 1)
+                      .map((p) => (
+                        <Option key={p.package_id} value={p.package_id}>
+                          {p.name_ar}
+                        </Option>
+                      ))}
                   </Select>
                 </Form.Item>
               </Grid>
@@ -1337,6 +1386,19 @@ function Companies() {
           moment(a.createdAt).unix() - moment(b.createdAt).unix(),
       },
       {
+        title: "Expire At",
+        key: "packageExpiration",
+        render: (_, record) =>
+          record.packageExpiration ? (
+            <Moment format="DD-MM-YYYY">{record.packageExpiration}</Moment>
+          ) : (
+            ""
+          ),
+        sorter: (a, b) =>
+          moment(a.packageExpiration).unix() -
+          moment(b.packageExpiration).unix(),
+      },
+      {
         title: "control",
         key: "action",
         width: "20%",
@@ -1400,10 +1462,18 @@ function Companies() {
       },
       { user: "true" },
     ];
+    // Add Categories Filter if Exist
     const categoryInTableFilter = tableFilter.find((it) =>
       it.hasOwnProperty("categories[]")
     );
     if (categoryInTableFilter) filtersArray.push(categoryInTableFilter);
+    // Add About To Expire Filter if Exist
+
+    const aboutToExpireInTableFilter = tableFilter.find((it) =>
+      it.hasOwnProperty("about_to_expire")
+    );
+    if (aboutToExpireInTableFilter)
+      filtersArray.push(aboutToExpireInTableFilter);
     Object.entries(filters).forEach((f) => {
       if (f[1] && f[1].length) {
         if (f[0] === "packageId") {
@@ -1571,6 +1641,43 @@ function Companies() {
               onChange={handleCategoryChange}
             />
           </MDBox>
+        </MDBox>
+        <MDBox className="flex flex-row-reverse gap-2">
+          <MDBox >
+
+          <MDButton
+           
+            className={`mx-2 px-2 ${
+              aboutToExpire ? "bg-blue-600 text-white" : "text-black"
+            }`}
+            onClick={GetAboutToExpireCompanies}
+            variant="gradient"
+            component="label"
+            color={`${aboutToExpire ? "primary" : "info"}`}
+          >
+            شركات تنتهي قبل شهر{" "}
+            {
+              <BsBell
+                className={`mx-2 text-2xl font-bold ${
+                  aboutToExpire ? " text-white" : "text-red-900"
+                }`}
+              />
+            }
+          </MDButton>
+          </MDBox>
+          <MDBox >
+          <MDButton
+              ml={2}
+              // onClick={handleDeleteSelected}
+              variant="gradient"
+              component="label"
+              color="warning"
+              className="mx-2"
+            >
+              <Icon>list</Icon>جدد المحدد
+
+            </MDButton>
+            </MDBox>
         </MDBox>
       </MDBox>
       <Table
