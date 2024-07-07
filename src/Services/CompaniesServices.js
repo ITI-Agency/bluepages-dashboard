@@ -83,6 +83,14 @@ const deleteMultipleCompany = async (ids) => {
   const response = await http.delete(`/companies/delete/multiple`, ids);
   return response;
 };
+const renewMultipleCompany = async (data) => {
+  // const dataArr = {
+  //   data: companies, // as array
+  //   //here you can add category id and/or country & city id
+  // };
+  const response = await http.patch(`/companies/renew/multiple`,data);
+  return response;
+};
 const deleteByPlan = async (planId, cityId,categories) => {
   console.log("🚀 ~ deleteByPlan ~ categories:", categories)
   const response = await http.post(
@@ -231,6 +239,7 @@ export default {
   updateCompanyCategory,
   removeCompanyCategory,
   deleteMultipleCompany,
+  renewMultipleCompany,
   deleteByPlan,
   deleteById,
   updateCompaniesSorting,

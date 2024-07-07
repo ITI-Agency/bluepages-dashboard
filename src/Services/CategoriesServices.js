@@ -39,6 +39,10 @@ const deleteMultipleCategory = async (ids) => {
   const response = await http.delete(`/categories/delete/multiple`, ids);
   return response;
 };
+const renewMultipleCompany = async (ids) => {
+  const response = await http.delete(`/categories/delete/multiple`, ids);
+  return response;
+};
 const updateCategory = async (category, id) => {
   const response = await http.put(`/categories/${id}`, { ...category });
   return response;

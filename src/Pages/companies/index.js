@@ -350,7 +350,7 @@ function Companies() {
       // setLoading(false);
     }
   };
-  const GetAboutToExpireCompanies = async () => {
+  const GetAboutToExpireCompanies = async (data) => {
     setAboutToExpire(true); // Toggle the selected state
     const filtersArray = [
       { country: "true" },
@@ -372,7 +372,7 @@ function Companies() {
       );
 
     const tableFilterWithoutCategory = tableFilter.filter(excludeProperties);
-    tableFilterWithoutCategory.push({ about_to_expire: true });
+    tableFilterWithoutCategory.push({ about_to_expire: data });
     const filterToSend = [...tableFilterWithoutCategory, ...filtersArray];
     try {
       const response = await CompaniesServices.getAboutToExpireCompanies(
@@ -781,6 +781,26 @@ function Companies() {
         getAllCompanies();
       }
     } catch (error) {
+      toast.error("something went wrong!");
+      setLoading(false);
+      getAllCompanies();
+    }
+  };
+  const handleRenewSelected = async () => {
+    setLoading(true);
+    try {
+      const response = await CompaniesServices.renewMultipleCompany({ ids: selectedRowKeys });
+      if (response && response.status == 200) {
+        toast.success("success to delete data");
+        setLoading(false);
+        getAllCompanies();
+      } else {
+        toast.error("something went wrong!");
+        setLoading(false);
+        getAllCompanies();
+      }
+    } catch (error) {
+      console.log("🚀 ~ handleRenewSelected ~ error:", error)
       toast.error("something went wrong!");
       setLoading(false);
       getAllCompanies();
@@ -1376,6 +1396,22 @@ function Companies() {
       ],
       onFilter: (value, record) => record.is_sms_request === value,
     });
+    const renderPackageExpiration = (_, record) => {
+      const currentDate = new Date();
+      const packageExpirationDate = new Date(record.packageExpiration);
+    
+      const isExpired = record.packageExpiration && packageExpirationDate < currentDate;
+    
+      const dateStyle = isExpired ? { color: 'red' } : {};
+    
+      return record.packageExpiration ? (
+        <Moment format="DD-MM-YYYY" style={dateStyle}>
+          {record.packageExpiration}
+        </Moment>
+      ) : (
+        ""
+      );
+    };
   columns.push(
     ...[
       {
@@ -1388,12 +1424,7 @@ function Companies() {
       {
         title: "Expire At",
         key: "packageExpiration",
-        render: (_, record) =>
-          record.packageExpiration ? (
-            <Moment format="DD-MM-YYYY">{record.packageExpiration}</Moment>
-          ) : (
-            ""
-          ),
+        render:renderPackageExpiration,
         sorter: (a, b) =>
           moment(a.packageExpiration).unix() -
           moment(b.packageExpiration).unix(),
@@ -1644,8 +1675,25 @@ function Companies() {
         </MDBox>
         <MDBox className="flex flex-row-reverse gap-2">
           <MDBox >
-
-          <MDButton
+          <Select
+              style={{ width: 200, borderRadius: 30 }}
+              size="large"
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              options={[{label:"المنتهية",value:"finished"},{label:"قاربت علي الإنتهاء" ,value:"about_to_expire"}]?.map((co) => ({
+                label: co.label,
+                value: co.value,
+              }))}
+              placeholder="إنتهاء الإعلانات"
+              allowClear
+              onChange={GetAboutToExpireCompanies}
+            />
+          {/* <MDButton
            
             className={`mx-2 px-2 ${
               aboutToExpire ? "bg-blue-600 text-white" : "text-black"
@@ -1663,7 +1711,7 @@ function Companies() {
                 }`}
               />
             }
-          </MDButton>
+          </MDButton> */}
           </MDBox>
           <MDBox >
           <MDButton
@@ -1673,6 +1721,7 @@ function Companies() {
               component="label"
               color="warning"
               className="mx-2"
+              onClick={handleRenewSelected}
             >
               <Icon>list</Icon>جدد المحدد
 
