@@ -86,6 +86,8 @@ function CreateCompany() {
 	const [company,setCompany] = useState(false)
 	const [verified, setVerified] = useState(false);
 	const [stay, setStay] = useState(false);
+	const [defaultUser, setDefaultUser] = useState(null);
+
 	const sortFilesByName = (fileList) => {
     return fileList.sort((a, b) => {
       // Extract the numeric part from the file names and convert to number
@@ -128,9 +130,17 @@ function CreateCompany() {
 		getCompany(searchParams.get('companyId'));
 		
 	},[searchParams.get('companyId')])
+	const [form] = Form.useForm();
 	useEffect(() => {
 		getFieldsData();
 	}, []);
+	useEffect(() => {
+    const defaultUser = users.find(user => user.name === "bluepages.admin");
+    setDefaultUser(defaultUser);
+    if (defaultUser) {
+      form.setFieldsValue({ userId: defaultUser.id });
+    }
+  }, [users, form]);
 	const getCountryCities = async (id) => {
 		const { status: citiesStatus, data: citiesData } = await CountriesServices.getAllCities(id);
 		if (citiesStatus == 200) {
@@ -175,7 +185,7 @@ function CreateCompany() {
 			return;
 		}
 	};
-	const [form] = Form.useForm();
+
 	const onReset = () => {
 		form.resetFields();
 	};
@@ -339,7 +349,7 @@ function CreateCompany() {
 		email: company.email || "",
 		website: company.website || "",
 		countryId: company?.countryId || null,
-		userId: company?.userId,
+		userId: company?.userId || defaultUser?.id,
 		subscriptionPlanId: company?.subscriptionPlanId || null,
 		subscriptionPlanPackageId: company?.subscriptionPlanPackageId || null,
 		cityId: company?.cityId || null,
@@ -367,6 +377,7 @@ function CreateCompany() {
 		// longitude: company.longitude || "",
 		// latitude: company.latitude || "",
 		location_link: company.location_link || "",
+
 	};
 	return (
 		<DashboardLayout>

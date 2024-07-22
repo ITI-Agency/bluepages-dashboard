@@ -1404,7 +1404,7 @@ function Companies() {
     
       const dateStyle = isExpired ? { color: 'red' } : {};
     
-      return record.packageExpiration ? (
+      return record.packageExpiration && record.subscriptionPlanId!==1 ? (
         <Moment format="DD-MM-YYYY" style={dateStyle}>
           {record.packageExpiration}
         </Moment>
