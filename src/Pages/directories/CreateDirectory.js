@@ -134,7 +134,9 @@ function CreateDirectory() {
 								</Form.Item>
 							</Form.Item>
 
-
+							<Form.Item label="رقم الترتيب" name="index_number">
+                <InputNumber style={{ width: '100%' }} placeholder="أدخل رقم الترتيب" />
+              </Form.Item>
 
 							<Form.Item className="mt-8" >
 								<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>
