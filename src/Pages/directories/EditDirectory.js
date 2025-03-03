@@ -33,6 +33,36 @@ function CreateDirectory() {
 	const [pdf, setpdf] = useState([]);
 
 	const [content, setContent] = useState('إكتب المحتوي هنا');
+	// Add this useEffect to fetch directory details when component loads
+useEffect(() => {
+  if (directoryId) {
+    fetchDirectoryDetails();
+  }
+}, [directoryId]);
+
+// Add this function to get directory details
+const fetchDirectoryDetails = async () => {
+  setLoading(true);
+  try {
+    const response = await DirectoryService.getDirectoryDetails(directoryId);
+    if (response && response.status === 200) {
+      const directoryData = response.data;
+      // Set directory state
+      setDirectory(directoryData);
+      // Set form values
+      form.setFieldsValue({
+        index_number: directoryData.index_number
+      });
+    } else {
+      toast.error("حدث خطأ أثناء جلب بيانات الدليل!");
+    }
+  } catch (error) {
+    console.error("Error fetching directory details:", error);
+    toast.error("حدث خطأ أثناء جلب بيانات الدليل!");
+  } finally {
+    setLoading(false);
+  }
+};
 	// useEffect(() => {
 	// 	getFieldsData();
 	// }, []);
@@ -77,9 +107,6 @@ function CreateDirectory() {
 		let formData = new FormData();
 		if (pdf?.length) {
 			formData.append("file", pdf[0].originFileObj);
-		}else{
-			toast.error('الرجاء إضافه صور أولا')
-			return;
 		}
 		// Add index_number to formData if it exists in the form data
 		if (data.index_number !== undefined) {
@@ -114,7 +141,7 @@ function CreateDirectory() {
 			<Container sx={{ mb: 4 }}>
 				<Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 4, md: 5 } }}>
 					<div className="mt-4">
-						<Form layout="vertical" {...layout} form={form} name="control-hooks" onFinish={mutation.mutate} >
+						<Form layout="vertical" {...layout} form={form} name="control-hooks" onFinish={mutation.mutate} initialValues={{index_number: directory?.index_number || ""}} >
 							<Form.Item style={{ marginBottom: 0 }} >
 		
 								<Form.Item label="تعديل ملف الدليل" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} valuePropName="logo">
