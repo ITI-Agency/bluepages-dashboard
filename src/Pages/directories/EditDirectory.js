@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Input, Select } from 'antd';
+import { Button, Form, Input, Select,InputNumber } from 'antd';
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import { useNavigate, useParams } from "react-router-dom";
@@ -81,6 +81,11 @@ function CreateDirectory() {
 			toast.error('الرجاء إضافه صور أولا')
 			return;
 		}
+		// Add index_number to formData if it exists in the form data
+		if (data.index_number !== undefined) {
+			formData.append("index_number", data.index_number);
+		}
+		
 		// Object.keys(data).forEach((t) => {
 		// 	formData.append(t, data[t]);
 		// });
@@ -124,8 +129,8 @@ function CreateDirectory() {
 							</Form.Item>
 
 
-							<Form.Item label="رقم الترتيب" name="index_number">
-                <InputNumber style={{ width: '100%' }} placeholder="أدخل رقم الترتيب" />
+							<Form.Item label="رقم الفهرس" name="index_number">
+                <InputNumber style={{ width: '100%' }} placeholder="أدخل رقم الفهرس" />
               </Form.Item>
 							<Form.Item className="mt-8" >
 								<Button type="primary" htmlType="submit" className='mx-2 bg-blue-500 rtl:pt-2'>

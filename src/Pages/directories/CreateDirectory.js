@@ -134,8 +134,8 @@ function CreateDirectory() {
 								</Form.Item>
 							</Form.Item>
 
-							<Form.Item label="رقم الترتيب" name="index_number">
-                <InputNumber style={{ width: '100%' }} placeholder="أدخل رقم الترتيب" />
+							<Form.Item label="رقم الفهرس" name="index_number">
+                <InputNumber style={{ width: '100%' }} placeholder="أدخل رقم الفهرس" />
               </Form.Item>
 
 							<Form.Item className="mt-8" >
