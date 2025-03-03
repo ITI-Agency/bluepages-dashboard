@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Form, Input, Select } from 'antd';
+import { Button, Form, Input, Select ,InputNumber} from 'antd';
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import { useNavigate } from "react-router-dom";
