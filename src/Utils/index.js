@@ -46,6 +46,16 @@ const plans = [
 		name_en: 'Bronze',
 		name_ar: "برونز - مربع النشاط",
 	},
+	{
+		package_id: 9,
+		name_en: 'SECONDARY GOLD Main',
+		name_ar: "ذهبي ثانوي - الصفحه الرئيسيه",
+	},
+	{
+		package_id: 10,
+		name_en: 'SECONDARY GOLD City',
+		name_ar: "ذهبي ثانوي - صفحه المدينه",
+	},
 ];
  const modules ={toolbar: [
 	['bold', 'italic', 'underline', 'strike', 'blockquote'],
